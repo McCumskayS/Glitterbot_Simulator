@@ -1,0 +1,8 @@
+#btn {
+	//This is how we have HTML 'over' the canvas
+	position: absolute;
+}
+
+#test-canvas {
+	width: 70%;
+}

@@ -1,5 +1,3 @@
-// Author: Zain Ali
-// 22/11/2018
 const express = require('express') //Load Express
 const app = express() //App is an Express function
 const port = 3000 //Set a port

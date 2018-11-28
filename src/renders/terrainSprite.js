@@ -1,3 +1,8 @@
+//Base terrain object, creates a terrain and adds it to the container
+//Also sets the grid coordinates
+//Authors: Zain Ali, Asad Mahmood
+//Date: 21/11/2018
+
 class TerrainSprite {
 	constructor() {
 		//Setup
@@ -8,21 +13,11 @@ class TerrainSprite {
 		container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
-
-		//Fields
 		this.walkable = true;
 	}
 
 	loadSprite() {
-		this.texture = PIXI.Texture.fromImage('./sprites/square_1.png');
+		this.texture = PIXI.Texture.fromImage('./sprites/placeholder.png');
 		return this.texture;
-	}
-
-	getPositionX() {
-		return this.posx;
-	}
-
-	getPositionY() {
-		return this.posy;
 	}
 }

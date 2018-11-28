@@ -1,3 +1,7 @@
+//Rover robot front end object handler
+//Authors: Zain Ali, Asad Mahmood
+//Date: 21/11/2018
+
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor() {
@@ -5,6 +9,8 @@ class RoverSprite {
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
 		container.addChild(this.sprite);
+		//posx, posy are the grid coordinates (To not confuse with x and y, which are the sprite coordinates)
+		//TODO change into gridx, gridy in future
 		this.posx = 0;
 		this.posy = 0;
 		this.animSpeed = 0.5 //Default
@@ -34,6 +40,8 @@ class RoverSprite {
 		}
 	}
 
+	//The functions below this line will be used by the operator in case of overriding
+	//Check is rover can go over the next 'tile'
 	isWalkable(x, y) {
 		return grid[x][y].walkable;
 	}

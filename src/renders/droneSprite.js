@@ -1,3 +1,7 @@
+//Drone robot front end object handler
+//Authors: Zain Ali, Asad Mahmood
+//Date: 21/11/2018
+
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor() {

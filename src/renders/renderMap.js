@@ -1,5 +1,10 @@
+//Main Js file! Handles everything related to the visual aspects of the simulation
+//Authors: Zain Ali, Asad Mahmood
+//Date: 21/11/2018
+
 //Setup
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+//TODO change name from test to official
 var canvas = document.getElementById("test-canvas");
 var roverTimeline = new TimelineLite();
 var droneTimeline = new TimelineLite();
@@ -21,9 +26,15 @@ app.renderer.autoResize = true;
 app.stage.addChild(container);
 
 drawGrid();
+//Center container
 container.x = (app.screen.width - container.width) / 2;
 container.y = (app.screen.height - container.height) / 2;
 
+//Add drone & rover on the grid/map
+var roverSprite = new RoverSprite();
+var droneSprite = new DroneSprite();
+
+//test path for rover
 path = [
 	{posx: 1, posy:0},
   {posx: 2, posy:0},
@@ -31,13 +42,10 @@ path = [
   {posx: 3, posy:1},
 ]
 
-//Add drone & rover on the grid/map
-var roverSprite = new RoverSprite();
-var droneSprite = new DroneSprite();
-
-//TODO: FIND A WAY TO LET ANIMATION FINISH
+//Test movement
 roverSprite.followPath(path);
-droneSprite.moveTo(10, 5);
+droneSprite.moveTo(1, 1);
+
 //Creating square sprites and add them to the 2D array 'grid'
 function drawGrid() {
 	for (var i = 0; i < col; i++) {

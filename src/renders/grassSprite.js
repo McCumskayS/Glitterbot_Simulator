@@ -1,3 +1,7 @@
+//Grass terrain object (front end)
+//Authors: Zain Ali, Asad Mahmood
+//Date: 21/11/2018
+
 class GrassSprite extends TerrainSprite {
 	constructor() {
 		super();

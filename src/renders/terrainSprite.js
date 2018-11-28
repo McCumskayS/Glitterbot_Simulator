@@ -11,7 +11,6 @@ class TerrainSprite {
 
 		//Fields
 		this.walkable = true;
-		this.flyOver = true;
 	}
 
 	loadSprite() {

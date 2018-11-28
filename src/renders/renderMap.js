@@ -2,6 +2,7 @@
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 var canvas = document.getElementById("test-canvas");
 var roverTimeline = new TimelineLite();
+var droneTimeline = new TimelineLite();
 const row = 30;
 const col = 50;
 const container = new PIXI.Container();
@@ -30,11 +31,13 @@ path = [
   {posx: 3, posy:1},
 ]
 
+//Add drone & rover on the grid/map
 var roverSprite = new RoverSprite();
+var droneSprite = new DroneSprite();
 
 //TODO: FIND A WAY TO LET ANIMATION FINISH
 roverSprite.followPath(path);
-
+droneSprite.moveTo(10, 5);
 //Creating square sprites and add them to the 2D array 'grid'
 function drawGrid() {
 	for (var i = 0; i < col; i++) {

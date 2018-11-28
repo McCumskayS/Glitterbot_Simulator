@@ -1,7 +1,7 @@
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor() {
-		this.texture = PIXI.Texture.fromImage('./sprites/drone_2.png');
+		this.texture = PIXI.Texture.fromImage('./sprites/rover.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
 		container.addChild(this.sprite);

@@ -11,18 +11,25 @@ class RoverSprite {
 	}
 
 	//Follows a path of nodes!
-	// TODO: WORKS ONLY WITH A CONSECUTIVE NODE PATH!!
 	followPath(path) {
 		for (let i = 0; i < path.length; i++) {
-			if (path[i].x > this.posx+1) {
-				this.moveRight();
-			} else if (path[i].x < this.posx) {
-				this.moveLeft();
+			if (path[i].posx > this.posx) {
+				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx})
+				this.posx += 1;
+				console.log('('+this.posx+' - '+this.posy+')');
+			} else if (path[i].posx < this.posx) {
+				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx})
+				this.posx -= 1;
+				console.log('('+this.posx+' - '+this.posy+')');
 			}
-			if (path[i].y > this.posy) {
-				this.moveDown();
-			} else if (path[i].y < this.posy) {
-				this.moveUp();
+			if (path[i].posy > this.posy) {
+				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy})
+				this.posy += 1;
+				console.log('('+this.posx+' - '+this.posy+')');
+			} else if (path[i].posy < this.posy) {
+				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy})
+				this.posy -= 1;
+				console.log('('+this.posx+' - '+this.posy+')');
 			}
 		}
 	}
@@ -33,15 +40,9 @@ class RoverSprite {
 
 	moveRight() {
 		if (this.isWalkable(this.posx+1, this.posy)) {
-			animSprite = () => {
-				this.sprite.x += this.animSpeed;
-				if (this.sprite.x >= squareSize*grid[this.posx+1][this.posy].posx) {
-						ticker.stop();
-						this.posx += 1;
-						console.log('('+this.posx+' - '+this.posy+')');
-				}
-			}
-			ticker.start();
+			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx})
+			this.posx += 1;
+			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
 		}
@@ -49,15 +50,9 @@ class RoverSprite {
 
 	moveLeft() {
 		if (this.isWalkable(this.posx-1, this.posy)) {
-			animSprite = () => {
-				this.sprite.x -= this.animSpeed;
-				if (this.sprite.x <= squareSize*grid[this.posx-1][this.posy].posx) {
-						ticker.stop();
-						this.posx -= 1;
-						console.log('('+this.posx+' - '+this.posy+')');
-				}
-			}
-			ticker.start();
+			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx})
+			this.posx -= 1;
+			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
 		}
@@ -65,15 +60,9 @@ class RoverSprite {
 
 	moveUp() {
 		if (this.isWalkable(this.posx, this.posy-1)) {
-			animSprite = () => {
-				this.sprite.y -= this.animSpeed;
-				if (this.sprite.y <= squareSize*grid[this.posx][this.posy-1].posy) {
-						ticker.stop();
-						this.posy -= 1;
-						console.log('('+this.posx+' - '+this.posy+')');
-				}
-			}
-			ticker.start();
+			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy})
+			this.posy -= 1;
+			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
 		}
@@ -81,15 +70,9 @@ class RoverSprite {
 
 	moveDown() {
 		if (this.isWalkable(this.posx, this.posy+1)) {
-			animSprite = () => {
-				this.sprite.y += this.animSpeed;
-				if (this.sprite.y >= squareSize*grid[this.posx][this.posy+1].posy) {
-						ticker.stop();
-						this.posy += 1;
-						console.log('('+this.posx+' - '+this.posy+')');
-				}
-			}
-			ticker.start();
+			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy})
+			this.posy += 1;
+			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
 		}

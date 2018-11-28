@@ -1,15 +1,15 @@
 //Setup
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
-let canvas = document.getElementById("test-canvas");
+var canvas = document.getElementById("test-canvas");
+var roverTimeline = new TimelineLite();
 const row = 30;
 const col = 50;
 const container = new PIXI.Container();
 const squareSize = 20;
 const grid = [];
-const ticker = new PIXI.ticker.Ticker();
 const app = new PIXI.Application({
-    width: (col*20),
-    height: (row*20),
+    width: (col*squareSize),
+    height: (row*squareSize),
     antialias: true,
     transparent: true,
     resolution: 1,
@@ -18,19 +18,16 @@ const app = new PIXI.Application({
 );
 app.renderer.autoResize = true;
 app.stage.addChild(container);
-ticker.stop();
-ticker.add(delta => animSprite(delta));
 
 drawGrid();
-//Shell function for the PIXI.ticker in order to have  different animations
-var animSprite = function() {}
 container.x = (app.screen.width - container.width) / 2;
 container.y = (app.screen.height - container.height) / 2;
 
 path = [
-	{x: 1, y:0},
-	{x: 2, y:0},
-	{x: 2, y:1},
+	{posx: 1, posy:0},
+  {posx: 2, posy:0},
+	{posx: 2, posy:1},
+  {posx: 3, posy:1},
 ]
 
 var roverSprite = new RoverSprite();

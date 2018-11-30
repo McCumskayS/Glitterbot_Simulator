@@ -3,6 +3,7 @@ const app = express() //App is an Express function
 const port = 3000 //Set a port
 const root = __dirname; //Root is the current Directory
 const socket = require('socket.io') //Load socket.io
+const sender = require('./sender.js')
 
 //Route to the main HTML page (in this case index.html)
 app.get('/', function(req, res) {
@@ -21,8 +22,4 @@ const server = app.listen(port,
 //Make a socket instance from what we requried
 //connected `to the previously created server
 const io = socket(server);
-
-//When a client connect display message on console
-io.on('connection', function(socket){
-  //TO-DO
-});
+sender(io);

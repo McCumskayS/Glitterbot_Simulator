@@ -6,17 +6,18 @@
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 //TODO change name from test to official
 var canvas = document.getElementById("test-canvas");
+const socket = io();
 var roverTimeline = new TimelineLite();
 var droneTimeline = new TimelineLite();
-const row = 30;
+const row = 25;
 const col = 50;
 const container = new PIXI.Container();
 const squareSize = 20;
 const grid = [];
 const app = new PIXI.Application({
-    width: (col*squareSize),
-    height: (row*squareSize),
-    antialias: true,
+    width: col*squareSize,
+    height: row*squareSize,
+    antialias: false,
     transparent: true,
     resolution: 1,
 		view: document.getElementById("test-canvas"),
@@ -34,17 +35,21 @@ container.y = (app.screen.height - container.height) / 2;
 var roverSprite = new RoverSprite();
 var droneSprite = new DroneSprite();
 
-//test path for rover
-path = [
-	{posx: 1, posy:0},
-  {posx: 2, posy:0},
-	{posx: 2, posy:1},
-  {posx: 3, posy:1},
-]
+//Reads path from server and moves the roverSprite
+function roverPath(path) {
+	roverSprite.followPath(path);
+}
+socket.on('rover-frontEnd', roverPath);
+
+function dronePath(coordinates) {
+  droneSprite.moveTo(coordinates.x, coordinates.y)
+}
+socket.on('drone-frontEnd', dronePath);
+
 
 //Test movement
-roverSprite.followPath(path);
-droneSprite.moveTo(1, 1);
+//roverSprite.followPath(path);
+//droneSprite.moveTo(10, 5);
 
 //Creating square sprites and add them to the 2D array 'grid'
 function drawGrid() {
@@ -59,8 +64,9 @@ function drawGrid() {
 			}
 			terrain.posx = i;
 			terrain.posy = j;
-			terrain.sprite.x = (i % col) * squareSize;
+			terrain.sprite.x = Math.floor(i % col) * squareSize;
 			terrain.sprite.y = Math.floor(j % row) * squareSize;
+      container.addChild(terrain.sprite);
 			grid[i][j] = terrain;
 		}
 	}

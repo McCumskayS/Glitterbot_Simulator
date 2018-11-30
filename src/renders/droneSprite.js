@@ -15,7 +15,6 @@ class DroneSprite {
 	}
 
 	//TODO boundry system!
-	//TODO Send updates to server after movement
 	moveTo(targetX, targetY) {
 		var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
 		distanceSquared = Math.abs(distanceSquared);

@@ -6,7 +6,7 @@ function sender(io) {
 		{posx: 2, posy:1},
 	  {posx: 3, posy:1},
 	]
-	//test dronePath
+	//testdrone Path
 	dronePath = {
 		x: 4,
 		y: 7,

@@ -10,7 +10,6 @@ class TerrainSprite {
 		this.loadSprite();
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
-		//container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
 		this.walkable = true;

@@ -67,13 +67,13 @@ function drawGrid() {
 
 //Used for nice pixel scaling
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
-////////////////////////////////
-//TESTS
+
+//Setting pivot for the container
 container.pivot.x = container.width/2;
 container.pivot.y = container.height/2;
 container.interactive = true;
-//container.buttonMode = true;
 
+//Set various interaction for the container, mouse+touchscreen
 container
        .on('pointerdown', onDragStart)
        .on('pointerup', onDragEnd)
@@ -103,8 +103,13 @@ function onDragMove() {
     this.position.set(newPosition.x, newPosition.y);
   }
 }
+
+//TEMPORARY: Used for having a default zoom level
+//TODO set MAX zoom level
 var defaultScaleX = container.scale.x;
 var defaultScaleY = container.scale.y;
+
+//Canvas zoom event listener
 canvas.addEventListener("wheel", function(event) {
   if (event.deltaY < 0) {
     container.scale.x += 0.05;

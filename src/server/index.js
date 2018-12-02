@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express') //Load Express
 const app = express() //App is an Express function
 const port = 3000 //Set a port
@@ -7,7 +8,7 @@ const sender = require('./sender.js')
 
 //Route to the main HTML page (in this case index.html)
 app.get('/', function(req, res) {
-    res.sendFile(root + '/index.html');
+    res.sendFile('index.html', {root: path.join(root, '../')});
 });
 
 //Specify where to get files

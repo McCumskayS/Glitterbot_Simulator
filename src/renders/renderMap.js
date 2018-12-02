@@ -3,8 +3,7 @@
 //Date: 21/11/2018
 
 //Setup
-//TODO change name from test to official
-const canvas = document.getElementById("test-canvas");
+const canvas = document.getElementById("map-canvas");
 const socket = io();
 var roverTimeline = new TimelineLite();
 var droneTimeline = new TimelineLite();
@@ -19,7 +18,7 @@ const app = new PIXI.Application({
     antialias: false,
     transparent: true,
     resolution: 1,
-		view: document.getElementById("test-canvas"),
+		view: document.getElementById("map-canvas"),
 	}
 );
 app.renderer.autoResize = true;
@@ -118,13 +117,3 @@ canvas.addEventListener("wheel", function(event) {
     }
   }
 });
-
-//This works, BUT FOR NOW DON'T TOUCH IT
-/*
-container.on('pointerdown', onClick);
-
-function onClick () {
-    container.scale.x *= 1.25;
-    container.scale.y *= 1.25;
-}
-*/

@@ -13,7 +13,7 @@ app.get('/', function(req, res) {
 
 //Specify where to get files
 //E.g. the various js scripts in index.html
-app.use(express.static(root));
+app.use(express.static('../'));
 
 //Listening to port(3000) and logging a message on console
 //Also save the connection to a variable named 'server'

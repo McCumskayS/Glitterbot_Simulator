@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
+    "gsap": "^2.0.2",
+    "pixi.js": "^4.8.2",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {

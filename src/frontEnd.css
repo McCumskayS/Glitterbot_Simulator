@@ -1,0 +1,15 @@
+#btn {
+	//This is how we have HTML 'over' the canvas
+	position: absolute;
+}
+
+#test-canvas {
+	margin: auto;
+	display: block;
+	width: 70%;
+	outline: black 3px solid;
+}
+
+#canva-id {
+	margin-top: 100px;
+}

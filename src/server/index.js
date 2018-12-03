@@ -1,3 +1,4 @@
+//server
 const path = require('path')
 const express = require('express') //Load Express
 const app = express() //App is an Express function

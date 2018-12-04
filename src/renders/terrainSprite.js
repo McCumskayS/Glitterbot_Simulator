@@ -13,10 +13,19 @@ class TerrainSprite {
 		this.posx = 0;
 		this.posy = 0;
 		this.walkable = true;
+		this.litter = false;
 	}
 
 	loadSprite() {
 		this.texture = PIXI.Texture.fromImage('./sprites/placeholder.png');
 		return this.texture;
+	}
+
+	setTerrainLitter(){
+		this.litter = true;
+	}
+
+	getTerrainLitter(){
+		return this.litter;
 	}
 }

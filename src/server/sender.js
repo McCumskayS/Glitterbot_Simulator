@@ -5,11 +5,13 @@ function sender(io) {
 	  {posx: 2, posy:0},
 		{posx: 2, posy:1},
 	  {posx: 3, posy:1},
+		{posx: 4, posy:1},
+		{posx: 4, posy:0},
 	]
 	//testdrone Path
 	dronePath = {
 		x: 4,
-		y: 7,
+		y: 6,
 	}
 	//When a client connect display message on console
 	io.on('connection', function(socket){

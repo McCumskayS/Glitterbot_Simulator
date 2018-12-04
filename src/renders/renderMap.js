@@ -4,6 +4,7 @@
 
 //Setup
 const canvas = document.getElementById("map-canvas");
+const divCanvas = document.getElementById("canvas-id");
 const socket = io();
 var roverTimeline = new TimelineLite();
 var droneTimeline = new TimelineLite();
@@ -13,8 +14,8 @@ const container = new PIXI.Container();
 const squareSize = 20;
 const grid = [];
 const app = new PIXI.Application({
-    width: 1000,
-    height: 600,
+    width: col*squareSize,
+    height: row*squareSize,
     antialias: false,
     transparent: true,
     resolution: 1,

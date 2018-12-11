@@ -20,23 +20,39 @@ class RoverSprite {
 	followPath(path) {
 		for (let i = 0; i < path.length; i++) {
 			if (path[i].posx > this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx})
+				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx, onComplete:this.deleteLitter})
 				this.posx += 1;
 				console.log('('+this.posx+' - '+this.posy+')');
 			} else if (path[i].posx < this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx})
+				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx, onComplete:this.deleteLitter})
 				this.posx -= 1;
 				console.log('('+this.posx+' - '+this.posy+')');
 			}
 			if (path[i].posy > this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy})
+				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy, onComplete:this.deleteLitter})
 				this.posy += 1;
 				console.log('('+this.posx+' - '+this.posy+')');
 			} else if (path[i].posy < this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy})
+				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy, onComplete:this.deleteLitter})
 				this.posy -= 1;
 				console.log('('+this.posx+' - '+this.posy+')');
 			}
+		}
+	}
+
+	deleteLitter(){
+		var terrain;
+		var litter;
+		terrain = grid[roverSprite.posx][roverSprite.posy];
+		//TODO fix posx and posy
+		console.log(roverSprite.posx);
+		console.log(roverSprite.posy);
+		if(terrain.getTerrainLitter() == true)
+		{
+			console.log("found litter");
+			litter = litterArray[roverSprite.posx][roverSprite.posy];
+			container.removeChild(litter);
+			terrain.setTerrainLitter(false);
 		}
 	}
 

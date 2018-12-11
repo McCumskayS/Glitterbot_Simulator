@@ -14,6 +14,7 @@ class TerrainSprite {
 		this.posy = 0;
 		this.walkable = true;
 		this.litter = false;
+		this.type = "placeholder";
 	}
 
 	loadSprite() {
@@ -21,11 +22,15 @@ class TerrainSprite {
 		return this.texture;
 	}
 
-	setTerrainLitter(){
-		this.litter = true;
+	setTerrainLitter(val){
+		this.litter = val;
 	}
 
 	getTerrainLitter(){
 		return this.litter;
+	}
+
+	getTerrainType(){
+		return this.type;
 	}
 }

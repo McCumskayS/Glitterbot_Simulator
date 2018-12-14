@@ -1,2 +1,0 @@
-# Glitterbot_Simulator
-Gui

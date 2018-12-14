@@ -26,7 +26,7 @@ There are other features being built but they're not merged yet i.e. still in de
 ## Currently in development
 * Branch Classes - backend classes for rover and drove - Yichun Yuan, Xinyang Zhang (Currently put aside)
 * Branch GUI - User interface for the website - Zain Ali
-* Branch Litter - Adding digital litter on the map in order for the drone and rover to interact with it - Asad Mahmood
+* Branch Litter - Adding digital litter on the map in order for the drone and rover to interact with it - Asad Mahmood, Zain Ali
 * Branch Pathfinding - Working on the pathfinding system for the rover - Scott McCumskays, William Connors
 * Branch grid_system - Setting the map on the website and the basic foundation of the project, including the socket connection - Zain Ali, Asad Mahmood
 * Branch scanPath - the path that the drone should take when he goes to scan an area - Xinyang Zhang, Yichun Yuan

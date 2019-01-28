@@ -27,6 +27,22 @@ class RoverSprite {
 		}
 	}
 
+	deleteLitter(){
+		var terrain;
+		var litter;
+		terrain = grid[roverSprite.posx][roverSprite.posy];
+		//TODO fix posx and posy
+		console.log(roverSprite.posx);
+		console.log(roverSprite.posy);
+		if(terrain.getTerrainLitter() == true)
+		{
+			console.log("found litter");
+			litter = litterArray[roverSprite.posx][roverSprite.posy];
+			container.removeChild(litter);
+			terrain.setTerrainLitter(false);
+		}
+	}
+
 	//The functions below this line will be used by the operator in case of overriding
 	//Check is rover can go over the next 'tile'
 	isWalkable(x, y) {

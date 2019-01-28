@@ -6,6 +6,7 @@ class RockSprite extends TerrainSprite {
 	constructor() {
 		super();
 		this.walkable = false;
+		this.type = "Rock";
 	}
 
 	//Ovveride

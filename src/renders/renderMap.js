@@ -4,6 +4,7 @@
 
 //Setup
 const canvas = document.getElementById("map-canvas");
+const genLitterBtn = document.getElementById("litterBtn");
 const divCanvas = document.getElementById("canvas-id");
 const socket = io();
 var roverTimeline = new TimelineLite();
@@ -13,6 +14,7 @@ const col = 50;
 const container = new PIXI.Container();
 const squareSize = 20;
 const grid = [];
+const litterArray = [];
 const app = new PIXI.Application({
     width: col*squareSize,
     height: row*squareSize,
@@ -26,6 +28,7 @@ app.renderer.autoResize = true;
 app.stage.addChild(container);
 
 drawGrid();
+generateLitterArray();
 //Center container
 container.x = (app.screen.width) / 2;
 container.y = (app.screen.height) / 2;
@@ -51,7 +54,7 @@ function drawGrid() {
 		grid[i] = [];
 		for (var j = 0; j < row; j++) {
 			var num = Math.random();
-			if (num > 0.01) {
+			if (num > 0.03) {
 				var terrain = new GrassSprite(i, j, col, row);
 			} else {
 				var terrain = new RockSprite(i, j, col, row);
@@ -65,6 +68,47 @@ function drawGrid() {
 		}
 	}
 }
+
+function generateLitterArray(){
+  for (var i = 0; i < col; i++) {
+    litterArray[i] = [];
+    for (var j = 0; j < row; j++) {
+    }
+  }
+}
+
+//function for generating litter
+  genLitterBtn.addEventListener('click', function(action){
+
+    //generate random value between 0 and amount of rows/cols
+    var numRow = Math.floor(Math.random()*(row));
+    var numCol = Math.floor(Math.random()*(col));
+    //get terrain from array
+    var terrain = grid[numCol][numRow];
+
+    //keep getting new terrain col and row until you find one that doesn't already contain a litter
+    //TODO : Fix while loop getting stuck once the screen is full of litter
+    while ((terrain.getTerrainLitter() == true) || (terrain.getTerrainType() == "Rock"))
+    {
+      var numRow = Math.floor(Math.random()*(row));
+      var numCol = Math.floor(Math.random()*(col));
+      var terrain = grid[numCol][numRow];
+    }
+    //generate a new litter instance
+    var litter = new LitterSprite();
+    //get terrain from grid
+    var terrain = grid[numCol][numRow];
+
+    //
+    litter.sprite.x = Math.floor(numCol % col) * squareSize;
+    litter.sprite.y = Math.floor(numRow % row) * squareSize;
+
+    //set terrain litter to be true
+    terrain.setTerrainLitter(true);
+    container.addChild(litter.sprite);
+    litterArray[numCol][numRow] = litter.sprite;
+  });
+
 
 //Used for nice pixel scaling
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;

@@ -19,24 +19,11 @@ class RoverSprite {
 	//Follows a path of nodes!
 	followPath(path) {
 		for (let i = 0; i < path.length; i++) {
-			if (path[i].posx > this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx, onComplete:this.deleteLitter})
-				this.posx += 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			} else if (path[i].posx < this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx, onComplete:this.deleteLitter})
-				this.posx -= 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			}
-			if (path[i].posy > this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy, onComplete:this.deleteLitter})
-				this.posy += 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			} else if (path[i].posy < this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy, onComplete:this.deleteLitter})
-				this.posy -= 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			}
+			var targetX = path[i].posx;
+			var targetY = path[i].posy;
+			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.myFunc});
+			this.posx = targetX;
+			this.posy = targetY;
 		}
 	}
 

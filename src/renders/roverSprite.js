@@ -25,6 +25,7 @@ class RoverSprite {
 		}
 	}
 
+ //add comment
 	//The functions below this line will be used by the operator in case of overriding
 	//Check is rover can go over the next 'tile'
 	isWalkable(x, y) {

@@ -26,9 +26,8 @@ const app = new PIXI.Application({
 );
 app.renderer.autoResize = true;
 app.stage.addChild(container);
-
-drawGrid();
 generateLitterArray();
+drawGrid();
 //Center container
 container.x = (app.screen.width) / 2;
 container.y = (app.screen.height) / 2;
@@ -47,6 +46,14 @@ function dronePath(coordinates) {
   droneSprite.moveTo(coordinates.x, coordinates.y)
 }
 socket.on('drone-frontEnd', dronePath);
+
+function generateLitterArray(){
+  for (var i = 0; i < col; i++) {
+    litterArray[i] = [];
+    for (var j = 0; j < row; j++) {
+    }
+  }
+}
 
 //Creating square sprites and add them to the 2D array 'grid'
 function drawGrid() {
@@ -67,15 +74,20 @@ function drawGrid() {
 			grid[i][j] = terrain;
 		}
 	}
+  var terrain = new LitterSprite();
+  var gridRef = grid[5][1];
+  terrain.posx = 5;
+  terrain.posy = 1;
+  terrain.sprite.x = Math.floor(5 % col) * squareSize;
+  terrain.sprite.y = Math.floor(1 % row) * squareSize;
+  container.addChild(terrain.sprite);
+  gridRef.setTerrainLitter(true);
+  gridRef = terrain;
+  litterArray[5][1] = terrain.sprite;
+
 }
 
-function generateLitterArray(){
-  for (var i = 0; i < col; i++) {
-    litterArray[i] = [];
-    for (var j = 0; j < row; j++) {
-    }
-  }
-}
+
 
 //function for generating litter
   genLitterBtn.addEventListener('click', function(action){

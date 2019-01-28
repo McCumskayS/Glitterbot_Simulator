@@ -21,23 +21,23 @@ class RoverSprite {
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i].posx;
 			var targetY = path[i].posy;
-			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.myFunc});
 			this.posx = targetX;
 			this.posy = targetY;
+			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]});
 		}
 	}
 
-	deleteLitter(){
+	deleteLitter(posx, posy){
 		var terrain;
 		var litter;
-		terrain = grid[roverSprite.posx][roverSprite.posy];
+		terrain = grid[posx][posy];
 		//TODO fix posx and posy
-		console.log(roverSprite.posx);
-		console.log(roverSprite.posy);
+		console.log(posx);
+		console.log(posy);
 		if(terrain.getTerrainLitter() == true)
 		{
 			console.log("found litter");
-			litter = litterArray[roverSprite.posx][roverSprite.posy];
+			litter = litterArray[posx][posy];
 			container.removeChild(litter);
 			terrain.setTerrainLitter(false);
 		}

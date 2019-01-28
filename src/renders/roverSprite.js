@@ -21,11 +21,12 @@ class RoverSprite {
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i].posx;
 			var targetY = path[i].posy;
-			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY});
+			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.myFunc});
+			this.posx = targetX;
+			this.posy = targetY;
 		}
 	}
 
- //add comment
 	//The functions below this line will be used by the operator in case of overriding
 	//Check is rover can go over the next 'tile'
 	isWalkable(x, y) {

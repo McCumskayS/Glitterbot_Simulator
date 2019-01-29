@@ -1,3 +1,7 @@
+// actually it is a wise idea to divide the whole scanning area into parts rather than scale the litter place of greatest probability
+// beacause the area can be divided into different sizes and cannot ensure that the drone can scan everywhere.
+
+
 // scan algorithm for the Drone
 class Point{
   constructor(locationX, locationY){
@@ -26,71 +30,111 @@ class DroneSprite{
 
     // a info that tells whether receive instruction to move to a specific point
     this.flag = 0;
+    this.reachPoint = new Point(10,10);
+    this.divNum = 4;
+
+    //suppose the map is a rectangle of size length*width
+    this.length = container.width;
+    this.width = container.height;
+    // get the length and width of each divided area
+    this.sideLength = length/divNum;
+    this.sideWidth = width/divNum;
+
+    this.numOfLitter[] = new Array[sideLength*sideWidth];
   }
 
-    const reachPoint = new Point(10,10);
-
-
-
-    // this function makes the drone move and scan the area to find new litter and mark the litter
-    function move(reachPoint) {
-
-      var DistanceSquared = (reachPoint.locationX-DroneSprite.posx)^2 + (reachPoint.locationY-DroneSprite.posy)^2;
-      var Distance = Math.sqrt(DistanceSquared);
-      var cosA = Math.abs(reachPoint.locationX-DroneSprite.posx)/Distance;
-      var sinA = Math.abs(reachPoint.locationY-DroneSprite.posy)/Distance;
-
-      while(this.posx != reac hPoint.locationX && this.posx != reachPoint.locationY){
-
-          this.posx += scanRadius*cosA;
-          this.posy += scanRadius*sinA;
-
-        // scanning
-        searchLitter();
-    }
+  function moveTo(targetX, targetY) {
+    var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+    distanceSquared = Math.abs(distanceSquared);
+    var distance = Math.sqrt(distanceSquared);
+    var time = distance/this.animSpeed;
+    droneTimeline.to(this.sprite, time, {x:squareSize*targetX, y:squareSize*targetY});
+    this.posx = targetX;
+    this.posy = targetY;
+    console.log("Drone: " +this.posx+"-"+this.posy);
+}
+  
 
     // the function shows the flying routine of the drone
     function Routine() {
-      //suppose the map is a rectangle of size length*width
-      var length;
-      var width;
+      var locationX = 0;
+      var locationY = 0;
+      // every time the drone flies to the startpoint of the map which should be (0,0)
+      moveTo(locationX, locationY);
 
-      point = new Point(0, 0);
+      //start routine movement
+      while(true) {
 
-      while(true){
-        // every time the drone flies to the startpoint of the map which should be (0,0)
-        move(0, 0);
-        //start routine movement
-        while(true) {
-
-          while(this.posx < length) {
-            // move the drone horizontally
-            point.locationX = length;
-            move(point);
-          }
+        if (this.posy < width) {
+          // move the drone horizontally
+          locationX = length;
+          moveTo(locationX, locationY);
+          locationY += 2*scanRadius;
+          moveTo(locationX, locationY);
+        }
           // first move down a bit
-          if(this.posy < width) {
-            point.locationY += 2*scanRadius;
-            move(point);
-          }
-          else {
-            break;
-          }
-          // then move back
-          while(this.posx > 0) {
-            point.locationX = 0;
-            move(point);
-          }
-
-          if(this.posy < width) {
-            point.locationY += 2*scanRadius;
-            move(point);
-          }
-          else {
-            break;
-          }
+        if(this.posy < width) {
+          locationX = 0;
+          moveTo(locationX, locationY);
+          locationY += 2*scanRadius;
+          moveTo(locationX, locationY);
+        }
+        else {
+          break;
         }
       }
+
+    }
+
+    // a function that first takes a compulsory routine movement and do scanning according to the probability of occurance of litter or receiving any instruction to fly to a certain point
+    function totalMovement() {
+      // First take a routine in order to scan all the areas of the map
+      Routine();
+
+      if (flag == 1) {  // receive instruction and move to reachPoint
+        move(reachPoint);
+        // TODO: move the drone according to the array ranking
+      }
+      else {
+        // TODO: directly move the drone according to the array ranking
+      }
+    }
+
+    // a function that does scanning inside the scanning area of index
+    function sideMovement(index) {
+      var row = index/divNum;
+      var column = index%divNum - 1;
+      if (column == -1) {
+        column += 4;
+      }
+      var locationX = row*sideWidth;
+      var locationY = column*sideLength;
+      moveTo(locationX, locationY);
+      // start scanning
+      while(true) {
+        if(this.posy < row*sideWidth) {
+          locationX += sideLength;
+          moveTo(locationX, locationY);
+          locationY += scanRadius;
+          moveTo(locationX, locationY);
+        }
+
+        if(this.posy < row*sideWidth) {
+          locationX -= sideLength;
+          moveTo(locationX, locationY);
+          locationY += scanRadius;
+          moveTo(locationX, locationY);
+        }
+        else {
+          break;
+        }
+      }
+    }
+
+    // mark the area in the map that has been scanned
+    var Glength;
+    var Gwidth;
+    function markScanningArea(currentPoint) {
 
     }
 

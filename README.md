@@ -6,14 +6,14 @@ Glitterbot is a 2nd yeargroup project which is a web-based simulation. It consis
 Install Node.js (latest version)
 * [Node.js](https://nodejs.org/it/)
 ## Getting Started
-In order to install the project follow the following steps: 
+In order to install the project follow the following steps:
 * Pull it from the master and then move into the root folder ("Glitterbot_Simulator")
 * On the terminal run the following command :
 ```
 npm install
 ```
 * Wait for all the modules to be installed (a new folder called "node_modules" should appear in the root folder)
-* Move into src/server folder and run this command on the terminal : 
+* Move into src/server folder and run this command on the terminal :
 ```
 node index.js
 ```
@@ -30,6 +30,7 @@ There are other features being built but they're not merged yet i.e. still in de
 * Branch Pathfinding - Working on the pathfinding system for the rover - Scott McCumskays, William Connors
 * Branch grid_system - Setting the map on the website and the basic foundation of the project, including the socket connection - Zain Ali, Asad Mahmood
 * Branch scanPath - the path that the drone should take when he goes to scan an area - Xinyang Zhang, Yichun Yuan
+* Branch diagonalMovement - test
 
 
 ## Authors

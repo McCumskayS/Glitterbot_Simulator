@@ -19,24 +19,27 @@ class RoverSprite {
 	//Follows a path of nodes!
 	followPath(path) {
 		for (let i = 0; i < path.length; i++) {
-			if (path[i].posx > this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx})
-				this.posx += 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			} else if (path[i].posx < this.posx) {
-				roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx})
-				this.posx -= 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			}
-			if (path[i].posy > this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy})
-				this.posy += 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			} else if (path[i].posy < this.posy) {
-				roverTimeline.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy})
-				this.posy -= 1;
-				console.log('('+this.posx+' - '+this.posy+')');
-			}
+			var targetX = path[i].posx;
+			var targetY = path[i].posy;
+			this.posx = targetX;
+			this.posy = targetY;
+			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]});
+		}
+	}
+
+	deleteLitter(posx, posy){
+		var terrain;
+		var litter;
+		terrain = grid[posx][posy];
+		//TODO fix posx and posy
+		console.log(posx);
+		console.log(posy);
+		if(terrain.getTerrainLitter() == true)
+		{
+			console.log("found litter");
+			litter = litterArray[posx][posy];
+			container.removeChild(litter);
+			terrain.setTerrainLitter(false);
 		}
 	}
 
@@ -48,8 +51,8 @@ class RoverSprite {
 
 	moveRight() {
 		if (this.isWalkable(this.posx+1, this.posy)) {
-			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx+1][this.posy].posx})
 			this.posx += 1;
+			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx][this.posy].posx, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})
 			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
@@ -58,8 +61,8 @@ class RoverSprite {
 
 	moveLeft() {
 		if (this.isWalkable(this.posx-1, this.posy)) {
-			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx-1][this.posy].posx})
 			this.posx -= 1;
+			TweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx][this.posy].posx, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})
 			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
@@ -68,8 +71,8 @@ class RoverSprite {
 
 	moveUp() {
 		if (this.isWalkable(this.posx, this.posy-1)) {
-			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy-1].posy})
 			this.posy -= 1;
+			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy].posy, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})
 			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");
@@ -78,8 +81,8 @@ class RoverSprite {
 
 	moveDown() {
 		if (this.isWalkable(this.posx, this.posy+1)) {
-			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy+1].posy})
 			this.posy += 1;
+			TweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy].posy, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})
 			console.log('('+this.posx+' - '+this.posy+')');
 		} else {
 			console.log("Can't go there\n");

@@ -5,6 +5,7 @@
 class GrassSprite extends TerrainSprite {
 	constructor() {
 		super();
+		this.type = "Grass";
 	}
 
 	//Ovveride

@@ -23,7 +23,8 @@ class RoverSprite {
 			var targetY = path[i].posy;
 			this.posx = targetX;
 			this.posy = targetY;
-			roverTimeline.to(this.sprite, this.animSpeed, {x:squareSize*targetX, y:squareSize*targetY, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]});
+			roverTimeline.to(this.sprite, this.animSpeed,
+				{x:squareSize*targetX, y:squareSize*targetY, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]});
 		}
 	}
 

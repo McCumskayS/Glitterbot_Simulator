@@ -20,9 +20,7 @@ function sender(io) {
 	io.on('connection', function(socket){
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
-			if (data == true) {
-				socket.emit('rover-frontEnd', roverPath);
-			}
+			console.log(data.coordinates.posx+"-"+data.coordinates.posy)
 		});
 	  //socket.emit('rover-frontEnd', roverPath);
 		//socket.emit('drone-frontEnd', dronePath);

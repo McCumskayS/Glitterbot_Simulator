@@ -2,6 +2,7 @@
 //Authors: Zain Ali, Asad Mahmood
 //Date: 21/11/2018
 
+const socket = io();
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor() {
@@ -9,15 +10,15 @@ class RoverSprite {
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
 		container.addChild(this.sprite);
-		//posx, posy are the grid coordinates (To not confuse with x and y, which are the sprite coordinates)
-		//TODO change into gridx, gridy in future
 		this.posx = 0;
 		this.posy = 0;
-		this.animSpeed = 0.5 //Default
+		this.animSpeed = 0.5
+		this.waiting = true;
 	}
 
 	//Follows a path of nodes!
 	followPath(path) {
+		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i].posx;
 			var targetY = path[i].posy;
@@ -33,8 +34,7 @@ class RoverSprite {
 		var litter;
 		terrain = grid[posx][posy];
 		//TODO fix posx and posy
-		console.log(posx);
-		console.log(posy);
+		console.log(posx+'-'+posy);
 		if(terrain.getTerrainLitter() == true)
 		{
 			console.log("found litter");

@@ -11,7 +11,7 @@ class DroneSprite {
 		container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
-		this.animSpeed = 2 //Default
+		this.animSpeed = 2 
 	}
 
 	//TODO boundry system!

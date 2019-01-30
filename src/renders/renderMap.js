@@ -6,7 +6,7 @@
 const canvas = document.getElementById("map-canvas");
 const genLitterBtn = document.getElementById("litterBtn");
 const divCanvas = document.getElementById("canvas-id");
-const socket = io();
+//const socket = io();
 var roverTimeline = new TimelineLite();
 var droneTimeline = new TimelineLite();
 const row = 25;
@@ -35,17 +35,26 @@ container.y = (app.screen.height) / 2;
 //Add drone & rover on the grid/map
 var roverSprite = new RoverSprite();
 var droneSprite = new DroneSprite();
-
+function startRoutine() {
+  if (roverSprite.waiting == true) {
+    socket.emit("rover-frontEnd", roverSprite.waiting);
+    console.log("sending to the server");
+    socket.on('rover-frontEnd', roverPath)
+  }
+  setInterval(this.startRoutine, 5000);
+}
+startRoutine();
 //Reads path from server and moves the roverSprite
 function roverPath(path) {
 	roverSprite.followPath(path);
 }
-socket.on('rover-frontEnd', roverPath);
+//socket.on('rover-frontEnd', roverPath);
 //Reads path from server and moves the droneSprite
-function dronePath(coordinates) {
+/*function dronePath(coordinates) {
   droneSprite.moveTo(coordinates.x, coordinates.y)
 }
 socket.on('drone-frontEnd', dronePath);
+*/
 
 function generateLitterArray(){
   for (var i = 0; i < col; i++) {

@@ -19,8 +19,13 @@ function sender(io) {
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-	  socket.emit('rover-frontEnd', roverPath);
-		socket.emit('drone-frontEnd', dronePath);
+		socket.on('rover-frontEnd', function(data) {
+			if (data == true) {
+				socket.emit('rover-frontEnd', roverPath);
+			}
+		});
+	  //socket.emit('rover-frontEnd', roverPath);
+		//socket.emit('drone-frontEnd', dronePath);
 	});
 }
 

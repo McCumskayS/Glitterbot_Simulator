@@ -147,7 +147,7 @@ class DroneSprite{
             var terrain = grid[locationX+i][locationY+j];
             if (terrain.getTerrainLitter()) {
               //send location to server
-            }
+              socket.on('litter-location', terrain);
           }
         }
       }

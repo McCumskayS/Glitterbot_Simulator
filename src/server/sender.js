@@ -22,8 +22,6 @@ function sender(io) {
 		socket.on('rover-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy)
 		});
-	  //socket.emit('rover-frontEnd', roverPath);
-		//socket.emit('drone-frontEnd', dronePath);
 	});
 }
 

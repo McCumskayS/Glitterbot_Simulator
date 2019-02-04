@@ -36,14 +36,10 @@ var roverSprite = new RoverSprite();
 var droneSprite = new DroneSprite();
 
 function startRoutine() {
-  if (roverSprite.waiting == true) {
-    socket.emit("rover-frontEnd", {coordinates: {posx:roverSprite.posx, posy:roverSprite.posy}, state: roverSprite.waiting});
-    console.log("sending to the server");
-    //socket.on('rover-frontEnd', roverPath)
-  }
-  setInterval(this.startRoutine, 1000);
+  socket.emit("rover-frontEnd", {coordinates: {posx:roverSprite.posx, posy:roverSprite.posy}, state: roverSprite.waiting});
+  console.log("sending to the server");
 }
-startRoutine();
+setInterval(this.startRoutine, 1000);
 //Reads path from server and moves the roverSprite
 function roverPath(path) {
 	roverSprite.followPath(path);

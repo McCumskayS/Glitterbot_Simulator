@@ -4,9 +4,9 @@
 //Date: 21/11/2018
 
 class TerrainSprite {
-	constructor() {
+	constructor(squareSize) {
 		//Setup
-		this.squareSize = 20; //Pixels
+		this.squareSize = squareSize; //Pixels
 		this.loadSprite();
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
@@ -15,6 +15,7 @@ class TerrainSprite {
 		this.walkable = true;
 		this.litter = false;
 		this.type = "placeholder";
+		this.litterSprite = null;
 	}
 
 	loadSprite() {
@@ -32,5 +33,18 @@ class TerrainSprite {
 
 	getTerrainType(){
 		return this.type;
+	}
+
+	spawnLitter(container) {
+		this.litterSprite = new LitterSprite(this.squareSize);
+		this.litterSprite.sprite.x = this.sprite.x;
+		this.litterSprite.sprite.y = this.sprite.y;
+		container.addChild(this.litterSprite.sprite);
+		this.setTerrainLitter(true);
+	}
+
+	removeLitter(container) {
+		container.removeChild(this.litterSprite.sprite);
+		this.setTerrainLitter(false);
 	}
 }

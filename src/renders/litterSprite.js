@@ -3,8 +3,8 @@
 //Date: 21/11/2018
 
 class LitterSprite{
-	constructor(){
-		this.squareSize = 20; //Pixels
+	constructor(squareSize){
+		this.squareSize = squareSize; //Pixels
 		this.loadSprite();
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);

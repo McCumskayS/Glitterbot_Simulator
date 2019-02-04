@@ -20,7 +20,8 @@ function sender(io) {
 	io.on('connection', function(socket){
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
-			console.log(data.coordinates.posx+"-"+data.coordinates.posy)
+			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
+			socket.emit('rover-frontEnd', roverPath);
 		});
 	});
 }

@@ -4,12 +4,13 @@
 
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(mapGrid, container, squareSize) {
+	constructor(mapGrid, container, squareSize, litterArray) {
 		this.texture = PIXI.Texture.fromImage('./sprites/rover.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
 		this.grid = mapGrid;
 		this.container = container;
+		this.litterArray = litterArray;
 		this.roverTimeline = new TimelineLite();
 		this.squareSize = squareSize;
 		this.container.addChild(this.sprite);
@@ -17,7 +18,7 @@ class RoverSprite {
 		this.posy = 0;
 		this.animSpeed = 0.5
 		this.waiting = true;
-		this.deleteLitter = this.deleteLitter.bind(this);
+		this.collectLitter = this.collectLitter.bind(this);
 	}
 
 	//Follows a path of nodes!
@@ -30,18 +31,15 @@ class RoverSprite {
 			this.posy = targetY;
 			this.roverTimeline.to(this.sprite, this.animSpeed,
 				{x:this.squareSize*targetX, y:this.squareSize*targetY,
-					onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]});
+					onComplete:this.collectLitter, onCompleteParams: [this.posx, this.posy]});
 		}
 	}
 
-	deleteLitter(posx, posy){
-		var terrain;
-		var litter;
-		terrain = this.grid[posx][posy];
+	collectLitter(posx, posy){
 		console.log(posx+'-'+posy);
-		if(terrain.getTerrainLitter() == true) {
+		if(this.litterArray[posx][posy] != null) {
 			console.log("found litter");
-			terrain.removeLitter(this.container);
+			this.container.removeChild(this.litterArray[posx][posy]);
 		}
 	}
 

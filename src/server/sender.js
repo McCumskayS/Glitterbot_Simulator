@@ -21,7 +21,9 @@ function sender(io) {
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
-			socket.emit('rover-frontEnd', roverPath);
+			if (data.waiting != false) {
+				socket.emit('rover-frontEnd', roverPath);
+			}
 		});
 	});
 }

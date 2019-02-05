@@ -13,6 +13,7 @@ class MapRenderer {
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
+		this.addLitter = this.addLitter.bind(this);
 	}
 
 	drawGrid() {
@@ -35,7 +36,7 @@ class MapRenderer {
 				this.litterArray[i][j] = null;
 			}
 		}
-		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this.litterArray);
+		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this);
 		this.droneSprite = new DroneSprite(this.squareSize, this.container);
 		//test
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
@@ -60,8 +61,21 @@ class MapRenderer {
 		this.container.addChild(litterSprite);
 	}
 
+	removeLitter(x, y) {
+		if (this.litterArray[x][y] != null) {
+			this.container.removeChild(this.litterArray[x][y]);
+			delete this.litterArray[x][y];
+			return true;
+		}
+		return false;
+	}
+
 	moveRover(path) {
 		this.roverSprite.followPath(path);
+	}
+
+	moveDrone(x, y) {
+		this.droneSprite.moveTo(x, y);
 	}
 }
 
@@ -74,11 +88,17 @@ function startRoutine(m) {
 	});
 }
 
+function setButtons(mapRenderer) {
+	//Linking the litter generations button to the addLitter method
+	const genLitterBtn = document.getElementById("litterBtn");
+	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
+}
+
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
-	//setInterval();
-	startRoutine(mapRenderer);
+	setButtons(mapRenderer);
+	setInterval(startRoutine, 5000, mapRenderer);
 }
 
 document.addEventListener('DOMContentLoaded', main);

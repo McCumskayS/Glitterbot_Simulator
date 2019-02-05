@@ -21,7 +21,8 @@ function sender(io) {
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
-			if (data.waiting != false) {
+			console.log("rover is waiting: "+data.state);
+			if (data.state != false) {
 				socket.emit('rover-frontEnd', roverPath);
 			}
 		});

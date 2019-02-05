@@ -23,7 +23,7 @@ class DroneSprite {
 		distanceSquared = Math.abs(distanceSquared);
     var distance = Math.sqrt(distanceSquared);
 		var time = distance/this.animSpeed;
-		droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
+		this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 		this.posx = targetX;
 		this.posy = targetY;
 		console.log("Drone: " +this.posx+"-"+this.posy);

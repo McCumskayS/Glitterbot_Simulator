@@ -15,10 +15,14 @@ class DroneSprite {
 		this.animSpeed = 2;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();
+		
 	}
 
 	//TODO boundry system!
-	moveTo(targetX, targetY) {
+	moveTo(path) {
+		var targetX = path[i].posx;
+		var targetY = path[i].posy;
+
 		var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
 		distanceSquared = Math.abs(distanceSquared);
     var distance = Math.sqrt(distanceSquared);

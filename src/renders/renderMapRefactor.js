@@ -44,6 +44,10 @@ class MapRenderer {
 		litterSprite.y = Math.floor(1 % this.row) * this.squareSize;
 		this.litterArray[2][1] = litterSprite;
 		this.container.addChild(litterSprite);
+
+		// test drone
+		//this.droneSprite.moveTo(10,0);
+
 	}
 
 	addLitter() {
@@ -65,18 +69,33 @@ class MapRenderer {
 	}
 }
 
+	moveDrone(path) {
+		this.droneSprite.moveTo(path);
+	}
+
 function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
+	// send the location of the drone to the server
+	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy}});
+
 	console.log("sending to the server");
+
 	socket.on('rover-frontEnd', function(data) {
 		m.moveRover(data);
+	});
+
+
+	// receive scanning path from the server
+	socket.on('drone-frontEnd', function(data) {
+		m.moveDrone(data);
 	});
 }
 
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
+
 	//setInterval();
 	startRoutine(mapRenderer);
 }

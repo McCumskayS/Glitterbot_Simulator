@@ -15,21 +15,30 @@ class DroneSprite {
 		this.animSpeed = 2;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();
-		
+
 	}
 
 	//TODO boundry system!
 	moveTo(path) {
-		var targetX = path[i].posx;
-		var targetY = path[i].posy;
+		for (let i = 0; i < path.length; i++) {
+			var targetX = path[i].posx;
+			var targetY = path[i].posy;
 
-		var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
-		distanceSquared = Math.abs(distanceSquared);
-    var distance = Math.sqrt(distanceSquared);
-		var time = distance/this.animSpeed;
-		droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
-		this.posx = targetX;
-		this.posy = targetY;
-		console.log("Drone: " +this.posx+"-"+this.posy);
+			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+			distanceSquared = Math.abs(distanceSquared);
+	    var distance = Math.sqrt(distanceSquared);
+			var time = distance/this.animSpeed;
+			this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
+
+			this.posx = targetX;
+			this.posy = targetY;
+			console.log("Drone: " +this.posx+"-"+this.posy);
+		}
 	}
+
+
+
+
+
+
 }

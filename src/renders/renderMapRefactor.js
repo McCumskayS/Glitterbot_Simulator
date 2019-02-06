@@ -67,11 +67,14 @@ class MapRenderer {
 	moveRover(path) {
 		this.roverSprite.followPath(path);
 	}
-}
 
 	moveDrone(path) {
 		this.droneSprite.moveTo(path);
 	}
+
+}
+
+
 
 function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
@@ -85,7 +88,7 @@ function startRoutine(m) {
 		m.moveRover(data);
 	});
 
-
+	console.log("sending drone location to the server");
 	// receive scanning path from the server
 	socket.on('drone-frontEnd', function(data) {
 		m.moveDrone(data);

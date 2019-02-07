@@ -36,7 +36,7 @@ class MapRenderer {
 			}
 		}
 		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this.litterArray);
-		this.droneSprite = new DroneSprite(this.squareSize, this.container);
+		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container);
 		//test
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
 		litterSprite.anchor.set(0.5, 0.5);

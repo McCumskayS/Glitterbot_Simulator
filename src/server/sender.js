@@ -13,8 +13,9 @@ function sender(io) {
 	]
 	//test drone Path
 	dronePath = [
-		{posx: 4, posy:6},
-		{posx: 7, posy:9},
+		{posx:1, posy:1},
+		{posx:7, posy:9},
+		{posx:10, posy:12}
 	]
 	//When a client connect display message on console
 	io.on('connection', function(socket){

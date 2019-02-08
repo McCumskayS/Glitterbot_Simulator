@@ -99,6 +99,7 @@ function main() {
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
 	setInterval(startRoutine, 5000, mapRenderer);
+	setInterval(mapRenderer.addLitter, 15000);
 }
 
 document.addEventListener('DOMContentLoaded', main);

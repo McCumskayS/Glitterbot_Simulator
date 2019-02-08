@@ -1,19 +1,20 @@
 <!DOCTYPE html>
   <html>
     <head>
-      <title> Testing Page</title>
-      <link rel="stylesheet" href="node_modules/mocha/mocha.css">
+      <title>Testing Page</title>
+      <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
     </head>
     <body>
       <div id="mocha"></div>
-      <script src="node_modules/mocha/mocha.js"></script>
-      <script src="node_modules/chai/chai.js"></script>
+      <script src="../node_modules/mocha/mocha.js"></script>
+      <script src="../node_modules/chai/chai.js"></script>
       <script>mocha.setup('bdd')</script>
 
       <!-- code to be tested here -->
 
 
       <!-- load test files here -->
+      <script src="../test/class-tests.js"></script>
 
       <script>
         mocha.run();

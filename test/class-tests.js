@@ -1,5 +1,11 @@
-var assert = require('assert');
-var expect = require('chai').expect;
-var should = require('chai').should();
+var assert = chai.assert;
 
+describe('Array', function() {
 
+    it('should start empty', function(){
+      var arr = [];
+
+      assert.equal(arr.length, 0);
+
+    });
+});

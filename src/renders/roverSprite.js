@@ -16,6 +16,7 @@ class RoverSprite {
 		this.container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
+		this.capacity = 5;
 		this.animSpeed = 1.2;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
@@ -37,9 +38,16 @@ class RoverSprite {
 	}
 
 	collectLitter(posx, posy){
-		console.log(posx+'-'+posy);
-		if (this.mapRenderer.removeLitter(posx, posy)) {
-			console.log("litter collected");
+		if (this.capacity > 0) {
+			console.log(posx+'-'+posy);
+			if (this.mapRenderer.removeLitter(posx, posy)) {
+				this.capacity = this.capacity - 1;
+				console.log("litter collected, capacity remaining = " + this.capacity);
+
+			}
+		}
+		else {
+			console.log("rover full");
 		}
 	}
 

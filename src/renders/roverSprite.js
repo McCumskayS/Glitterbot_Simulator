@@ -25,8 +25,8 @@ class RoverSprite {
 	followPath(path) {
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
-			var targetX = path[i].posx;
-			var targetY = path[i].posy;
+			var targetX = path[i][0];
+			var targetY = path[i][1];
 			this.posx = targetX;
 			this.posy = targetY;
 			this.roverTimeline.to(this.sprite, this.animSpeed,

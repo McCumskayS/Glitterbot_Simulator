@@ -30,12 +30,10 @@ function sender(io) {
 			console.log("rover is waiting: "+data.state);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
-			engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
+			console.log(litterArrayLocations);
 			if (data.state != false) {
-				//socket.emit('rover-frontEnd', roverPath);
-				//run aStare thingy
-				//will return the shortes list of nodes
-				//and we will emit that list
+				socket.emit('rover-frontEnd', path);
 			}
 		});
 		socket.on('grid-channel', function(data) {

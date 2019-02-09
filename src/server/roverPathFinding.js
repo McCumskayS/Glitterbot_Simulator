@@ -6,16 +6,20 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid)  {
 	var shortestPath = [];
 	var length = 1000000; //for now test
 	for (var i = 0; i < litterArrayLocations.length; i++) {
-		var temp = transformGrid(grid);
-		var gridCopy = new PF.Grid(temp);
-		var finder = new PF.AStarFinder({
-    	allowDiagonal: true
-		});
-		var path = finder.findPath(currentLocation.x, currentLocation.y,
-		litterArrayLocations[i].x, litterArrayLocations[i].y, gridCopy);
-		if (path.length < length) {
-			shortestPath = path;
-			length = path.length;
+		for (var j = 0; j < litterArrayLocations[i].length; j++) {
+			if (litterArrayLocations[i][j] == 1) {
+				var temp = transformGrid(grid);
+				var gridCopy = new PF.Grid(temp);
+				var finder = new PF.AStarFinder({
+					allowDiagonal: true
+				});
+				var path = finder.findPath(currentLocation.x, currentLocation.y, j, i, gridCopy);
+				if (path.length < length) {
+					shortestPath = path;
+					length = path.length;
+				}
+				litterArrayLocations[i][j] = 0;
+			}
 		}
 	}
 	return shortestPath;

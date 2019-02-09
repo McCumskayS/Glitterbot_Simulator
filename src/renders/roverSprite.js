@@ -25,6 +25,7 @@ class RoverSprite {
 	followPath(path) {
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
+			console.log("were hereeee");
 			var targetX = path[i][0];
 			var targetY = path[i][1];
 			this.posx = targetX;

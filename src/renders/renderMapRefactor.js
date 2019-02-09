@@ -2,12 +2,13 @@ const socket = io();
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 100;
-		this.col = 100;
+		this.row = 20;
+		this.col = 20;
 		this.container = container;
 		this.squareSize = 20;
 		this.grid = [];
 		this.litterArray = [];
+		this.litterArrayLocations = [];
 		this.grassTexture = PIXI.Texture.fromImage('./sprites/grass.png');
 		this.rockTexture = PIXI.Texture.fromImage('./sprites/rock.png');
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
@@ -44,10 +45,14 @@ class MapRenderer {
 		litterSprite.x = Math.floor(2 % this.col) * this.squareSize;
 		litterSprite.y = Math.floor(1 % this.row) * this.squareSize;
 		this.litterArray[2][1] = litterSprite;
+		this.litterArrayLocations.push({x:2, y:1});
 		this.container.addChild(litterSprite);
+		//Sending grid array and litter array, to delete in the future
+		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 	}
 
 	addLitter() {
+		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
 		do {
 			var row = Math.floor(Math.random()*(this.row));
 			var col = Math.floor(Math.random()*(this.col));
@@ -58,6 +63,9 @@ class MapRenderer {
 		litterSprite.x = Math.floor(col % this.col) * this.squareSize;
 		litterSprite.y = Math.floor(row % this.row) * this.squareSize;
 		this.litterArray[col][row] = litterSprite;
+		this.litterArrayLocations.push({x:col, y:row});
+		//test update the litter array on the server
+		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 		this.container.addChild(litterSprite);
 	}
 

@@ -1,3 +1,9 @@
+const engine = require('./roverPathFinding.js')
+var grid = [];
+var litterArrayLocations = [];
+var roverX;
+var roverY;
+
 function sender(io) {
 	//test roverPath
 	//test comment
@@ -22,10 +28,20 @@ function sender(io) {
 		socket.on('rover-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			console.log("rover is waiting: "+data.state);
+			roverX = data.coordinates.posx;
+			roverY = data.coordinates.posy;
+			engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
 			if (data.state != false) {
-				socket.emit('rover-frontEnd', roverPath);
+				//socket.emit('rover-frontEnd', roverPath);
+				//run aStare thingy
+				//will return the shortes list of nodes
+				//and we will emit that list
 			}
 		});
+		socket.on('grid-channel', function(data) {
+			grid = data.grid;
+			litterArrayLocations = data.litter;
+		})
 	});
 }
 

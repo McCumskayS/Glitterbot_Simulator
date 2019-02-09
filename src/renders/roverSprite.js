@@ -16,7 +16,7 @@ class RoverSprite {
 		this.container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
-		this.animSpeed = 1.2;
+		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
 	}

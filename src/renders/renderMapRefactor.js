@@ -2,8 +2,8 @@ const socket = io();
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 10;
-		this.col = 6;
+		this.row = 20;
+		this.col = 30;
 		this.container = container;
 		this.squareSize = 20;
 		this.grid = [];
@@ -98,10 +98,7 @@ function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
 	console.log("sending to the server");
-	socket.on('rover-frontEnd', function(data) {
-		console.log(data);
-		m.moveRover(data);
-	});
+	setTimeout(startRoutine, 5000, m);
 }
 
 function setButtons(mapRenderer) {
@@ -115,10 +112,10 @@ function main() {
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
-	startRoutine(mapRenderer);
-	startRoutine(mapRenderer);
-	startRoutine(mapRenderer);
-	startRoutine(mapRenderer);
+	socket.on('rover-frontEnd', function(data) {
+		console.log(data);
+		mapRenderer.moveRover(data);
+	});
 	//setInterval(startRoutine, 5000, mapRenderer);
 }
 

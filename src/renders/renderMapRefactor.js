@@ -13,6 +13,7 @@ class MapRenderer {
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
+		this.moveDrone = this.moveDrone.bind(this);
 	}
 
 	drawGrid() {
@@ -68,8 +69,8 @@ class MapRenderer {
 		this.roverSprite.followPath(path);
 	}
 
-	moveDrone(path) {
-		this.droneSprite.moveTo(path);
+	moveDrone(position) {
+		this.droneSprite.moveTo(position);
 	}
 
 }
@@ -80,7 +81,10 @@ function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
 	// send the location of the drone to the server
-	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy}});
+	console.log('scanRadius:'+ m.droneSprite.scanRadius);
+
+	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
+		scanRadius: m.droneSprite.scanRadius});
 
 	console.log("sending to the server");
 
@@ -90,9 +94,7 @@ function startRoutine(m) {
 
 	console.log("sending drone location to the server");
 	// receive scanning path from the server
-	socket.on('drone-frontEnd', function(data) {
-		m.moveDrone(data);
-	});
+
 }
 
 function main() {
@@ -100,7 +102,17 @@ function main() {
 	mapRenderer.drawGrid();
 
 	//setInterval();
+
 	startRoutine(mapRenderer);
+	socket.on('drone-frontEnd', function(data) {
+		mapRenderer.moveDrone(data);
+	});
+
+	//receive position from the backend
+	socket.on('drone-backEnd', function(data) {
+		socket.emit('drone-frontEnd', data);
+	});
+
 }
 
 document.addEventListener('DOMContentLoaded', main);

@@ -22,14 +22,16 @@ class DroneSprite {
 		//camera system parameters
 		this.lens = 5;
 		this.droneHeight = 4;
+		this.scanRadius = 5;
+
 		this.searchLitter = this.searchLitter.bind(this);
 	}
 
 	//TODO boundry system!
-	moveTo(path) {
-		for (let i = 0; i < path.length; i++) {
-			var targetX = path[i].posx;
-			var targetY = path[i].posy;
+	moveTo(position) {
+
+			var targetX = position.coordinates.posx;
+			var targetY = position.coordinates.posy;
 
 			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
 			distanceSquared = Math.abs(distanceSquared);
@@ -41,28 +43,30 @@ class DroneSprite {
 			this.posx = targetX;
 			this.posy = targetY;
 			console.log("Drone: " +this.posx+"-"+this.posy);
-		}
+			// send the location of drone to the rendermap
+			socket.emit('drone-backEnd', {coordinates: {posx:this.posx, posy:this.posy},
+				scanRadius: this.scanRadius} );
 	}
 
 	//A function that make the drone search litter in the surrounding area
 	searchLitter(posx, posy) {
 		console.log(posx+'-'+posy);
-		var scanRadius = Math.sqrt((this.lens)^2 - (this.droneHeight)^2);
-		for (let i = -scanRadius; i <= scanRadius; i++) {
-			for (let j = -scanRadius; j <= scanRadius; j++) {
+/*
+		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
+			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
 				//First check the boundary
 				if (posx+i > this.width && posy+j > this.height) {
 					continue;
 				}
 				else {
 					var terrain = this.grid[posx+i][posy+j];
-
+					//check whether there is a litter in the terrain
 				}
 			}
 		}
-	}
-
-
+	
+*/
+}
 
 
 }

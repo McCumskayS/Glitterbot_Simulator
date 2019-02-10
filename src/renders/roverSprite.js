@@ -4,11 +4,10 @@
 
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(mapGrid, container, squareSize, mapRenderer) {
+	constructor(container, squareSize, mapRenderer) {
 		this.texture = PIXI.Texture.fromImage('./sprites/rover.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
-		this.grid = mapGrid;
 		this.container = container;
 		this.mapRenderer  = mapRenderer;
 		this.roverTimeline = new TimelineLite();
@@ -25,7 +24,6 @@ class RoverSprite {
 	followPath(path) {
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
-			console.log("were hereeee");
 			var targetX = path[i][0];
 			var targetY = path[i][1];
 			this.posx = targetX;

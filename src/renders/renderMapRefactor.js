@@ -17,6 +17,7 @@ class MapRenderer {
 		this.addLitter = this.addLitter.bind(this);
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
+		this.moveDrone = this.moveDrone.bind(this);
 	}
 
 	drawGrid() {
@@ -41,16 +42,8 @@ class MapRenderer {
 				this.litterArrayLocations[i][j] = 0;//no litter
 			}
 		}
-		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this);
+		this.roverSprite = new RoverSprite(this.container, this.squareSize, this);
 		this.droneSprite = new DroneSprite(this.squareSize, this.container);
-		//test
-		var litterSprite = new PIXI.Sprite(this.litterTexture);
-		litterSprite.anchor.set(0.5, 0.5);
-		litterSprite.x = Math.floor(1 % this.col) * this.squareSize;
-		litterSprite.y = Math.floor(5 % this.row) * this.squareSize;
-		this.litterArray[5][1] = litterSprite;
-		this.litterArrayLocations[5][1] = 1;//litter exist
-		this.container.addChild(litterSprite);
 		//Sending grid array and litter array, to delete in the future
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 	}
@@ -88,9 +81,9 @@ class MapRenderer {
 		this.roverSprite.followPath(path);
 	}
 
-	/*moveDrone(x, y) {
+	moveDrone(x, y) {
 		this.droneSprite.moveTo(x, y);
-	}*/
+	}
 }
 
 function startRoutine(m) {
@@ -116,7 +109,6 @@ function main() {
 		console.log(data);
 		mapRenderer.moveRover(data);
 	});
-	//setInterval(startRoutine, 5000, mapRenderer);
 }
 
 document.addEventListener('DOMContentLoaded', main);

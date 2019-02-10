@@ -1,7 +1,6 @@
 //function that calculates the h for all the litters
 var PF = require('pathfinding');
 
-
 function pathFindingEngine(litterArrayLocations, currentLocation, grid)  {
 	var shortestPath = [];
 	var length = 1000000; //for now test

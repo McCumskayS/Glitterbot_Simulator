@@ -1,7 +1,7 @@
 //Test file for testing various classes.
 //Authors: Scott McCumskay
 //Date:07/02/2019
-
+mocha.setup('bdd');
 var assert = chai.assert;
 
 describe('Array', function() {
@@ -19,8 +19,8 @@ describe('DroneSprite class', function(){
   const connt = new PIXI.Container();         //Placebo variables for test purposes
   var drone = new DroneSprite(20,connt);
   describe('Dronesprite "moveTo" function', function(){   //moveTo function tests
-    var targetx = 4;
-    var targety = 6;
+    var targetx = 2;
+    var targety = 2;
     drone.moveTo(targetx,targety);
     it('posx should be equal to targetx',function(){
       assert.equal(drone.posx,targetx);
@@ -29,6 +29,10 @@ describe('DroneSprite class', function(){
       assert.equal(drone.posy,targety);
     });
   });
+});
+
+describe('RoverSprite class', function(){
+
 });
 
 //Tests for RenderMapRefactor class, located in src/renders/renderMapRefactor.js

@@ -2,17 +2,20 @@
   <html>
     <head>
       <title>Testing Page</title>
-      <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+      <link rel="stylesheet" href="/test/node_modules/mocha/mocha.css">
     </head>
     <body>
       <div id="mocha"></div>
-      <script src="../node_modules/mocha/mocha.js"></script>
-      <script src="../node_modules/chai/chai.js"></script>
+      <script src="/test/node_modules/mocha/mocha.js"></script>
+      <script src="/test/node_modules/chai/chai.js"></script>
       <div id="files"></div>
-      <script src="../src/renders/droneSprite.js"></script>
-      <script src="../src/renders/renderMapRefactor.js"></script>
-      <script src="../src/server/index.js"></script>
-      <script src="../src/server/sender.js"></script>
+      <script src="../renders/droneSprite.js"></script>
+      <script src="../renders/roverSprite.js"></script>
+      <script src="../renders/renderMapRefactor.js"></script>
+      <script src="../server/index.js"></script>
+      <script src="../server/sender.js"></script>
+      <!-- Stuff for socketio -->
+
       <div id='canvas-id'>
         <canvas id="map-canvas"></canvas>
       </div>
@@ -20,14 +23,14 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script>
       <script>mocha.setup('bdd')</script>
-
+      <script src="../renders/pixiSetup.js"></script>
       <!-- code to be tested here -->
 
 
       <!-- load test files here -->
-      <script src="../test/class-tests.js"></script>
+      <script src="/test/src/test/class-tests.js"></script>
 
-      <script src="../src/renders/pixiSetup.js"></script>
+
       <script>
         mocha.run();
       </script>

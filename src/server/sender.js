@@ -36,12 +36,15 @@ function sender(io) {
 
 			console.log('routinePath start work!');
 
-			routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, socket);
-			console.log('Direction: '+this.direction);
+			direction = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, socket);
+			console.log('Direction: '+direction);
 			//socket.emit('drone-frontEnd', nextLocation);
 		});
 
 		// receive
+		socket.on('litter-channel', function(data) {
+			console.log('x:'+data.x+'y:'+data.y);
+		})
 	});
 }
 
@@ -52,8 +55,8 @@ function routinePath(posx, posy, scanRadius, direction, socket) {
 	//var width = grid.length;
 	//var height = grid[0].length;
 
-	var width = 100;
-	var height = 100;
+	var width = 99;
+	var height = 99;
 	console.log('from server: '+posx+'-'+posy);
 	var currentX = posx;
 	var currentY = posy;
@@ -66,7 +69,7 @@ while (currentX <= width && currentY <= height) {
 				break;
 			}
 			else {
-				currentY += scanRadius;
+				currentY += 2*scanRadius-1;
 				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
 					direction: direction});
 				direction = 1;
@@ -74,7 +77,8 @@ while (currentX <= width && currentY <= height) {
 		}
 		else {
 			while(currentX < width) {
-				currentX += scanRadius;
+				currentX += 2*scanRadius-1;
+
 				// send location to the render map
 				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
 					direction: direction});
@@ -89,7 +93,7 @@ while (currentX <= width && currentY <= height) {
 				break;
 			}
 			else {
-				currentY += scanRadius;
+				currentY += 2*scanRadius-1;
 				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
 					direction: direction});
 				direction = 0;
@@ -97,7 +101,7 @@ while (currentX <= width && currentY <= height) {
 		}
 		else {
 			while (currentX > 0) {
-				currentX -= scanRadius;
+				currentX -= 2*scanRadius-1;
 				// send location to the render map
 				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
 					direction: direction});
@@ -105,6 +109,8 @@ while (currentX <= width && currentY <= height) {
 		}
 	}
 }
+
+return direction;
 
 /*
 	if (posx == width || (posx == 0 && posy != 0)) {

@@ -4,7 +4,7 @@
 
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(row, column, mapGrid, squareSize, container) {
+	constructor(row, column, mapGrid, squareSize, container, litterArray) {
 		this.texture = PIXI.Texture.fromImage('./sprites/drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
@@ -23,7 +23,7 @@ class DroneSprite {
 		this.lens = 5;
 		this.droneHeight = 4;
 		this.scanRadius = 5;
-
+		this.litterArray = litterArray;
 		this.searchLitter = this.searchLitter.bind(this);
 	}
 
@@ -43,31 +43,29 @@ class DroneSprite {
 			this.posx = targetX;
 			this.posy = targetY;
 			console.log("Drone: " +this.posx+"-"+this.posy);
-			// send the location of drone to the rendermap
 
-			socket.emit('drone-backEnd', {coordinates: {posx:this.posx, posy:this.posy},
-				scanRadius: this.scanRadius});
-			console.log('send current location to the render Map');
 	}
 
 	//A function that make the drone search litter in the surrounding area
 	searchLitter(posx, posy) {
 		console.log(posx+'-'+posy);
-/*
+
 		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
 			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
 				//First check the boundary
-				if (posx+i > this.width && posy+j > this.height) {
+				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
 					continue;
 				}
 				else {
-					var terrain = this.grid[posx+i][posy+j];
 					//check whether there is a litter in the terrain
+					if (this.litterArray[posy+j][posx+i] != null) {
+						socket.emit('litter-channel', {x:posx+i, y:posy+j});
+					}
 				}
 			}
 		}
 
-*/
+
 }
 
 

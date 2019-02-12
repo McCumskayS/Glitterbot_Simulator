@@ -17,19 +17,20 @@ class DroneSprite {
 		this.droneTimeline = new TimelineLite();
 		//add new parameters
 		this.grid = mapGrid;
-		this.width = row;
-		this.height = column;
+		this.width = row-1;
+		this.height = column-1;
 		//camera system parameters
 		this.lens = 5;
 		this.droneHeight = 4;
 		this.scanRadius = 5;
 		this.litterArray = litterArray;
 		this.searchLitter = this.searchLitter.bind(this);
+		this.waiting = true;
 	}
 
 	//TODO boundry system!
 	moveTo(position) {
-
+			this.waiting = false;
 			var targetX = position.coordinates.posx;
 			var targetY = position.coordinates.posy;
 
@@ -43,7 +44,7 @@ class DroneSprite {
 			this.posx = targetX;
 			this.posy = targetY;
 			console.log("Drone: " +this.posx+"-"+this.posy);
-
+			this.waiting = true;
 	}
 
 	//A function that make the drone search litter in the surrounding area
@@ -58,6 +59,7 @@ class DroneSprite {
 				}
 				else {
 					//check whether there is a litter in the terrain
+					console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
 					if (this.litterArray[posy+j][posx+i] != null) {
 						socket.emit('litter-channel', {x:posx+i, y:posy+j});
 					}

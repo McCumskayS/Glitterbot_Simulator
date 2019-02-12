@@ -4,7 +4,8 @@ function sender(io) {
 	var scanRadius = 0;
   var grid = [];
 	// 0 for left and 1 for right
-	var direction = 1;
+	var direction = 'right'
+	var prevDirection = 'left'
 
 	roverPath = [
 		{posx: 1, posy:0},
@@ -26,119 +27,112 @@ function sender(io) {
 				socket.emit('rover-frontEnd', roverPath);
 			}
 		});
-
 		//receive the location of the drone and send back the path
-
 		socket.on('drone-frontEnd', function(data) {
+			console.log(data.state)
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
 			console.log('scan radius: ' + scanRadius);
-
-			console.log('routinePath start work!');
-
-			direction = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, socket);
+			//console.log('routinePath start work!');
+			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, socket, direction, prevDirection);
+			direction = newdata.direction;
+			prevDirection = newdata.prevDirection;
 			console.log('Direction: '+direction);
-			//socket.emit('drone-frontEnd', nextLocation);
-		});
+			if (data.state != false){
+				socket.emit('drone-frontEnd', newdata);
+			}
 
+
+		});
 		// receive
-		socket.on('litter-channel', function(data) {
-			console.log('x:'+data.x+'y:'+data.y);
-		})
-	});
+			socket.on('litter-channel', function(data) {
+				console.log('x:'+data.x+'y:'+data.y);
+			})
+		});
 }
 
-function routinePath(posx, posy, scanRadius, direction, socket) {
-	//how to know the size of the map?
-	// for test
-
-	//var width = grid.length;
-	//var height = grid[0].length;
-
-	var width = 99;
-	var height = 99;
+function routinePath(posx, posy, scanRadius, socket, direction, prevDirection) {
+	var width = 49;
+	var height = 49;
 	console.log('from server: '+posx+'-'+posy);
 	var currentX = posx;
 	var currentY = posy;
+	var movement = 2*scanRadius
 
-while (currentX <= width && currentY <= height) {
-
-	if (currentX == 0) {
-		if (direction == 0) {
-			if (currentY == height) {
-				break;
-			}
-			else {
-				currentY += 2*scanRadius-1;
-				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
-					direction: direction});
-				direction = 1;
-			}
-		}
-		else {
-			while(currentX < width) {
-				currentX += 2*scanRadius-1;
-
-				// send location to the render map
-				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
-					direction: direction});
-			}
-		}
-
-	}
-
-	if (currentX == width) {
-		if (direction == 1) {
-			if (currentY == height) {
-				break;
-			}
-			else {
-				currentY += 2*scanRadius-1;
-				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
-					direction: direction});
-				direction = 0;
-			}
-		}
-		else {
-			while (currentX > 0) {
-				currentX -= 2*scanRadius-1;
-				// send location to the render map
-				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
-					direction: direction});
-			}
+	if (direction === 'right') {
+		if ((width - currentX) >= movement) {
+			currentX += movement
+		} else {
+			currentX = width
+			direction = 'down'
+			prevDirection = 'right'
 		}
 	}
+	else if (direction === 'down') {
+		if (currentY === height) {
+			direction = 'right'
+			prevDirection = 'left'
+			currentX = 0
+			currentY = 0
+		} else if ((height - currentY) >= movement) {
+			currentY += movement
+			if (prevDirection === 'right') {
+				direction = 'left'
+			} else {
+				direction = 'right'
+			}
+		} else {
+			currentY = height
+		}
+	}
+	else if (direction == 'left') {
+		if (currentX >= movement) {
+			currentX -= movement
+		} else {
+			currentX = 0
+			direction = 'down'
+			prevDirection = 'left'
+		}
+	}
+	var data = {coordinates: {posx:currentX, posy:currentY},direction: direction, prevDirection: prevDirection};
+	return data
+	/*if (currentY < height) {
+		if (direction == 0) { // direction: left
+			if (currentX > 0) {
+				currentX -= movement
+			} else {	// reach the left most boundary
+				// move downward
+				currentY += movement
+				//if (currentY > height)
+				}
+		} else {
+			if (currentX < width) {
+				currentX += movement
+			} else { // reach the right most boundary
+				// move downward
+				currentY += movement
+				}
+		}
+		var data = {coordinates: {posx:currentX, posy:currentY},direction: direction};
+		return data;
+	}*/
+
 }
 
-return direction;
 
-/*
-	if (posx == width || (posx == 0 && posy != 0)) {
 
-		if (posx == width) {
-			direction = 0;
-		}
-		else{
-			direction = 1;
-		}
-		if (posy != height) {
-			posy += 2*scanRadius;
-		}
-	}
-	else {
-		if (direction == 0) {
-			posx -= scanRadius;
-		}
-		else {
-			posx += scanRadius;
-		}
-	}
 
-	var data = {coordinates: {posx:posx, posy:posy},
-		direction: direction}
-	return data;
-*/
-}
+
+
+
+
+
+
+
+
+
+
+
 
 
 module.exports = sender;

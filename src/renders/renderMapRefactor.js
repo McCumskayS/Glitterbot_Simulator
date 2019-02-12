@@ -2,8 +2,8 @@ const socket = io();
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 100;
-		this.col = 100;
+		this.row = 50;
+		this.col = 50;
 		this.container = container;
 		this.squareSize = 20;
 		this.grid = [];
@@ -81,10 +81,10 @@ function startRoutine(m) {
 		state: m.roverSprite.waiting});
 	// send the location of the drone to the server
 	console.log('scanRadius:'+ m.droneSprite.scanRadius);
-
+/*
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius});
-
+*/
 	console.log("sending to the server");
 
 	socket.on('rover-frontEnd', function(data) {
@@ -96,23 +96,27 @@ function startRoutine(m) {
 
 }
 
+function droneRoutine(m) {
+	console.log(m.droneSprite.waiting)
+	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
+		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting});
+		setTimeout(droneRoutine, 1000, m);
+}
+
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
 
 	//setInterval();
 
-	startRoutine(mapRenderer);
+	//startRoutine(mapRenderer);
+	droneRoutine(mapRenderer);
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
 		console.log('it works for drone to move!');
 	});
-	//receive position from the backend
-	socket.on('drone-backEnd', function(data) {
-		console.log('send new location of the drone');
-		socket.emit('drone-frontEnd', data);
-	});
+
 
 
 }

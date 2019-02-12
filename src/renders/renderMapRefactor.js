@@ -75,8 +75,6 @@ class MapRenderer {
 
 }
 
-
-
 function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
@@ -104,14 +102,17 @@ function main() {
 	//setInterval();
 
 	startRoutine(mapRenderer);
+
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
+		console.log('it works for drone to move!');
 	});
-
 	//receive position from the backend
 	socket.on('drone-backEnd', function(data) {
+		console.log('send new location of the drone');
 		socket.emit('drone-frontEnd', data);
 	});
+
 
 }
 

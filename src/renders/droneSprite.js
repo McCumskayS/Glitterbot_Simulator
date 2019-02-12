@@ -44,8 +44,10 @@ class DroneSprite {
 			this.posy = targetY;
 			console.log("Drone: " +this.posx+"-"+this.posy);
 			// send the location of drone to the rendermap
+
 			socket.emit('drone-backEnd', {coordinates: {posx:this.posx, posy:this.posy},
-				scanRadius: this.scanRadius} );
+				scanRadius: this.scanRadius});
+			console.log('send current location to the render Map');
 	}
 
 	//A function that make the drone search litter in the surrounding area
@@ -64,7 +66,7 @@ class DroneSprite {
 				}
 			}
 		}
-	
+
 */
 }
 

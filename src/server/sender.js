@@ -28,23 +28,24 @@ function sender(io) {
 		});
 
 		//receive the location of the drone and send back the path
+
 		socket.on('drone-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
 			console.log('scan radius: ' + scanRadius);
 
 			console.log('routinePath start work!');
-			console.log('Direction: '+direction);
-			var nextLocation = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction);
-			this.direction = nextLocation.direction;
-			socket.emit('drone-frontEnd', nextLocation);
+
+			routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, socket);
+			console.log('Direction: '+this.direction);
+			//socket.emit('drone-frontEnd', nextLocation);
 		});
 
 		// receive
 	});
 }
 
-function routinePath(posx, posy, scanRadius, direction) {
+function routinePath(posx, posy, scanRadius, direction, socket) {
 	//how to know the size of the map?
 	// for test
 
@@ -54,8 +55,58 @@ function routinePath(posx, posy, scanRadius, direction) {
 	var width = 100;
 	var height = 100;
 	console.log('from server: '+posx+'-'+posy);
+	var currentX = posx;
+	var currentY = posy;
 
+while (currentX <= width && currentY <= height) {
 
+	if (currentX == 0) {
+		if (direction == 0) {
+			if (currentY == height) {
+				break;
+			}
+			else {
+				currentY += scanRadius;
+				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
+					direction: direction});
+				direction = 1;
+			}
+		}
+		else {
+			while(currentX < width) {
+				currentX += scanRadius;
+				// send location to the render map
+				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
+					direction: direction});
+			}
+		}
+
+	}
+
+	if (currentX == width) {
+		if (direction == 1) {
+			if (currentY == height) {
+				break;
+			}
+			else {
+				currentY += scanRadius;
+				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
+					direction: direction});
+				direction = 0;
+			}
+		}
+		else {
+			while (currentX > 0) {
+				currentX -= scanRadius;
+				// send location to the render map
+				socket.emit('drone-frontEnd', {coordinates: {posx:currentX, posy:currentY},
+					direction: direction});
+			}
+		}
+	}
+}
+
+/*
 	if (posx == width || (posx == 0 && posy != 0)) {
 
 		if (posx == width) {
@@ -80,13 +131,8 @@ function routinePath(posx, posy, scanRadius, direction) {
 	var data = {coordinates: {posx:posx, posy:posy},
 		direction: direction}
 	return data;
+*/
 }
-
-
-
-
-
-
 
 
 module.exports = sender;

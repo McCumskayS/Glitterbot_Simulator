@@ -1,7 +1,6 @@
 //Test file for testing various classes.
 //Authors: Scott McCumskay
 //Date:07/02/2019
-mocha.setup('bdd');
 var assert = chai.assert;
 
 describe('Array', function() {
@@ -37,30 +36,5 @@ describe('RoverSprite class', function(){
 
 //Tests for RenderMapRefactor class, located in src/renders/renderMapRefactor.js
 describe('RenderMapRefactor class', function(){
-  //Placebo socket variables
-  const path = require('path')
-  const express = require('express')
-  const app = express()
-  const port = 3000
-  const root = __dirname;
-  const socket = require('socket.io')
-  const sender = require('../src/server/sender.js')
-  app.get('/', function(req, res) {
-      res.sendFile('index.html', {root: path.join(root, '../src')});
-  });
-  app.use(express.static('../src'));
-  const server = app.listen(port,
-      () => console.log(`Example app listening on port ${port}!`));
-  const io = socket(server);
-  sender(io);
-  //RenderMapRefactor variables
-  const connr = new PIXI.Container();
-  var rendermap = new MapRenderer(connr);
 
-
-
-
-  it('row should be equal to 100 upon instantiation',function(){
-    assert.equal(rendermap.row,100);
-  });
 });

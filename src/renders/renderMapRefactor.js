@@ -100,6 +100,13 @@ function setButtons(mapRenderer) {
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
 }
 
+function randAddLitter(mapRenderer) {
+	var timer = Math.floor(Math.random() * 10001) + 5000;
+	mapRenderer.addLitter();
+	setTimeout(randAddLitter, timer, mapRenderer);
+	console.log
+}
+
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
@@ -108,7 +115,9 @@ function main() {
 	socket.on('rover-frontEnd', function(data) {
 		console.log(data);
 		mapRenderer.moveRover(data);
+    randAddLitter(mapRenderer);
 	});
+
 }
 
 document.addEventListener('DOMContentLoaded', main);

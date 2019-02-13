@@ -94,12 +94,19 @@ function setButtons(mapRenderer) {
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
 }
 
+function randAddLitter(mapRenderer) {
+	var timer = Math.floor(Math.random() * 10001) + 5000;
+	mapRenderer.addLitter();
+	setTimeout(randAddLitter, timer, mapRenderer);
+	console.log
+}
+
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
 	setInterval(startRoutine, 5000, mapRenderer);
-	setInterval(mapRenderer.addLitter, 15000);
+	randAddLitter(mapRenderer);
 }
 
 document.addEventListener('DOMContentLoaded', main);

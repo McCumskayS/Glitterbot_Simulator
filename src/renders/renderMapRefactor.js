@@ -14,6 +14,12 @@ class MapRenderer {
 		this.roverSprite = null;
 		this.droneSprite = null;
 		this.moveDrone = this.moveDrone.bind(this);
+
+
+		// new feature
+		this.treeTexture = PIXI.Texture.fromImage.('./sprites/tree.png');
+		this.treeSprite = null;
+
 	}
 
 	drawGrid() {
@@ -25,6 +31,10 @@ class MapRenderer {
 				if (num > 0.03) {
 					var terrain = new PIXI.Sprite(this.grassTexture);
 					this.grid[i][j] = "grass";
+
+					
+
+
 				} else {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";

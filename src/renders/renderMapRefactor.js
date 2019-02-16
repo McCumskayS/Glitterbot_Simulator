@@ -16,9 +16,8 @@ class MapRenderer {
 		this.moveDrone = this.moveDrone.bind(this);
 
 
-		// new feature
-		this.treeTexture = PIXI.Texture.fromImage.('./sprites/tree.png');
-		this.treeSprite = null;
+		// new features
+		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
 
 	}
 
@@ -29,12 +28,14 @@ class MapRenderer {
 			for (var j = 0; j < this.row; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
-					var terrain = new PIXI.Sprite(this.grassTexture);
-					this.grid[i][j] = "grass";
-
-					
-
-
+					// add tree tp the map
+					if (num > 0.99) {
+						var terrain = new PIXI.Sprite(this.treeTexture);
+						this.grid[i][j] = "tree";
+					} else {
+						var terrain = new PIXI.Sprite(this.grassTexture);
+						this.grid[i][j] = "grass";
+						}
 				} else {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";

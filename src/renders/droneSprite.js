@@ -50,25 +50,26 @@ class DroneSprite {
 	//A function that make the drone search litter in the surrounding area
 	searchLitter(posx, posy) {
 		console.log(posx+'-'+posy);
-
 		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
 			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
 				//First check the boundary
 				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
 					continue;
-				}
-				else {
-					//check whether there is a litter in the terrain
-					console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
-					if (this.litterArray[posy+j][posx+i] != null) {
-						socket.emit('litter-channel', {x:posx+i, y:posy+j});
+				}	else {
+						//check whether there is a litter in the terrain
+						console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
+						if (this.litterArray[posy+j][posx+i] != null) {
+							socket.emit('litter-channel', {x:posx+i, y:posy+j});
+						}
+						// check whether there is a tree
+						if (this.grid[posy+j][posx+i] == "tree") {
+							socket.emit('tree-location', {coordinates:{posx:posx+i, posy:posy+j}});
+						}
 					}
-				}
 			}
 		}
+	}
 
-
-}
 
 
 }

@@ -15,10 +15,9 @@ class MapRenderer {
 		this.droneSprite = null;
 		this.moveDrone = this.moveDrone.bind(this);
 
-
 		// new features
 		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
-
+		this.treeArray = [];
 	}
 
 	drawGrid() {
@@ -57,10 +56,6 @@ class MapRenderer {
 		this.litterArray[2][1] = litterSprite;
 		this.litterArray[4][5] = litterSprite;
 		this.container.addChild(litterSprite);
-
-		// test drone
-		//this.droneSprite.moveTo(10,0);
-
 	}
 
 	addLitter() {
@@ -83,6 +78,10 @@ class MapRenderer {
 
 	moveDrone(position) {
 		this.droneSprite.moveTo(position);
+	}
+
+	addTree(posx, posy) {
+		treeArray[posy][posx] == 1;
 	}
 
 }
@@ -118,9 +117,6 @@ function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
 
-	//setInterval();
-
-	//startRoutine(mapRenderer);
 	droneRoutine(mapRenderer);
 
 	socket.on('drone-frontEnd', function(data) {
@@ -128,6 +124,11 @@ function main() {
 		console.log('it works for drone to move!');
 	});
 
+	socket.on('tree-location', function(data) {
+		var x = data.coordinates.posx;
+		var y = data.coordinates.posy;
+		mapRenderer.addTree(x,y);
+	})
 
 
 }

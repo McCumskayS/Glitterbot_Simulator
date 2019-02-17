@@ -1,3 +1,6 @@
+var PF = require('pathfinding');
+
+
 function sender(io) {
 	//test roverPath
 	//test comment
@@ -41,8 +44,6 @@ function sender(io) {
 			if (data.state != false){
 				socket.emit('drone-frontEnd', newdata);
 			}
-
-
 		});
 		// receive
 			socket.on('litter-channel', function(data) {
@@ -96,43 +97,60 @@ function routinePath(posx, posy, scanRadius, socket, direction, prevDirection) {
 	}
 	var data = {coordinates: {posx:currentX, posy:currentY},direction: direction, prevDirection: prevDirection};
 	return data
-	/*if (currentY < height) {
-		if (direction == 0) { // direction: left
-			if (currentX > 0) {
-				currentX -= movement
-			} else {	// reach the left most boundary
-				// move downward
-				currentY += movement
-				//if (currentY > height)
-				}
-		} else {
-			if (currentX < width) {
-				currentX += movement
-			} else { // reach the right most boundary
-				// move downward
-				currentY += movement
-				}
-		}
-		var data = {coordinates: {posx:currentX, posy:currentY},direction: direction};
-		return data;
-	}*/
+}
+
+function treePathFinding(grid, posx, posy, treeArray, scanRadius, nextX, nextY) {
+
+	var temp = setGridUnWalkable(grid);
+	//check trees and set the new grid
+	var newGrid = checkTree(posx, posy, temp);
+	//do the movement
+	var gridCopy = new PF.Grid(newGrid);
+	var finder = new PF.AStarFinder({
+		allowDiagonal: true;
+	});
+
+	var path = finder.findPath(posx, posy, )
 
 }
 
+function setGridUnWalkable(grid) {
+	for (let i = 0; i < grid.length; i++) {
+		for(let j = 0; j < grid[i].length; j++) {
+			grid.setWalkableAt(i, j, false);
+		}
+	}
+	return grid;
+}
 
+// A function that check whether exist trees on the roverPath
+function checkTree(posx, posy, treeArray, grid, nextX, nextY) {
+	var width = grid.length;
+	var height = grid[i].length;
 
+	for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
+		for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
+			//First check the boundary
+			if (posx+i > width || posy+j > height || posx+i < 0 || posy+j < 0) {
+				continue;
+			}	else {
+				if (treeArray[posy+j][posx+i] != 1) {
+					grid.setWalkableAt(posx+i, posy+j, true);
+				} else {
+						if (posx+i == nextX && posy+j == nextY) {
 
+						}
+					}
 
+				}
+		}
+	}
+	return grid;
+}
 
+function checkNextLocation() {
 
-
-
-
-
-
-
-
-
+}
 
 
 module.exports = sender;

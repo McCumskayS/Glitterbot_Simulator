@@ -42,11 +42,13 @@ class RoverSprite {
 			if (this.mapRenderer.removeLitter(posx, posy)) {
 				this.capacity = this.capacity - 1;
 				console.log("litter collected, capacity remaining = " + this.capacity);
-
 			}
 		}
 		else {
-			console.log("rover full");
+			console.log("rover full, returning to base");
+			if(this.capacity === 0 && this.posx === 0 && this.posy === 0) {
+				this.capacity = 5;
+			}
 		}
 	}
 

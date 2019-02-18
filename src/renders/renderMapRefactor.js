@@ -89,7 +89,7 @@ class MapRenderer {
 function startRoutine(m) {
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
-		state: m.roverSprite.waiting});
+		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity});
 	console.log("sending to the server");
 	setTimeout(startRoutine, 5000, m);
 }

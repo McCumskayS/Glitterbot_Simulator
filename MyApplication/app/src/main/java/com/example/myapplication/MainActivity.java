@@ -58,24 +58,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GoogleMap mMap;
 
     protected void createLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(2000);
-        locationRequest.setFastestInterval(5000);
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, getMainLooper());
     }
 
     @Override
@@ -157,14 +150,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 //Setting the linear acceleration values in a string
                 linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
-                            + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
-                            + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
+                        + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
+                        + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
                 linearAccelerationText.setText(linearString);
 
                 //Setting the absolute acceleration values in a string
                 absoluteString = "ABS EAST = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[0])
-                              + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
-                              + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
+                        + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
+                        + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
                 absoluteAccelerationText.setText(absoluteString);
             }
         }

@@ -75,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 //Setting the linear acceleration values in a string
                 linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
-                        + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
-                        + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
+                            + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
+                            + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
                 linearAccelerationText.setText(linearString);
 
                 //Setting the absolute acceleration values in a string
                 absoluteString = "ABS EAST = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[0])
-                        + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
-                        + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
+                              + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
+                              + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
                 absoluteAccelerationText.setText(absoluteString);
             }
         }

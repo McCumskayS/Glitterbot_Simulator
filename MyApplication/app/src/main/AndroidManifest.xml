@@ -25,6 +25,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA-yro994nnak1aj3pScls1PfvozbntBe0"/>
 
+
     </application>
 
     <uses-feature

@@ -9,17 +9,12 @@ function sender(io) {
 	// 0 for left and 1 for right
 	var direction = 'right'
 	var prevDirection = 'left'
+ 	var treeArray =[];
+  var col = 49;
 
-	roverPath = [
-		{posx: 1, posy:0},
-	  {posx: 2, posy:0},
-		{posx: 2, posy:1},
-	  {posx: 3, posy:1},
-		{posx: 4, posy:1},
-		{posx: 4, posy:0},
-		{posx: 5, posy:1},
-		{posx: 6, posy:1},
-	]
+	for (var i = 0; i<col; i++) {
+		treeArray[i] = [];
+	}
 
 	//When a client connect display message on console
 	io.on('connection', function(socket){
@@ -36,29 +31,39 @@ function sender(io) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
 			console.log('scan radius: ' + scanRadius);
-			//console.log('routinePath start work!');
-			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, socket, direction, prevDirection);
+			/*
+			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, prevDirection);
 			direction = newdata.direction;
 			prevDirection = newdata.prevDirection;
 			console.log('Direction: '+direction);
 			if (data.state != false){
 				socket.emit('drone-frontEnd', newdata);
 			}
+			*/
+			grid = new PF.Grid(data.grid);
+			var newdata = testTrees(data.coordinates.posx,data.coordinates.posy,scanRadius,treeArray,grid);
+
+				socket.emit('drone-frontEnd', newdata);
+
 		});
 		// receive
-			socket.on('litter-channel', function(data) {
-				console.log('x:'+data.x+'y:'+data.y);
-			})
+		socket.on('litter-channel', function(data) {
+			console.log('x:'+data.x+'y:'+data.y);
 		});
+		// copy tre array from front end to back end
+		socket.on('treeArray', function(data) {
+			treeArray = data.slice();
+		});
+	});
 }
 
-function routinePath(posx, posy, scanRadius, socket, direction, prevDirection) {
+function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 	var width = 49;
 	var height = 49;
 	console.log('from server: '+posx+'-'+posy);
 	var currentX = posx;
 	var currentY = posy;
-	var movement = 2*scanRadius
+	var movement = scanRadius
 
 	if (direction === 'right') {
 		if ((width - currentX) >= movement) {
@@ -95,22 +100,29 @@ function routinePath(posx, posy, scanRadius, socket, direction, prevDirection) {
 			prevDirection = 'left'
 		}
 	}
+	//DO treePathFinding here
+
+
 	var data = {coordinates: {posx:currentX, posy:currentY},direction: direction, prevDirection: prevDirection};
 	return data
 }
 
-function treePathFinding(grid, posx, posy, treeArray, scanRadius, nextX, nextY) {
+// function to check trees
+function testTrees(posx, posy, scanRadius, treeArray, grid) {
+	var height = 49;
+	var weight = 49;
 
-	var temp = setGridUnWalkable(grid);
-	//check trees and set the new grid
-	var newGrid = checkTree(posx, posy, temp);
-	//do the movement
-	var gridCopy = new PF.Grid(newGrid);
-	var finder = new PF.AStarFinder({
-		allowDiagonal: true;
-	});
+	var currentX = posx;
+	var currentY = posy;
 
-	var path = finder.findPath(posx, posy, )
+	// check trees here
+
+	var data = checkTrees(currentX, currentY, treeArray, grid, scanRadius);
+	while (data.nextLocation.posx != currentX) {
+		data = checkTrees(data.nextLocation.posx, data.nextLocation.posy, treeArray, grid, scanRadius);
+	}
+
+	return data;
 
 }
 
@@ -124,33 +136,65 @@ function setGridUnWalkable(grid) {
 }
 
 // A function that check whether exist trees on the roverPath
-function checkTree(posx, posy, treeArray, grid, nextX, nextY) {
-	var width = grid.length;
-	var height = grid[i].length;
+function checkTrees(posx, posy, treeArray, grid, scanRadius) {
+	var width = 49;
+	var height = 49;
+  var nextX = posx+scanRadius;
+	var nextY = posy;
 
-	for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
-		for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
+	for (let i = -scanRadius; i <= scanRadius; i++) {
+		for (let j = -scanRadius; j <= scanRadius; j++) {
 			//First check the boundary
 			if (posx+i > width || posy+j > height || posx+i < 0 || posy+j < 0) {
 				continue;
 			}	else {
-				if (treeArray[posy+j][posx+i] != 1) {
-					grid.setWalkableAt(posx+i, posy+j, true);
-				} else {
-						if (posx+i == nextX && posy+j == nextY) {
-
+					if (treeArray[posy+j][posx+i] != 1) {
+						grid.setWalkableAt(posx+i, posy+j, true);
+					} else {
+							if (posx+i == nextX && posy+j == nextY) {
+								// choose the next location
+								for (let k = scanRadius; k >= -scanRadius; k--) {
+									for(let m = scanRadius; m >= -scanRadius; m--) {
+										if(treeArray[nextY+m][nextY+k] != 1) {
+											nextX = nextX+k;
+											nextY = nextY+m;
+										}
+									}
+								}
+							}
 						}
-					}
-
 				}
 		}
 	}
-	return grid;
-}
-
-function checkNextLocation() {
-
+	var data = {nextLocation:{posx:nextX, posy:nextY}, grid: grid};
+	return data;
 }
 
 
+
+function treePathFinding(grid, posx, posy, treeArray, scanRadius, nextX, nextY) {
+	var radius = scanRadius;
+	var temp = setGridUnWalkable(grid);
+/*
+	var finder = new PF.AStarFinder({
+		allowDiagonal: true
+	});
+	//check trees and set the new grid
+	var data = checkTree(posx, posy, temp, nextX, nextY, radius);
+	//do the movement
+	var newGrid = data.grid;
+	var endX = data.coordinates.posx;
+	var endY = data.coordinates.posy;
+	var gridCopy = new PF.Grid(newGrid);
+
+	var path = finder.findPath(posx, posy, endX, endY, gridCopy);
+	var newPath = new PF.Util.compressPath(path);
+	for (let i=0; i< newPath.length; i++) {
+		//TODO
+
+	}
+
+	*/
+
+}
 module.exports = sender;

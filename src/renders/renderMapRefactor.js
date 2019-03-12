@@ -14,7 +14,6 @@ class MapRenderer {
 		this.roverSprite = null;
 		this.droneSprite = null;
 		this.moveDrone = this.moveDrone.bind(this);
-
 		// new features
 		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
 		this.treeArray = [];
@@ -24,6 +23,7 @@ class MapRenderer {
 		for (var i = 0; i < this.col; i++) {
 			this.grid[i] = [];
 			this.litterArray[i] = [];
+			this.treeArray[i] = [];
 			for (var j = 0; j < this.row; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
@@ -31,6 +31,8 @@ class MapRenderer {
 					if (num > 0.99) {
 						var terrain = new PIXI.Sprite(this.treeTexture);
 						this.grid[i][j] = "tree";
+						console.log('tree is initially placed at '+i+','+j);
+
 					} else {
 						var terrain = new PIXI.Sprite(this.grassTexture);
 						this.grid[i][j] = "grass";
@@ -47,7 +49,7 @@ class MapRenderer {
 			}
 		}
 		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this.litterArray);
-		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray);
+		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
 		//test
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
 		litterSprite.anchor.set(0.5, 0.5);
@@ -80,10 +82,6 @@ class MapRenderer {
 		this.droneSprite.moveTo(position);
 	}
 
-	addTree(posx, posy) {
-		treeArray[posy][posx] == 1;
-	}
-
 }
 
 function startRoutine(m) {
@@ -109,7 +107,7 @@ function startRoutine(m) {
 function droneRoutine(m) {
 	console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
-		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting});
+		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
 		setTimeout(droneRoutine, 1000, m);
 }
 
@@ -123,13 +121,6 @@ function main() {
 		mapRenderer.moveDrone(data);
 		console.log('it works for drone to move!');
 	});
-
-	socket.on('tree-location', function(data) {
-		var x = data.coordinates.posx;
-		var y = data.coordinates.posy;
-		mapRenderer.addTree(x,y);
-	})
-
 
 }
 

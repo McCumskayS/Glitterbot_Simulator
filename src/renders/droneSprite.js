@@ -4,7 +4,7 @@
 
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(row, column, mapGrid, squareSize, container, litterArray) {
+	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray) {
 		this.texture = PIXI.Texture.fromImage('./sprites/drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
@@ -24,6 +24,7 @@ class DroneSprite {
 		this.droneHeight = 4;
 		this.scanRadius = 5;
 		this.litterArray = litterArray;
+		this.treeArray = treeArray;
 		this.searchLitter = this.searchLitter.bind(this);
 		this.waiting = true;
 	}
@@ -55,18 +56,23 @@ class DroneSprite {
 				//First check the boundary
 				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
 					continue;
-				}	else {
-						//check whether there is a litter in the terrain
-						console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
-						if (this.litterArray[posy+j][posx+i] != null) {
-							socket.emit('litter-channel', {x:posx+i, y:posy+j});
-						}
-						// check whether there is a tree
-						if (this.grid[posy+j][posx+i] == "tree") {
-							socket.emit('tree-location', {coordinates:{posx:posx+i, posy:posy+j}});
-						}
+				}
+				else {
+					//check whether there is a litter in the terrain
+					//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
+					if (this.litterArray[posy+j][posx+i] != null) {
+						socket.emit('litter-channel', {x:posx+i, y:posy+j});
 					}
+					// check whether there is a tree
+					if (this.grid[posy+j][posx+i] == "tree") {
+						this.treeArray[posy+j][posx+i] = 1;
+						socket.emit('treeArray', this.treeArray);
+
+					}
+				}
+
 			}
+
 		}
 	}
 

@@ -10,7 +10,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
+import android.support.v4.app.FragmentActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback{
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor rotation;
@@ -22,6 +33,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] absoluteAcceleration;
     private float[] linearAcceleration;
     boolean rotationMatrixCreated = false;
+    String linearString;
+    String absoluteString;
+
+    private GoogleMap mMap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         absoluteAcceleration = new float[4];
         linearAcceleration = new float[4];
         rotationMatrixInv = new float[16];
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -52,9 +72,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             System.arraycopy(event.values, 0, linearAcceleration, 0, event.values.length);
             if (rotationMatrixCreated) {
                 android.opengl.Matrix.multiplyMV(absoluteAcceleration, 0, rotationMatrixInv, 0 , linearAcceleration, 0);
-                linearAccelerationText.setText("ax = " + String.format("%.3f", linearAcceleration[0]) + " ay = "
-                        + String.format("%.3f", linearAcceleration[1]) + " az = " + String.format("%.3f", linearAcceleration[2]));
-                absoluteAccelerationText.setText("ABS EAST = " + String.format("%.3f", absoluteAcceleration[0]) + " ABS NORTH = " + String.format("%.3f", absoluteAcceleration[1]) + " ABS DOWN = " + String.format("%.3f", absoluteAcceleration[2]));
+
+                //Setting the linear acceleration values in a string
+                linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
+                        + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
+                        + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
+                linearAccelerationText.setText(linearString);
+
+                //Setting the absolute acceleration values in a string
+                absoluteString = "ABS EAST = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[0])
+                        + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
+                        + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
+                absoluteAccelerationText.setText(absoluteString);
             }
         }
 
@@ -67,6 +96,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
     }
 

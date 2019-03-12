@@ -19,16 +19,11 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-<<<<<<< HEAD
 import java.util.Arrays;
-
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
-=======
 
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback{
->>>>>>> b48bc745e9322fe794c8c7bc32c29766e3cfd4e7
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor rotation;
@@ -39,15 +34,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] absoluteAcceleration;
     private float[] linearAcceleration;
     boolean rotationMatrixCreated = false;
-<<<<<<< HEAD
-    private KalmanFilterManager kalmanFilterManager;
-=======
     String linearString;
     String absoluteString;
 
     private GoogleMap mMap;
-
->>>>>>> b48bc745e9322fe794c8c7bc32c29766e3cfd4e7
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,14 +59,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         linearAcceleration = new float[4];
         rotationMatrixInv = new float[16];
 
-<<<<<<< HEAD
-        kalmanFilterManager = new KalmanFilterManager();
-
-=======
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
->>>>>>> b48bc745e9322fe794c8c7bc32c29766e3cfd4e7
     }
 
     @Override
@@ -86,13 +71,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             System.arraycopy(event.values, 0, linearAcceleration, 0, event.values.length);
             if (rotationMatrixCreated) {
                 android.opengl.Matrix.multiplyMV(absoluteAcceleration, 0, rotationMatrixInv, 0 , linearAcceleration, 0);
-<<<<<<< HEAD
-                linearAccelerationText.setText("ax = " + String.format("%.3f", linearAcceleration[0]) + " ay = "
-                        + String.format("%.3f", linearAcceleration[1]) + " az = " + String.format("%.3f", linearAcceleration[2]));
-                absoluteAccelerationText.setText("ABS EAST = " + String.format("%.3f", absoluteAcceleration[0]) + " ABS NORTH = " + String.format("%.3f", absoluteAcceleration[1]) + " ABS DOWN = " + String.format("%.3f", absoluteAcceleration[2]));
 
-                kalmanFilterManager.predict(absoluteAcceleration[0]);
-=======
 
                 //Setting the linear acceleration values in a string
                 linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
@@ -105,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                               + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
                               + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
                 absoluteAccelerationText.setText(absoluteString);
->>>>>>> b48bc745e9322fe794c8c7bc32c29766e3cfd4e7
             }
         }
 

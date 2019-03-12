@@ -16,6 +16,13 @@ public class Matrix {
         data = new double[rows][cols];
     }
 
+    public void show(){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                System.out.println(data[i][j]);
+        }
+    }
+
     public void setData(double... args) {
         assert(args.length == rows * cols);
         for (int r = 0; r < rows; ++r) {

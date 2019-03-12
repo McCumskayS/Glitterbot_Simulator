@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] absoluteAcceleration;
     private float[] linearAcceleration;
     boolean rotationMatrixCreated = false;
+    private KalmanFilterManager kalmanFilterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         absoluteAcceleration = new float[4];
         linearAcceleration = new float[4];
         rotationMatrixInv = new float[16];
+
+        kalmanFilterManager = new KalmanFilterManager();
+
     }
 
     @Override
@@ -55,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 linearAccelerationText.setText("ax = " + String.format("%.3f", linearAcceleration[0]) + " ay = "
                         + String.format("%.3f", linearAcceleration[1]) + " az = " + String.format("%.3f", linearAcceleration[2]));
                 absoluteAccelerationText.setText("ABS EAST = " + String.format("%.3f", absoluteAcceleration[0]) + " ABS NORTH = " + String.format("%.3f", absoluteAcceleration[1]) + " ABS DOWN = " + String.format("%.3f", absoluteAcceleration[2]));
+
+                kalmanFilterManager.predict(absoluteAcceleration[0]);
             }
         }
 

@@ -18,6 +18,7 @@ class RoverSprite {
 		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
+		this.battery = 100;
 	}
 
 	//Follows a path of nodes!

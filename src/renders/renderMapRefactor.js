@@ -96,8 +96,13 @@ function startRoutine(m) {
 
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
-	const genLitterBtn = document.getElementById("litterBtn");
+	const genLitterBtn = document.getElementById("litter");
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
+}
+
+
+function batteryLevel(){
+	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
 
 function main() {

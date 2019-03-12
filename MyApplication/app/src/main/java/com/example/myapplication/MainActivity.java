@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,12 +10,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-
-import android.support.v4.app.FragmentActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor rotation;
     private TextView linearAccelerationText;
     private TextView absoluteAccelerationText;
-    private TextView rotationMatrixText;
     private float[] rotationMatrix;
     private float[] rotationMatrixInv;
     private float[] absoluteAcceleration;
@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //Getting textViews
         linearAccelerationText = findViewById(R.id.linearAcceleration);
-        absoluteAccelerationText = findViewById(R.id.linearAccelerationTest);
-        rotationMatrixText = findViewById(R.id.rotationMatrix);
+        absoluteAccelerationText = findViewById(R.id.absoluteAcceleration);
 
         rotationMatrix = new float[16];
         absoluteAcceleration = new float[4];
@@ -104,10 +103,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mMap = googleMap;
 
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
+        LatLng sydney = new LatLng(52.954784, -1.158109);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        addCircleToMap(sydney);
+    }
 
+    public void addCircleToMap(LatLng position) {
+        CircleOptions circleOptions = new CircleOptions()
+                .center(position)
+                .fillColor(Color.BLUE)
+                .strokeColor(Color.TRANSPARENT)
+                .radius(1); //meters
+
+        Circle circle = mMap.addCircle(circleOptions);
     }
 
 }

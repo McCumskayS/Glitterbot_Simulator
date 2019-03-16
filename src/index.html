@@ -1,28 +1,57 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <link href="stylesheet.css" rel="stylesheet" type="text/css" />
   <body>
-    <!-- icons from W3Schoolc.... -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- material design light -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <!-- our stylesheet -->
-    <link rel="stylesheet" type="text/css" href="./stylesheet.css">
+    <div class="box_1">
+        <h2>GlitterBot</h2>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script>
     <script src="./renders/roverSprite.js"></script>
     <script src="./renders/droneSprite.js"></script>
     <script src="./renders/renderMapRefactor.js"></script>
+
     <div id='canvas-id'>
       <canvas id="map-canvas"></canvas>
     </div>
-    <div id='dock'>
-      <button id="litterBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
-        <i class="fa fa-trash"></i>
-      </button>
+    <!-- <div id='dock'> -->
+      <!-- <button id="litterBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"> -->
+        <!-- <i class="fa fa-trash"></i> -->
+      <!-- </button> -->
+    <!-- </div> -->
+    <div class="content">
+        <div class="nva">
+            <ul>
+                <li id="roverBase"><a href="#"><img src="image/1.png" style="margin-top: 10px;"></a></li>
+                <li id="droneBase"><a href="#"><img src="image/3.png" style="width: 48px;
+                    margin-left: 17px;
+                    margin-top: 11px;"></a></li>
+                <li id="droneLand"><a href="#"><img src="image/4.png" style="margin-top: 10px;"></a></li>
+                <!--<li><a href="#"><img src="image/5.png" style="margin-top: 5px;"></a></li>-->
+                <li id="litter"><a href="#"><img src="image/8.png" style="margin-top: 6px;"></a></li>
+                <ul id="nav_1">
+                <li class="top"><a href="#nogo22" id="services" class="top_link"><span class="down"><img src="image/7.png"></span></a>
+                <ul class="sub">
+                    <li><a href="#nogo23" class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
+                    <li><a href="#nogo24"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
+                    <li><a href="#nogo25"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
+                    <li><a href="#nogo26"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
+                </ul>
+                </ul>
+            </ul>
+        </div>
     </div>
+    <div class="right">
+        <div class="left_4">(X: 23 - Y: 15 - Z: 3)<span class="span_3">30%</span></div>
+        <div class="left_5">(X: 23 - Y: 15 - Z: 0) 1kg/10kg<span class="span_4">3%</span></div>
+    </div>
+
     <script src="./renders/pixiSetup.js"></script>
   </body>
+  </head>
 </html>

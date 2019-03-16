@@ -15,6 +15,7 @@ class DroneSprite {
 		this.animSpeed = 2;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();
+		this.battery = 100;
 	}
 
 	//TODO boundry system!

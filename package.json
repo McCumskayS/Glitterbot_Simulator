@@ -1,7 +1,7 @@
 {
   "name": "glitterbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Glitterbot is a 2nd yeargroup project which is a web-based simulation. It consists of 2 robots collaborating to collect litter from a park. The drone flies through the park scanning for potential litter and obstacles, sends the location back to the server, which in turn will send a path to the rover. The rover will then process this path and go to collect the litter, using a pathing algorithm to avoid any obstacles such as rocks or water. This is all visualised through a 2D grid system which represents the map, a red dot which respresents the drone and a blue square that represents the rover.\r ## Documentation\r * [Google Drive](https://drive.google.com/open?id=1AVRqvaEoW0lo5PRXyDMAQ6pkdIHL36RG) - Diagrams/Designs/MeetingDoc/GanttChart\r ## Prerequisites\r Install Node.js (latest version)\r * [Node.js](https://nodejs.org/it/)\r ## Getting Started\r In order to install the project follow the following steps:\r * Pull it from the master and then move into the root folder (\"Glitterbot_Simulator\")\r * On the terminal run the following command :\r ```\r npm install\r ```\r * Wait for all the modules to be installed (a new folder called \"node_modules\" should appear in the root folder)\r * Move into src/server folder and run this command on the terminal :\r ```\r node index.js\r ```\r this will initialize the application and it will listen to a port\r * Go to a browser and go to the following link: [localhost](http://localhost:3000)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,5 +17,13 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/McCumskayS/Glitterbot_Simulator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/McCumskayS/Glitterbot_Simulator/issues"
+  },
+  "homepage": "https://github.com/McCumskayS/Glitterbot_Simulator#readme"
 }

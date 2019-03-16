@@ -89,7 +89,7 @@ class MapRenderer {
 function startRoutine(m) {
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
-		state: m.roverSprite.waiting});
+		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity});
 	console.log("sending to the server");
 	setTimeout(startRoutine, 5000, m);
 }
@@ -100,6 +100,12 @@ function setButtons(mapRenderer) {
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
 }
 
+function randAddLitter(mapRenderer) {
+	var timer = Math.floor(Math.random() * 10001) + 5000;
+	mapRenderer.addLitter();
+	setTimeout(randAddLitter, timer, mapRenderer);
+	console.log
+}
 
 function batteryLevel(){
 	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
@@ -113,7 +119,9 @@ function main() {
 	socket.on('rover-frontEnd', function(data) {
 		console.log(data);
 		mapRenderer.moveRover(data);
+    randAddLitter(mapRenderer);
 	});
+
 }
 
 document.addEventListener('DOMContentLoaded', main);

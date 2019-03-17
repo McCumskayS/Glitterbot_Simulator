@@ -37,6 +37,8 @@ import java.util.Arrays;
 
 import java.util.Locale;
 
+import static com.example.myapplication.Coordinates.metersToGeoPoint;
+
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
@@ -54,13 +56,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     boolean rotationMatrixCreated = false;
     String linearString;
     String absoluteString;
+    private KalmanFilterManager kalmanFilterLat;
+    private KalmanFilterManager kalmanFilterLon;
 
     private GoogleMap mMap;
 
     protected void createLocationRequest() {
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -101,13 +105,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //Get last known location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         fusedLocationClient.getLastLocation()
@@ -118,7 +115,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
                         mMap.animateCamera(cameraUpdate);
-                        addCircleToMap(latLng);
+                        addCircleToMap(latLng, Color.BLUE);
+                        Log.d("initial Time State", "" + location.getTime() );
+                        kalmanFilterLat = new KalmanFilterManager(location, true);
+                        kalmanFilterLon = new KalmanFilterManager(location, false);
                     }
                 });
 
@@ -130,9 +130,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
                 for (Location location : locationResult.getLocations()) {
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
+                    addCircleToMap(latLng, Color.BLUE);
+
+                    //kalmna stuff
+
+                    kalmanFilterLat.predict(0, location.getTime());
+                    kalmanFilterLon.predict(0, location.getTime());
+                    GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
+                    LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
                     mMap.animateCamera(cameraUpdate);
-                    addCircleToMap(latLng);
+                    addCircleToMap(predictedLatLng, Color.GREEN);
+
                 }
             }
         };
@@ -141,13 +150,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d("sensorChanged", "I'm here");
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             System.arraycopy(event.values, 0, linearAcceleration, 0, event.values.length);
             if (rotationMatrixCreated) {
                 android.opengl.Matrix.multiplyMV(absoluteAcceleration, 0, rotationMatrixInv, 0 , linearAcceleration, 0);
-
-
                 //Setting the linear acceleration values in a string
                 linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
                         + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
@@ -182,13 +188,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         LatLng sydney = new LatLng(52.954784, -1.158109);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        addCircleToMap(sydney);
+        addCircleToMap(sydney, Color.BLUE);
     }
 
-    public void addCircleToMap(LatLng position) {
+    public void addCircleToMap(LatLng position, int color) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(position)
-                .fillColor(Color.BLUE)
+                .fillColor(color)
                 .strokeColor(Color.TRANSPARENT)
                 .radius(1); //meters
 

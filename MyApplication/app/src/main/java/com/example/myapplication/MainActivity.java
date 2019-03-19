@@ -37,6 +37,8 @@ import java.util.Arrays;
 
 import java.util.Locale;
 
+import static com.example.myapplication.Coordinates.latitudeToMeters;
+import static com.example.myapplication.Coordinates.longitudeToMeters;
 import static com.example.myapplication.Coordinates.metersToGeoPoint;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private KalmanFilterManager kalmanFilterLon;
 
     private GoogleMap mMap;
+    private int Counter;
 
     protected void createLocationRequest() {
         locationRequest = new LocationRequest();
@@ -88,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         rotation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, rotation, SensorManager.SENSOR_DELAY_NORMAL);
-
         //Getting textViews
         linearAccelerationText = findViewById(R.id.linearAcceleration);
         absoluteAccelerationText = findViewById(R.id.absoluteAcceleration);
@@ -111,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        Log.d("LocationUpdate", "Last location here");
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
                         mMap.animateCamera(cameraUpdate);
@@ -129,21 +130,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    addCircleToMap(latLng, Color.BLUE);
+                    if (Counter < 2) {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        addCircleToMap(latLng, Color.BLUE);
 
-                    //kalmna stuff
+                        //kalmna stuff
 
-                    kalmanFilterLat.predict(0, location.getTime());
-                    kalmanFilterLon.predict(0, location.getTime());
-                    kalmanFilterLat.update(location);
-                    kalmanFilterLon.update(location);
-                    GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
-                    LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
-                    mMap.animateCamera(cameraUpdate);
-                    addCircleToMap(predictedLatLng, Color.GREEN);
-
+                        kalmanFilterLat.predict(absoluteAcceleration[1], location.getTime());
+                        kalmanFilterLon.predict(absoluteAcceleration[0], location.getTime());
+                        GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
+                        LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
+                        mMap.animateCamera(cameraUpdate);
+                        addCircleToMap(predictedLatLng, Color.GREEN);
+                        Counter++;
+                    }
                 }
             }
         };

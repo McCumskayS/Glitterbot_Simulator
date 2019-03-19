@@ -4,6 +4,7 @@ import android.location.Location;
 import android.util.Log;
 
 import static com.example.myapplication.Coordinates.latitudeToMeters;
+import static com.example.myapplication.Coordinates.longitudeToMeters;
 import static com.example.myapplication.Coordinates.metersToGeoPoint;
 
 public class KalmanFilterManager {
@@ -84,8 +85,14 @@ public class KalmanFilterManager {
         Q.setData(Math.pow(0.1,2), 0, 0, Math.pow(0.1, 2));
         if (latOrlong) {
             State.setData(latitudeToMeters(location.getLatitude()), (location.getSpeed()*Math.cos(location.getBearing())));
+            //Log.d("Lat real", Double.toString(location.getLatitude()));
+            Log.d("Lat Before", Double.toString(latitudeToMeters(location.getLatitude())));
+            Log.d("Lat vel before", Double.toString(location.getSpeed()*Math.cos(location.getBearing())));
         } else {
-            State.setData(latitudeToMeters(location.getLongitude()), (location.getSpeed()*Math.sin(location.getBearing())));
+            State.setData(longitudeToMeters(location.getLongitude()), (location.getSpeed()*Math.sin(location.getBearing())));
+            //Log.d("Long real", Double.toString(location.getLongitude()));
+            Log.d("Long Before", Double.toString(longitudeToMeters(location.getLongitude())));
+            Log.d("Long velocity", Double.toString(location.getSpeed()*Math.sin(location.getBearing())));
         }
         prevTime = System.currentTimeMillis();
         State.show("initial State");
@@ -93,6 +100,8 @@ public class KalmanFilterManager {
 
 
     public void predict(double absoluteAcc, float time) {
+
+
         State.show("previous State");
         Long ok = System.currentTimeMillis();
         deltaTime = ok - prevTime;
@@ -117,9 +126,21 @@ public class KalmanFilterManager {
         Matrix.matrixTranspose(A, At);
         Matrix.matrixMultiply(Ap, At, ApAt);
         Matrix.matrixAdd(ApAt, Q, Pk);
+        //State.data[1][0] = 0;
+
+        if (latLong) {
+            //Log.d("Lat real", Double.toString(location.getLatitude()));
+            Log.d("Lat", Double.toString(State.data[0][0]));
+            Log.d("Lat Vel", Double.toString(State.data[1][0]));
+        } else {
+            //Log.d("Long real", Double.toString(location.getLongitude()));
+            Log.d("Long", Double.toString(State.data[0][0]));
+            Log.d("Long Vel", Double.toString(State.data[1][0]));
+
+        }
     }
 
-    public void update(Location location){
+   /** public void update(Location location){
         //Calculating K
         Matrix.matrixMultiply(H, Pk, Hp);
         Matrix.matrixMultiply(Hp, Ht, HpHt);
@@ -145,7 +166,7 @@ public class KalmanFilterManager {
         Matrix.matrixMultiply(K, H, Hp);
         Matrix.matrixSubtract(I, Hp, HpHt);
         Matrix.matrixMultiply(HpHt, Pk, Pk);
-    }
+    } **/
 
     public double getPoint() {
         return State.data[0][0];

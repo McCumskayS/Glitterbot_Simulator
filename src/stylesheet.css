@@ -12,7 +12,7 @@ body{
 .box_1{
 	width:100%;
 	height:60px;
-	background: #000}
+	background: #666}
 .box_1 h2{color: #fff;
     margin-left: 40px;
     line-height: 60px;}
@@ -79,7 +79,7 @@ body{
 .left_4{
 	width: 325px;
     height: 50px;
-    background: #000 url(../image/10.png) no-repeat 8px;
+    background: #666 url(../image/10.png) no-repeat 8px;
     margin-bottom: 10px;
     background-size: 40px 35px;
     border-right: 5px solid #069cca;
@@ -94,7 +94,7 @@ body{
 .left_5{
 	width: 325px;
     height: 50px;
-    background: #000 url(../image/9.png) no-repeat 10px;
+    background: #666 url(../image/9.png) no-repeat 10px;
     margin-bottom: 10px;
     border-right: 5px solid #24f409;
     background-size: 36px 24px;
@@ -111,7 +111,6 @@ body{
     display: block;
     float: right;
 	text-align: center;
-	background:url(/image/12.png) no-repeat 0px;
 	background-size:16px 34px}
 .right .span_4{
 	width: 65px;
@@ -119,7 +118,6 @@ body{
     display: block;
     float: right;
 	text-align: center;
-	background:url(/image/13.png) no-repeat 0px;
 	background-size:16px 34px}
 
 #map-canvas {
@@ -187,7 +185,7 @@ body{
     display: block;
     line-height: 50px;
     color: #fff;
-    background: #000;
+    background: #666;
     margin-top: 5px;
     margin-bottom: 10px;}
 * html #nav_1 li:hover ul {width:0;}

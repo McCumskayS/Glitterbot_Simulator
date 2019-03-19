@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     kalmanFilterLat.predict(0, location.getTime());
                     kalmanFilterLon.predict(0, location.getTime());
+                    kalmanFilterLat.update(location);
+                    kalmanFilterLon.update(location);
                     GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
                     LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);

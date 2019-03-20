@@ -30,6 +30,7 @@ class DroneSprite {
 	}
 
 	//TODO boundry system!
+
 	moveTo(position) {
 			this.waiting = false;
 			var targetX = position.coordinates.posx;
@@ -67,13 +68,13 @@ class DroneSprite {
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
-
 					}
 				}
 
 			}
 
 		}
+
 	}
 
 

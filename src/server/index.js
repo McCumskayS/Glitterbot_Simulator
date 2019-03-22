@@ -15,7 +15,7 @@ app.get('/test', function(req, res) {
     res.sendFile('testrun.html', {root: path.join(root, '../test')});
 });
 
-app.use('/test', express.static(path.join(__dirname, '/../../')));
+app.use('/tests', express.static(path.join(__dirname, '/../../')));
 //Specify where to get files
 //E.g. the various js scripts in index.html
 app.use('/', express.static('../'));

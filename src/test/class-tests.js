@@ -1,6 +1,7 @@
 //Test file for testing various classes.
 //Authors: Scott McCumskay
 //Date:07/02/2019
+mocha.setup('bdd');
 var assert = chai.assert;
 
 describe('Array', function() {
@@ -31,10 +32,5 @@ describe('DroneSprite class', function(){
 });
 
 describe('RoverSprite class', function(){
-
-});
-
-//Tests for RenderMapRefactor class, located in src/renders/renderMapRefactor.js
-describe('RenderMapRefactor class', function(){
 
 });

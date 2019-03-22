@@ -2,6 +2,7 @@ const assert = require("assert");
 var request = require("request");
 var fork = require("child_process").fork;
 var drone = require('../renders/droneSprite.js');
+var exec = require('child_process').exec;
 
 
 
@@ -21,7 +22,7 @@ describe('Array', function() {
     Container = require('pixi.js').Container
     WebGLRenderer = require('pixi.js').WebGLRenderer
   }
-  var drone = new Dronesprite(20,container);
+  var droneSprite = new DroneSprite(20,null);
 
   describe('DroneSprite "moveTo" function', function(){
     var targetx = 2;
@@ -38,17 +39,18 @@ describe('Array', function() {
 describe('listener test', function(){
   var child, port = 3000;
 
-  /*before( function(done){
+  before( function(done){
     child = fork('server/index.js',null,{env:{PORT: port}});
     child.on('message', function (msg){
       if (msg === 'Example app listening on port 3000!') {
         done();
       }
+
     });
   });
   after(function(){
     child.kill();
-  });*/
+  });
 
   it('listens on the specified port', function(done){
     this.timeout(30000);

@@ -12,6 +12,7 @@
     "detect-node": "^2.0.4",
     "express": "^4.16.4",
     "gsap": "^2.0.2",
+    "isnode": "0.0.1",
     "pixi.js": "^4.8.5",
     "request": "^2.88.0",
     "socket.io": "^2.1.1"

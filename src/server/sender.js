@@ -1,6 +1,3 @@
-var PF = require('pathfinding');
-
-
 function sender(io) {
 	//test roverPath
 	//test comment

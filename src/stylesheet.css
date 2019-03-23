@@ -54,6 +54,7 @@ body{
 	background: #666;
 	margin:0 auto;
 	border-radius:13px;
+	box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.20);
 	}
 .content{
 	width:100%;
@@ -68,7 +69,8 @@ body{
 .nva ul li img{
 	width:40px;
 	margin: 6px;
-    margin-left: 20px;}
+    margin-left: 20px;
+	}
 .right{
 	width: 396px;
     height: 180px;
@@ -82,12 +84,12 @@ body{
     background: #666 url(../image/10.png) no-repeat 8px;
     margin-bottom: 10px;
     background-size: 40px 35px;
-    border-right: 5px solid #069cca;
+    border-radius:13px;
     color: #fff;
     line-height: 50px;
     padding-left: 65px;
     font-size: 12px;
-	}
+	box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.20);}
 .left_4 img{
 	width:36px;
 	margin:5px}
@@ -96,12 +98,14 @@ body{
     height: 50px;
     background: #666 url(../image/9.png) no-repeat 10px;
     margin-bottom: 10px;
-    border-right: 5px solid #24f409;
+    border-radius:13px;
     background-size: 36px 24px;
     color: #fff;
     line-height: 50px;
     padding-left: 65px;
-    font-size: 12px;}
+    font-size: 12px;
+	box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.20);}
+
 .left_5 img{
 	width:36px;
 	margin:5px}

@@ -18,14 +18,51 @@ class DroneSprite {
 	}
 
 	//TODO boundry system!
-	moveTo(targetX, targetY) {
-		var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
-		distanceSquared = Math.abs(distanceSquared);
-    var distance = Math.sqrt(distanceSquared);
-		var time = distance/this.animSpeed;
-		this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
-		this.posx = targetX;
-		this.posy = targetY;
-		console.log("Drone: " +this.posx+"-"+this.posy);
+
+	moveTo(position) {
+			this.waiting = false;
+			var targetX = position.coordinates.posx;
+			var targetY = position.coordinates.posy;
+
+			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+			distanceSquared = Math.abs(distanceSquared);
+	    var distance = Math.sqrt(distanceSquared);
+			var time = distance/this.animSpeed;
+			this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
+				onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+
+			this.posx = targetX;
+			this.posy = targetY;
+			console.log("Drone: " +this.posx+"-"+this.posy);
+			this.waiting = true;
 	}
+
+	//A function that make the drone search litter in the surrounding area
+	searchLitter(posx, posy) {
+		console.log(posx+'-'+posy);
+		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
+			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
+				//First check the boundary
+				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
+					continue;
+				}
+				else {
+					//check whether there is a litter in the terrain
+					//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
+					if (this.litterArray[posy+j][posx+i] != null) {
+						socket.emit('litter-channel', {x:posx+i, y:posy+j});
+					}
+					// check whether there is a tree
+					if (this.grid[posy+j][posx+i] == "tree") {
+						this.treeArray[posy+j][posx+i] = 1;
+						socket.emit('treeArray', this.treeArray);
+
+					}
+				}
+
+			}
+
+		}
+	}
+
 }

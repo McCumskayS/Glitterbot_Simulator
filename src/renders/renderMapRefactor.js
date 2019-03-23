@@ -8,32 +8,23 @@ class MapRenderer {
 		this.squareSize = 20;
 		this.grid = [];
 		this.litterArray = [];
-		this.litterArrayLocations = [];
 		this.grassTexture = PIXI.Texture.fromImage('./sprites/grass.png');
 		this.rockTexture = PIXI.Texture.fromImage('./sprites/rock.png');
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
-
+		this.moveDrone = this.moveDrone.bind(this);
 		// new features
 		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
 		this.treeArray = [];
-    
-		this.addLitter = this.addLitter.bind(this);
-		this.drawGrid = this.drawGrid.bind(this);
-		this.removeLitter = this.removeLitter.bind(this);
-		this.moveDrone = this.moveDrone.bind(this);
-
 	}
 
 	drawGrid() {
-		for (var i = 0; i < this.row; i++) {
+		for (var i = 0; i < this.col; i++) {
 			this.grid[i] = [];
 			this.litterArray[i] = [];
-			this.treeArray[i] = [];	
-			this.litterArrayLocations[i] = [];
-			for (var j = 0; j < this.col; j++) {
-
+			this.treeArray[i] = [];
+			for (var j = 0; j < this.row; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
 					// add tree tp the map
@@ -51,14 +42,12 @@ class MapRenderer {
 					this.grid[i][j] = "rock";
 				}
 				terrain.anchor.set(0.5, 0.5);
-				terrain.x = Math.floor(j % this.col) * this.squareSize;
-				terrain.y = Math.floor(i % this.row) * this.squareSize;
+				terrain.x = Math.floor(i % this.col) * this.squareSize;
+				terrain.y = Math.floor(j % this.row) * this.squareSize;
 	      this.container.addChild(terrain);
 				this.litterArray[i][j] = null;
-				this.litterArrayLocations[i][j] = 0;//no litter
 			}
 		}
-
 		this.roverSprite = new RoverSprite(this.grid, this.container, this.squareSize, this.litterArray);
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
 		//test
@@ -69,39 +58,20 @@ class MapRenderer {
 		this.litterArray[2][1] = litterSprite;
 		this.litterArray[4][5] = litterSprite;
 		this.container.addChild(litterSprite);
-
-		//Sending grid array and litter array, to delete in the future
-		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-
 	}
 
 	addLitter() {
-		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
 		do {
 			var row = Math.floor(Math.random()*(this.row));
 			var col = Math.floor(Math.random()*(this.col));
 		}
-		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == "rock"));
+		while ((this.litterArray[col][row] != null) || (this.grid[col][row] == "rock"));
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
 		litterSprite.anchor.set(0.5, 0.5);
 		litterSprite.x = Math.floor(col % this.col) * this.squareSize;
 		litterSprite.y = Math.floor(row % this.row) * this.squareSize;
-		this.litterArray[row][col] = litterSprite; //tochange maybe
-		this.litterArrayLocations[row][col] = 1;
-		//test update the litter array on the server
-		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
+		this.litterArray[col][row] = litterSprite;
 		this.container.addChild(litterSprite);
-	}
-
-	removeLitter(x, y) {
-		if (this.litterArray[y][x] != null) {
-			this.container.removeChild(this.litterArray[y][x]);
-			delete this.litterArray[y][x];
-			this.litterArrayLocations[y][x] = 0;
-			socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-			return true;
-		}
-		return false;
 	}
 
 	moveRover(path) {
@@ -112,11 +82,9 @@ class MapRenderer {
 		this.droneSprite.moveTo(position);
 	}
 
-
 }
 
 function startRoutine(m) {
-	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
 	// send the location of the drone to the server
@@ -133,7 +101,7 @@ function startRoutine(m) {
 
 	console.log("sending drone location to the server");
 	// receive scanning path from the server
-  setTimeout(startRoutine, 5000, m);
+
 }
 
 function droneRoutine(m) {
@@ -141,20 +109,6 @@ function droneRoutine(m) {
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
 		setTimeout(droneRoutine, 1000, m);
-
-}
-
-function setButtons(mapRenderer) {
-	//Linking the litter generations button to the addLitter method
-	const genLitterBtn = document.getElementById("litterBtn");
-	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
-}
-
-function randAddLitter(mapRenderer) {
-	var timer = Math.floor(Math.random() * 10001) + 5000;
-	mapRenderer.addLitter();
-	setTimeout(randAddLitter, timer, mapRenderer);
-	
 }
 
 function main() {
@@ -166,13 +120,6 @@ function main() {
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
 		console.log('it works for drone to move!');
-
-	setButtons(mapRenderer);
-	startRoutine(mapRenderer);
-	socket.on('rover-frontEnd', function(data) {
-		console.log(data);
-		mapRenderer.moveRover(data);
-    randAddLitter(mapRenderer);
 	});
 
 }

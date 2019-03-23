@@ -1,3 +1,6 @@
+var PF = require('pathfinding');
+
+
 function sender(io) {
 	//test roverPath
 	//test comment
@@ -13,37 +16,22 @@ function sender(io) {
 		treeArray[i] = [];
 	}
 
-const engine = require('./roverPathFinding.js')
-
-var litterArrayLocations = [];
-var roverX;
-var roverY;
-
-function sender(io) {
-
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
-			console.log(data.coordinates.posx);
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
-			console.log("rover is waiting: "+data.state);
-			roverX = data.coordinates.posx;
-			roverY = data.coordinates.posy;
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
-			console.log(path);
-			if (data.state != false) {
-				socket.emit('rover-frontEnd', path);
+			if (data.waiting != false) {
+				socket.emit('rover-frontEnd', roverPath);
 			}
 		});
-
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
 			console.log(data.state)
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
 			console.log('scan radius: ' + scanRadius);
-			
+			/*
 			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, prevDirection);
 			direction = newdata.direction;
 			prevDirection = newdata.prevDirection;
@@ -51,8 +39,12 @@ function sender(io) {
 			if (data.state != false){
 				socket.emit('drone-frontEnd', newdata);
 			}
-			
-			
+			*/
+			grid = new PF.Grid(data.grid);
+			var newdata = testTrees(data.coordinates.posx,data.coordinates.posy,scanRadius,treeArray,grid);
+
+				socket.emit('drone-frontEnd', newdata);
+
 		});
 		// receive
 		socket.on('litter-channel', function(data) {
@@ -62,13 +54,6 @@ function sender(io) {
 		socket.on('treeArray', function(data) {
 			treeArray = data.slice();
 		});
-
-		socket.on('grid-channel', function(data) {
-			grid = data.grid;
-			litterArrayLocations = data.litter;
-			console.log(litterArrayLocations);
-		})
-
 	});
 }
 
@@ -185,6 +170,31 @@ function checkTrees(posx, posy, treeArray, grid, scanRadius) {
 	return data;
 }
 
+
+
+function treePathFinding(grid, posx, posy, treeArray, scanRadius, nextX, nextY) {
+	var radius = scanRadius;
+	var temp = setGridUnWalkable(grid);
+/*
+	var finder = new PF.AStarFinder({
+		allowDiagonal: true
+	});
+	//check trees and set the new grid
+	var data = checkTree(posx, posy, temp, nextX, nextY, radius);
+	//do the movement
+	var newGrid = data.grid;
+	var endX = data.coordinates.posx;
+	var endY = data.coordinates.posy;
+	var gridCopy = new PF.Grid(newGrid);
+
+	var path = finder.findPath(posx, posy, endX, endY, gridCopy);
+	var newPath = new PF.Util.compressPath(path);
+	for (let i=0; i< newPath.length; i++) {
+		//TODO
+
+	}
+
+	*/
 
 }
 module.exports = sender;

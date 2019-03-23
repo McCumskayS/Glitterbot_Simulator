@@ -13,15 +13,33 @@ function sender(io) {
 		treeArray[i] = [];
 	}
 
+
+const engine = require('./roverPathFinding.js')
+
+var litterArrayLocations = [];
+var roverX;
+var roverY;
+
+function sender(io) {
+
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-		socket.on('rover-frontEnd', function(data) {
+		
+    socket.on('rover-frontEnd', function(data) {
 			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			if (data.waiting != false) {
 				socket.emit('rover-frontEnd', roverPath);
 			}
 		});
+    
+    socket.on('grid-channel', function(data) {
+			grid = data.grid;
+			litterArrayLocations = data.litter;
+			console.log(litterArrayLocations);
+		});
+	
+
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
 			console.log(data.state)
@@ -46,7 +64,8 @@ function sender(io) {
 		socket.on('treeArray', function(data) {
 			treeArray = data.slice();
 		});
-	});
+	
+  });
 }
 
 function routinePath(posx, posy, scanRadius, direction, prevDirection) {
@@ -98,6 +117,7 @@ function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 	var data = {coordinates: {posx:currentX, posy:currentY},direction: direction, prevDirection: prevDirection};
 	return data
 }
+
 
 
 module.exports = sender;

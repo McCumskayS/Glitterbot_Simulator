@@ -1,174 +1,118 @@
 package com.example.myapplication;
 
-import android.location.Location;
-import android.util.Log;
-
-import static com.example.myapplication.Coordinates.latitudeToMeters;
-import static com.example.myapplication.Coordinates.longitudeToMeters;
-import static com.example.myapplication.Coordinates.metersToGeoPoint;
-
 public class KalmanFilterManager {
-    private boolean latLong;
+    private int gpsStandardDeviation = 5;
+    private double accelerometerDeviation = 0.1;
     private Long deltaTime;
-    //
-    private Matrix A;
-    private Matrix At;
-    private Matrix B;
-    private Matrix Pk;
-    private Matrix Q;
-    private Matrix Acc;
-    private Matrix State;
     private Long prevTime;
+    private Long currentTime;
 
-    //Inbetween Matrix for Xk
-    private Matrix ApS;
-    private Matrix Bu;
+    private Matrix A; //State transition model
+    private Matrix B; //Control Matrix
+    private Matrix Pk; //Process error
+    private Matrix Q; //Accelerometer covariance
+    private Matrix Acc; //Control Vector 1x1, acceleration
+    private Matrix State; //State
+    private Matrix R; //GPS covariance error
+    private Matrix Z; //Observation vector
+    private Matrix K; //Kalman Gain
+    private Matrix I; //Identity Matrix
 
-    //Inbetween Matrix for Pk
-    private Matrix Ap;
-    private Matrix ApAt;
+    //In-between Matrices used for state predictions
+    private Matrix AS;
+    private Matrix BAcc;
 
-    //update Kk
-    private Matrix H;
-    private Matrix Ht;
-    private Matrix Hp;
-    private Matrix HpHt;
-    private Matrix K;
-    private Matrix R;
+    //In-between Matrix for Pk predictions
+    private Matrix At; //A transposed
+    private Matrix APk;
+    private Matrix APkAt;
 
-    //update Xk
-    private Matrix Hx;
-    private Matrix Zh;
-    private Matrix Z;
+    //In-between Matrices for update phase
+    private Matrix Z_State;
+    private Matrix PkR;
+    private Matrix iPkR;
+    private Matrix KZ_State;
+    private Matrix IK;
 
-    //update Pk
-    private Matrix I;
 
-    public KalmanFilterManager(Location location, boolean latOrlong){
-        latLong = latOrlong;
+    public KalmanFilterManager(double position, double speed){
 
+        //Kalman matrices
         A = new Matrix(2,2);
         B = new Matrix(2,1);
         State = new Matrix(2,1);
-        ApS = new Matrix(2,1);
-        Bu = new Matrix(2,1);
         Acc = new Matrix(1,1);
         Pk = new Matrix(2,2);
         Q = new Matrix(2,2);
-
-        Ap = new Matrix(2,2);
-        ApAt = new Matrix(2,2);
-        At = new Matrix(2,2);
-
-        //update Kk
-        H = new Matrix(2,2);
-        Ht = new Matrix(2,2);
-        HpHt = new Matrix(2,2);
-        Hp = new Matrix(2,2);
-        K = new Matrix(2,2);
         R = new Matrix(2,2);
-
-        //update Xk
-        Hx = new Matrix(2,1);
-        Zh = new Matrix(2,1);
         Z = new Matrix(2,1);
-
-        //update Pk
+        K = new Matrix(2,2);
         I = new Matrix(2,2);
+
+        //Kalman predict in-between initialisation
+        APk = new Matrix(2,2);
+        APkAt = new Matrix(2,2);
+        At = new Matrix(2,2);
+        BAcc = new Matrix(2,1);
+        AS = new Matrix(2,1);
+
+        //update phase
+        Z_State = new Matrix(2, 1);
+        PkR = new Matrix(2, 2);
+        iPkR = new Matrix (2,2);
+        KZ_State = new Matrix(2, 1);
+        IK = new Matrix(2,2);
+
         I.setData(1,0,0,1);
-
-        R.setData(Math.pow(location.getAccuracy(),2) , 0, 0 , Math.pow(location.getAccuracy(),2));
+        R.setData(gpsStandardDeviation*gpsStandardDeviation , 0, 0 , gpsStandardDeviation*gpsStandardDeviation);
         Pk.setData(1,0,0,1);
-        H.setData(1,0,0,1);
-        Matrix.matrixTranspose(H, Ht);
-
-        Q.setData(Math.pow(0.1,2), 0, 0, Math.pow(0.1, 2));
-        if (latOrlong) {
-            State.setData(latitudeToMeters(location.getLatitude()), (location.getSpeed()*Math.cos(location.getBearing())));
-            //Log.d("Lat real", Double.toString(location.getLatitude()));
-            Log.d("Lat Before", Double.toString(latitudeToMeters(location.getLatitude())));
-            Log.d("Lat vel before", Double.toString(location.getSpeed()*Math.cos(location.getBearing())));
-        } else {
-            State.setData(longitudeToMeters(location.getLongitude()), (location.getSpeed()*Math.sin(location.getBearing())));
-            //Log.d("Long real", Double.toString(location.getLongitude()));
-            Log.d("Long Before", Double.toString(longitudeToMeters(location.getLongitude())));
-            Log.d("Long velocity", Double.toString(location.getSpeed()*Math.sin(location.getBearing())));
-        }
+        Q.setData(accelerometerDeviation*accelerometerDeviation, 0, 0, accelerometerDeviation*accelerometerDeviation);
+        State.setData(position, speed);
         prevTime = System.currentTimeMillis();
-        State.show("initial State");
     }
 
 
     public void predict(double absoluteAcc, float time) {
-
-
-        State.show("previous State");
-        Long ok = System.currentTimeMillis();
-        deltaTime = ok - prevTime;
+        currentTime = System.currentTimeMillis();
+        deltaTime = currentTime - prevTime;
         deltaTime /= 1000;
-        prevTime = ok;
-        Log.d("time State", ""+deltaTime + "time passed: " + ok + "prevTime: " + prevTime);
+        prevTime = currentTime;
+
         A.setData(1, deltaTime, 0 , 1);
-        A.show("A");
         B.setData((Math.pow(deltaTime,2))/2, deltaTime);
         Acc.setData(absoluteAcc);
 
         //Calculating Xk prediction
-        Matrix.matrixMultiply(A, State, ApS);
-        ApS.show("ApS");
-        Matrix.matrixMultiply(B, Acc , Bu);
-        Bu.show("Bu");
-        Matrix.matrixAdd(ApS, Bu, State);
-        State.show("updated State");
+        Matrix.matrixMultiply(A, State, AS);
+        Matrix.matrixMultiply(B, Acc , BAcc);
+        Matrix.matrixAdd(AS, BAcc, State);
 
         //Calculating Pk prediction
-        Matrix.matrixMultiply(A,Pk,Ap);
+        Matrix.matrixMultiply(A, Pk, APk);
         Matrix.matrixTranspose(A, At);
-        Matrix.matrixMultiply(Ap, At, ApAt);
-        Matrix.matrixAdd(ApAt, Q, Pk);
-        //State.data[1][0] = 0;
-
-        if (latLong) {
-            //Log.d("Lat real", Double.toString(location.getLatitude()));
-            Log.d("Lat", Double.toString(State.data[0][0]));
-            Log.d("Lat Vel", Double.toString(State.data[1][0]));
-        } else {
-            //Log.d("Long real", Double.toString(location.getLongitude()));
-            Log.d("Long", Double.toString(State.data[0][0]));
-            Log.d("Long Vel", Double.toString(State.data[1][0]));
-
-        }
+        Matrix.matrixMultiply(APk, At, APkAt);
+        Matrix.matrixAdd(APkAt, Q, Pk);
     }
 
-   /** public void update(Location location){
-        //Calculating K
-        Matrix.matrixMultiply(H, Pk, Hp);
-        Matrix.matrixMultiply(Hp, Ht, HpHt);
-        Matrix.matrixAdd(HpHt, R, Hp);
+    public void update(double position, double speed, double accuracy){
+        //Setting new observation values
+        Z.setData(position, speed);
+        //Setting gps error covariance matrix
+        R.setData(accuracy*accuracy, 0, 0, accuracy*accuracy);
 
-        Matrix.matrixMultiply(Pk, Ht, HpHt);
-        Matrix.matrixDestructiveInvert(Hp, Hp);
-        Matrix.matrixMultiply(HpHt, Hp, K);
+        Matrix.matrixSubtract(Z, State, Z_State);
+        Matrix.matrixAdd(Pk, R, PkR);
+        Matrix.matrixDestructiveInvert(PkR, iPkR);
+        Matrix.matrixMultiply(Pk, iPkR, K);
 
-        //Calculating Xk
-        if(latLong) {
-            Z.setData(location.getLatitude(), location.getSpeed());
-        }else{
-            Z.setData(location.getLongitude(), location.getSpeed());
-        }
+        Matrix.matrixMultiply(K, Z_State, KZ_State);
+        Matrix.matrixAdd(State, KZ_State, State);
 
-        Matrix.matrixMultiply(H, State, Hx);
-        Matrix.matrixSubtract(Z, Hx, Zh);
-        Matrix.matrixMultiply(K, Zh, Hx);
-        Matrix.matrixAdd(State, Hx, State);
+        Matrix.matrixSubtract(I, K, IK);
+        Matrix.matrixMultiply(IK, Pk, Pk);
+    }
 
-        //Calculating Pk
-        Matrix.matrixMultiply(K, H, Hp);
-        Matrix.matrixSubtract(I, Hp, HpHt);
-        Matrix.matrixMultiply(HpHt, Pk, Pk);
-    } **/
-
-    public double getPoint() {
+    public double getMeters() {
         return State.data[0][0];
     }
 }

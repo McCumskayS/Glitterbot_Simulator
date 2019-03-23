@@ -1,9 +1,5 @@
 package com.example.myapplication;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by lezh1k on 2/13/18.
  */
@@ -28,8 +24,7 @@ public class Coordinates {
         return distance * (lon < 0.0 ? -1.0 : 1.0);
     }
 
-    public static GeoPoint metersToGeoPoint(double lonMeters,
-                                            double latMeters) {
+    public static GeoPoint metersToGeoPoint(double lonMeters, double latMeters) {
         GeoPoint point = new GeoPoint(0.0, 0.0);
         GeoPoint pointEast = pointPlusDistanceEast(point, lonMeters);
         GeoPoint pointNorthEast = pointPlusDistanceNorth(pointEast, latMeters);
@@ -41,12 +36,10 @@ public class Coordinates {
         return distance * (lat < 0.0 ? -1.0 : 1.0);
     }
 
-    private static GeoPoint getPointAhead(GeoPoint point,
-                                          double distance,
-                                          double azimuthDegrees) {
-
+    private static GeoPoint getPointAhead(GeoPoint point, double distance, double azimuthDegrees) {
         double radiusFraction = distance / EARTH_RADIUS;
         double bearing = Math.toRadians(azimuthDegrees);
+
         double lat1 = Math.toRadians(point.Latitude);
         double lng1 = Math.toRadians(point.Longitude);
 

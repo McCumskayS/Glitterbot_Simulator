@@ -1,10 +1,8 @@
-//Drone robot front end object handler
-//Authors: Zain Ali, Asad Mahmood
-//Date: 21/11/2018
+
 
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(squareSize, container) {
+	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray) {
 		this.texture = PIXI.Texture.fromImage('./sprites/drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
@@ -15,10 +13,21 @@ class DroneSprite {
 		this.animSpeed = 2;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();
+		//add new parameters
+		this.grid = mapGrid;
+		this.width = row-1;
+		this.height = column-1;
+		//camera system parameters
+		this.lens = 5;
+		this.droneHeight = 4;
+		this.scanRadius = 5;
+		this.litterArray = litterArray;
+		this.treeArray = treeArray;
+		this.searchLitter = this.searchLitter.bind(this);
+		this.waiting = true;
 	}
 
 	//TODO boundry system!
-
 	moveTo(position) {
 			this.waiting = false;
 			var targetX = position.coordinates.posx;
@@ -64,5 +73,7 @@ class DroneSprite {
 
 		}
 	}
+
+
 
 }

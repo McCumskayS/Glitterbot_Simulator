@@ -1,6 +1,5 @@
-function sender(io) {
-	//test roverPath
-	//test comment
+const engine = require('./roverPathFinding.js')
+
 	var scanRadius = 0;
   var grid = [];
 	// 0 for left and 1 for right
@@ -14,7 +13,6 @@ function sender(io) {
 	}
 
 
-const engine = require('./roverPathFinding.js')
 
 var litterArrayLocations = [];
 var roverX;
@@ -25,20 +23,23 @@ function sender(io) {
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-		
-    socket.on('rover-frontEnd', function(data) {
-			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
-			if (data.waiting != false) {
-				socket.emit('rover-frontEnd', roverPath);
+
+		socket.on('rover-frontEnd', function(data) {
+
+			roverX = data.coordinates.posx;
+			roverY = data.coordinates.posy;
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
+			console.log(path);
+			if (data.state != false) {
+				socket.emit('rover-frontEnd', path);
 			}
 		});
-    
+
     socket.on('grid-channel', function(data) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-			console.log(litterArrayLocations);
+			console.log('但还是看老大哈萨克的'+litterArrayLocations);
 		});
-	
 
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
@@ -60,17 +61,18 @@ function sender(io) {
 		socket.on('litter-channel', function(data) {
 			console.log('x:'+data.x+'y:'+data.y);
 		});
+
 		// copy tre array from front end to back end
 		socket.on('treeArray', function(data) {
 			treeArray = data.slice();
 		});
-	
+
   });
 }
 
 function routinePath(posx, posy, scanRadius, direction, prevDirection) {
-	var width = 49;
-	var height = 49;
+	var width = 29;
+	var height = 19;
 	console.log('from server: '+posx+'-'+posy);
 	var currentX = posx;
 	var currentY = posy;
@@ -111,13 +113,10 @@ function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 			prevDirection = 'left'
 		}
 	}
-	//DO treePathFinding here
-
 
 	var data = {coordinates: {posx:currentX, posy:currentY},direction: direction, prevDirection: prevDirection};
 	return data
 }
-
 
 
 module.exports = sender;

@@ -24,6 +24,7 @@ class MapRenderer {
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
 
+
 	}
 
 	drawGrid() {
@@ -32,12 +33,19 @@ class MapRenderer {
 			this.litterArray[i] = [];
 			this.treeArray[i] = [];
 			this.litterArrayLocations[i] = [];
+
 			for (var j = 0; j < this.col; j++) {
 
 				var num = Math.random();
 				if (num > 0.03) {
-					var terrain = new PIXI.Sprite(this.grassTexture);
-					this.grid[i][j] = "grass";
+					if (num > 0.99) {
+						var terrain = new PIXI.Sprite(this.treeTexture);
+						this.grid[i][j] = "tree";
+					} else {
+						var terrain = new PIXI.Sprite(this.grassTexture);
+						this.grid[i][j] = "grass";
+					}
+
 				} else {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";
@@ -73,7 +81,7 @@ class MapRenderer {
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 		this.container.addChild(litterSprite);
 	}
-	
+
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
 			this.container.removeChild(this.litterArray[y][x]);
@@ -127,7 +135,6 @@ function randAddLitter(mapRenderer) {
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
-
 
 	droneRoutine(mapRenderer);
 

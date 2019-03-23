@@ -65,6 +65,7 @@ class DroneSprite {
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
+						console.log('tree x: '+(posy+j)+'tree y: '+(posx+i));
 
 					}
 				}

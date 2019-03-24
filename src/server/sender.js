@@ -1,4 +1,5 @@
 const engine = require('./roverPathFinding.js')
+const droneEngine = require('./dronePathFinding.js')
 
 var scanRadius = 0;
 var grid = [];
@@ -19,6 +20,20 @@ var count = 0;
 
 function sender(io) {
 
+	// test to know whtat the AStar function returns if failing to move to the target
+	// var PF = require('pathfinding');
+	// var Grid = new PF.Grid(5,5);
+	// for (var i = 0; i < 5; i++) {
+	// 	Grid.setWalkableAt(i, 3, false);
+	// }
+	// var finder = new PF.AStarFinder({
+	// 	allowDiagonal: false
+	// });
+	//
+	// var path = finder.findPath(0, 0, 4, 4, Grid);
+	// console.log('what the function would return failure: '+path.length);
+
+
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
@@ -37,8 +52,8 @@ function sender(io) {
     socket.on('grid-channel', function(data) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-			width = grid.length-1;
-			height = grid[0].length-1;
+			width = grid.length;
+			height = grid[0].length;
 
 			// initialize the utilityArray for the first time it sends the information of grid map
 			if (count == 0) {
@@ -55,9 +70,15 @@ function sender(io) {
 			scanRadius = data.scanRadius;
 			// console.log('scan radius: ' + scanRadius);
 
-			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, prevDirection);
-			direction = newdata.direction;
-			prevDirection = newdata.prevDirection;
+			// var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, prevDirection);
+			// direction = newdata.direction;
+			// prevDirection = newdata.prevDirection;
+
+
+			// initialize the grid map
+			grid = droneEngine.initialisation(height, width);
+
+
 			// console.log('Direction: '+direction);
 			if (data.state != false){
 				socket.emit('drone-frontEnd', newdata);
@@ -89,6 +110,38 @@ function createUtility() {
 		}
 	}
 }
+
+// move drone to the next position
+// returns both the path to the target and updated grid
+function moveDrone(posx, posy) {
+	// check trees
+	var targets = checkTrees(posx, posy, scanRadius);
+	if (targets.length != 0) {
+		currentLocation = {x: posx, y: posy};
+		var data = droneEngine.pathFindingEngine(treeArray, currentLocation, target, grid, direction);
+		return data;
+	} else {
+		// start using utility function to set new target
+	}
+
+}
+
+// a function that checks the scanning area and returns positions that can be the target
+function checkTrees(posx, posy, scanRadius) {
+	var targets = [];
+	for (var i = -scanRadius; i <= scanRadius; i++) {
+		for (var j = -scanRadius; j <= scanRadius; j++) {
+			if (treeArray[j][i] != 1 && i <= width && j <= height) {
+				// add the position to the targets array
+				targets.push([i,j]);
+			}
+		}
+	}
+
+	return targets;
+}
+
+
 
 function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 
@@ -137,9 +190,6 @@ function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 	return data
 }
 
-// set the destination according to the utility array
-function movement() {
-	
-}
+
 
 module.exports = sender;

@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.Locale;
 
+import static com.example.myapplication.Coordinates.latitudeToMeters;
+import static com.example.myapplication.Coordinates.longitudeToMeters;
 import static com.example.myapplication.Coordinates.metersToGeoPoint;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] linearAcceleration;
 
     boolean rotationMatrixCreated = false;
+    boolean isKalmanInitialised = false;
     String linearString;
     String absoluteString;
 
@@ -60,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     protected void createLocationRequest() {
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(4000);
-        locationRequest.setFastestInterval(1000);
+        locationRequest.setInterval(0);
+        locationRequest.setFastestInterval(0);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -120,9 +123,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
                         mMap.animateCamera(cameraUpdate);
-                        addCircleToMap(latLng, Color.BLUE);
-                        kalmanFilterLat = new KalmanFilterManager(location, true);
-                        kalmanFilterLon = new KalmanFilterManager(location, false);
+                        addCircleToMap(latLng, Color.BLUE, 0.3);
+                        kalmanFilterLat = new KalmanFilterManager(latitudeToMeters(location.getLatitude()),
+                                location.getSpeed()*Math.cos(location.getBearing()));
+                        kalmanFilterLon = new KalmanFilterManager(longitudeToMeters(location.getLongitude()),
+                                location.getSpeed()*Math.sin(location.getBearing()));
+                        isKalmanInitialised = true;
                     }
                 });
 
@@ -133,16 +139,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
+                    //Raw GPS readings will be plotted on the map as blue circles (1m radius)
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    addCircleToMap(latLng, Color.BLUE);
+                    addCircleToMap(latLng, Color.BLUE, 0.3);
 
-                    kalmanFilterLat.predict(1, location.getTime());
-                    kalmanFilterLon.predict(1, location.getTime());
+                    //Kalman update phase
+                    kalmanFilterLat.update(latitudeToMeters(location.getLatitude()), location.getSpeed()*Math.cos(location.getBearing()),
+                           1.5);
+                    kalmanFilterLon.update(longitudeToMeters(location.getLongitude()), location.getSpeed()*Math.sin(location.getBearing()),
+                            1.5);
+
+                    //Plotting the updated kalman point on the map as a GREEN circle
                     GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
                     LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
                     mMap.animateCamera(cameraUpdate);
-                    addCircleToMap(predictedLatLng, Color.GREEN);
+                    addCircleToMap(predictedLatLng, Color.GREEN, 0.5);
                 }
             }
         };
@@ -166,6 +178,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
                         + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
                 absoluteAccelerationText.setText(absoluteString);
+
+                //Kalman predict phase
+                if (isKalmanInitialised) {
+                    kalmanFilterLat.predict(absoluteAcceleration[1]);
+                    kalmanFilterLon.predict(absoluteAcceleration[0]);
+                }
             }
         }
 
@@ -186,12 +204,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mMap = googleMap;
     }
 
-    public void addCircleToMap(LatLng position, int color) {
+    public void addCircleToMap(LatLng position, int color, double size) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(position)
                 .fillColor(color)
                 .strokeColor(Color.TRANSPARENT)
-                .radius(1); //meters
+                .radius(size); //meters
         mMap.addCircle(circleOptions);
         //Circle cirle = mMap.addCircle(circleOptions?);
     }

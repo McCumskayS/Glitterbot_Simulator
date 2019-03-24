@@ -1,7 +1,7 @@
 package com.example.myapplication;
 
 public class KalmanFilterManager {
-    private int gpsStandardDeviation = 5;
+    private int gpsStandardDeviation = 1;
     private double accelerometerDeviation = 0.1;
     private Long deltaTime;
     private Long prevTime;
@@ -72,7 +72,7 @@ public class KalmanFilterManager {
     }
 
 
-    public void predict(double absoluteAcc, float time) {
+    public void predict(double absoluteAcc) {
         currentTime = System.currentTimeMillis();
         deltaTime = currentTime - prevTime;
         deltaTime /= 1000;
@@ -112,7 +112,7 @@ public class KalmanFilterManager {
         Matrix.matrixMultiply(IK, Pk, Pk);
     }
 
-    public double getMeters() {
+    public double getPoint() {
         return State.data[0][0];
     }
 }

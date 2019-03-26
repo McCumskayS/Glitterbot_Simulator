@@ -15,6 +15,8 @@
     "isnode": "0.0.1",
     "pixi.js": "^4.8.5",
     "request": "^2.88.0",
+    "sinon": "^7.3.0",
+    "sinon-chai": "^3.3.0",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {

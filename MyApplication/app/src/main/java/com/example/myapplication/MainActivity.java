@@ -141,14 +141,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 for (Location location : locationResult.getLocations()) {
                     //Raw GPS readings will be plotted on the map as blue circles (1m radius)
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    addCircleToMap(latLng, Color.BLUE, 0.3);
+                    addCircleToMap(latLng, Color.BLUE, 0.5);
 
                     //Kalman update phase
                     kalmanFilterLat.update(latitudeToMeters(location.getLatitude()), location.getSpeed()*Math.cos(location.getBearing()),
-                           1.5);
+                           location.getAccuracy());
                     kalmanFilterLon.update(longitudeToMeters(location.getLongitude()), location.getSpeed()*Math.sin(location.getBearing()),
-                            1.5);
-
+                          location.getAccuracy());
+                    Log.d("Accuracy", "onLocationResult:" + location.getAccuracy());
                     //Plotting the updated kalman point on the map as a GREEN circle
                     GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
                     LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);

@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 public class KalmanFilterManager {
     private int gpsStandardDeviation = 1;
-    private double accelerometerDeviation = 0.1;
+    private double accelerometerDeviation = 0.2;
     private Long deltaTime;
     private Long prevTime;
     private Long currentTime;
@@ -36,7 +36,6 @@ public class KalmanFilterManager {
 
 
     public KalmanFilterManager(double position, double speed){
-
         //Kalman matrices
         A = new Matrix(2,2);
         B = new Matrix(2,1);

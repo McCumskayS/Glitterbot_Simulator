@@ -102,6 +102,12 @@ function startRoutine(m) {
 	setTimeout(startRoutine, 5000, m);
 }
 
+function updateUI(m) {
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity;
+	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
+	setTimeout(updateUI, 1000, m);
+}
+
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
 	const genLitterBtn = document.getElementById("litter");
@@ -128,6 +134,7 @@ function main() {
 		console.log(data);
 		mapRenderer.moveRover(data);
     randAddLitter(mapRenderer);
+	updateUI(mapRenderer);
 	});
 
 }

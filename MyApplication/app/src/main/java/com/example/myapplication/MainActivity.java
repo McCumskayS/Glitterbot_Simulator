@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -30,6 +32,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 //import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.net.URISyntaxException;
 import java.util.Locale;
 
 import static com.example.myapplication.Coordinates.latitudeToMeters;
@@ -37,6 +41,10 @@ import static com.example.myapplication.Coordinates.longitudeToMeters;
 import static com.example.myapplication.Coordinates.metersToGeoPoint;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
+    //Socket testing
+    private Socket socket;
+
+
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -80,6 +88,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //socket testing
+        try {
+            socket = IO.socket("http://10.154.141.170:3000");
+            socket.connect();
+            String message = "Hello by app";
+            String data = "YOLOOOOO";
+            socket.emit("test-drone", data);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
         //Usual android initial setup
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -155,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
                     mMap.animateCamera(cameraUpdate);
                     addCircleToMap(predictedLatLng, Color.GREEN, 0.5);
+
                 }
             }
         };

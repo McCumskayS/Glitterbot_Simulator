@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 
+import android.util.Log;
+
 /**
  * Created by lezh1k on 2/13/18.
  */
@@ -14,6 +16,13 @@ public class Matrix {
         this.rows = rows;
         this.cols = cols;
         data = new double[rows][cols];
+    }
+
+    public void show(String tag){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                Log.d(tag, "" + data[i][j]);
+        }
     }
 
     public void setData(double... args) {

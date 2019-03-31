@@ -1,4 +1,5 @@
 const engine = require('./roverPathFinding.js')
+const converter = require('./CoordinatesConversion.js')
 
 	var scanRadius = 0;
   var grid = [];
@@ -21,6 +22,9 @@ const engine = require('./roverPathFinding.js')
 		lat: 0,
 		long: 0
 	}
+
+	var latLongWidth = 0;
+	var latLongHeight = 0;
 
 
 
@@ -78,18 +82,24 @@ function sender(io) {
 
 		//connection for recieving start position of the map
 		socket.on('app-startPos', function(data){
-			console.log('Recived start positions!');
-			startPos.lat = data.latitude;
-			startPos.long = data.longitude;
+			console.log('Recived start positions!')
+			startPos.lat = data.latitude
+			startPos.long = data.longitude
 		});
 
 		//connection for recieving end position of the map
 		socket.on('app-endPos', function(data){
-			console.log('Recived end position');
-			endPos.lat = data.latitude;
-			endPos.long = data.longitude;
-		});
+			console.log('Recived end position')
+			endPos.lat = data.latitude
+			endPos.long = data.longitude
+			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
+			//!!!!!!!!!!!!
+			width = converter.calculateWidth(startPos, endPos, grid.length)
+			height = converter.calculateHeight(startPos, endPos, grid[0].length)
 
+			console.console.log("Calculated width: " + width)
+			console.console.log("Calculated height: " + height)
+		});
   });
 }
 

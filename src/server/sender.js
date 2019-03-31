@@ -80,6 +80,10 @@ function sender(io) {
 			treeArray = data.slice();
 		});
 
+		socket.on('test-drone', function(data)) {
+			console.log(data.latitude)
+		}
+
 		//connection for recieving start position of the map
 		socket.on('app-startPos', function(data){
 			console.log('Recived start positions!')

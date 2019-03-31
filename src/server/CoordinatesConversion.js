@@ -8,4 +8,12 @@ function calculateHeight(startPos, endPos, maxY) {
 	return height
 }
 
-module.exports = {calculateWidth, calculateHeight}
+function mapOnGrid(startPos, pos, width, height) {
+	let deltaX = Math.abs(pos.long - startPos.long)
+	let deltaY = Math.abs(pos.lat - startPos.lat)
+	deltaX = deltaX / width
+	deltaY = deltaY / height
+	console.log(deltaX + " - " + deltaY)
+}
+
+module.exports = {calculateWidth, calculateHeight, mapOnGrid}

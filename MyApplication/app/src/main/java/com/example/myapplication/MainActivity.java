@@ -13,8 +13,9 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,23 +28,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-//import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-//import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.util.Locale;
-
 import static com.example.myapplication.Coordinates.latitudeToMeters;
 import static com.example.myapplication.Coordinates.longitudeToMeters;
 import static com.example.myapplication.Coordinates.metersToGeoPoint;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
-    //Socket testing
+    //Socket configurations
     private Socket socket;
-
+    private Button litterBtn;
+    private Button startBtn;
+    private Button endBtn;
+    private LatLng predictedLatLng;
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
@@ -92,21 +94,69 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         try {
             socket = IO.socket("http://10.154.141.170:3000");
             socket.connect();
-            String message = "Hello by app";
-            String data = "YOLOOOOO";
-            socket.emit("test-drone", data);
+            String message = "Connection from app!";
+            socket.emit("test-drone", message);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
-
-
-
-
-
         //Usual android initial setup
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        //button handling
+        litterBtn = findViewById(R.id.btnAddLitter);
+        startBtn = findViewById(R.id.btnStart);
+        endBtn = findViewById(R.id.btnEnd);
+        litterBtn.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  JSONObject data = new JSONObject();
+                  try {
+                      data.put("latitude", predictedLatLng.latitude);
+                      data.put("longitude", predictedLatLng.longitude);
+
+                  } catch (JSONException e) {
+                      // TODO Auto-generated catch block
+                      e.printStackTrace();
+                  }
+                socket.emit("test-drone" , data);
+              }
+        });
+
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("latitude", predictedLatLng.latitude);
+                    data.put("longitude", predictedLatLng.longitude);
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                socket.emit("app-startPos" , data);
+            }
+        });
+
+        endBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("latitude", predictedLatLng.latitude);
+                    data.put("longitude", predictedLatLng.longitude);
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                socket.emit("app-endPos" , data);
+            }
+        });
+
 
         //Setting up sensorManagers and GPS managers
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -175,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     Log.d("Accuracy", "onLocationResult:" + location.getAccuracy());
                     //Plotting the updated kalman point on the map as a GREEN circle
                     GeoPoint predicted = metersToGeoPoint(kalmanFilterLon.getPoint(), kalmanFilterLat.getPoint());
-                    LatLng predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
+                    predictedLatLng = new LatLng(predicted.Latitude, predicted.Longitude);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(predictedLatLng);
                     mMap.animateCamera(cameraUpdate);
                     addCircleToMap(predictedLatLng, Color.GREEN, 0.5);
@@ -236,6 +286,5 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 .strokeColor(Color.TRANSPARENT)
                 .radius(size); //meters
         mMap.addCircle(circleOptions);
-        //Circle cirle = mMap.addCircle(circleOptions?);
     }
 }

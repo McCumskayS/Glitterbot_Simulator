@@ -73,7 +73,7 @@ class MapRenderer {
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 		this.container.addChild(litterSprite);
 	}
-	
+
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
 			this.container.removeChild(this.litterArray[y][x]);
@@ -118,9 +118,9 @@ function setButtons(mapRenderer) {
 }
 
 function randAddLitter(mapRenderer) {
-	var timer = Math.floor(Math.random() * 10001) + 5000;
-	mapRenderer.addLitter();
-	setTimeout(randAddLitter, timer, mapRenderer);
+	//var timer = Math.floor(Math.random() * 10001) + 5000;
+	//mapRenderer.addLitter();
+	//setTimeout(randAddLitter, timer, mapRenderer);
 
 }
 
@@ -133,13 +133,11 @@ function main() {
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
-		console.log('it works for drone to move!');
    });
 
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
 	socket.on('rover-frontEnd', function(data) {
-		console.log(data);
 		mapRenderer.moveRover(data);
     randAddLitter(mapRenderer);
 

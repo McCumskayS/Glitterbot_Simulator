@@ -12,6 +12,16 @@ const engine = require('./roverPathFinding.js')
 		treeArray[i] = [];
 	}
 
+	var startPos = {
+		lat: 0,
+		long: 0
+	}
+
+	var endPos = {
+		lat: 0,
+		long: 0
+	}
+
 
 
 var litterArrayLocations = [];
@@ -38,7 +48,6 @@ function sender(io) {
     socket.on('grid-channel', function(data) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-			console.log('但还是看老大哈萨克的'+litterArrayLocations);
 		});
 
 		//receive the location of the drone and send back the path
@@ -65,6 +74,20 @@ function sender(io) {
 		// copy tre array from front end to back end
 		socket.on('treeArray', function(data) {
 			treeArray = data.slice();
+		});
+
+		//connection for recieving start position of the map
+		socket.on('app-startPos', function(data){
+			console.log('Recived start positions!');
+			startPos.lat = data.latitude;
+			startPos.long = data.longitude;
+		});
+
+		//connection for recieving end position of the map
+		socket.on('app-endPos', function(data){
+			console.log('Recived end position');
+			endPos.lat = data.latitude;
+			endPos.long = data.longitude;
 		});
 
   });

@@ -28,22 +28,41 @@ class DroneSprite {
 	}
 
 	//TODO boundry system!
-	moveTo(position) {
+	moveTo(data) {
 			this.waiting = false;
-			var targetX = position.coordinates.posx;
-			var targetY = position.coordinates.posy;
+			// var targetX = position.coordinates.posx;
+			// var targetY = position.coordinates.posy;
+			//
+			// var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+			// distanceSquared = Math.abs(distanceSquared);
+	    // var distance = Math.sqrt(distanceSquared);
+			// var time = distance/this.animSpeed;
+			// this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
+			// 	onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+			//
+			// this.posx = targetX;
+			// this.posy = targetY;
+			// console.log("Drone: " +this.posx+"-"+this.posy);
+			// this.waiting = true;
 
-			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
-			distanceSquared = Math.abs(distanceSquared);
-	    var distance = Math.sqrt(distanceSquared);
-			var time = distance/this.animSpeed;
-			this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
-				onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+			var path = data;
+			for (var i = 0; i < path.length; i++) {
+				var targetX = path[i][0];
+				var targetY = path[i][1];
 
-			this.posx = targetX;
-			this.posy = targetY;
-			console.log("Drone: " +this.posx+"-"+this.posy);
+				var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+				distanceSquared = Math.abs(distanceSquared);
+		    var distance = Math.sqrt(distanceSquared);
+				var time = distance/this.animSpeed;
+				this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
+					onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+
+				this.posx = targetX;
+				this.posy = targetY;
+				console.log("Drone: " +this.posx+"-"+this.posy);
+			}
 			this.waiting = true;
+
 	}
 
 	//A function that make the drone search litter in the surrounding area
@@ -52,7 +71,7 @@ class DroneSprite {
 		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
 			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
 				//First check the boundary
-				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
+				if (posx+i >= this.width || posy+j >= this.height || posx+i < 0 || posy+j < 0) {
 					continue;
 				}
 				else {
@@ -65,8 +84,6 @@ class DroneSprite {
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
-						console.log('tree x: '+(posy+j)+'tree y: '+(posx+i));
-
 					}
 				}
 

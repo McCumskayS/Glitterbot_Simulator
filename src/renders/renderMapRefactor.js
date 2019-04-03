@@ -1,4 +1,5 @@
 const socket = io();
+var count = 0;
 
 class MapRenderer {
 	constructor(container) {
@@ -34,18 +35,21 @@ class MapRenderer {
 			this.treeArray[i] = [];
 			this.litterArrayLocations[i] = [];
 
-			for (var j = 0; j < this.col; j++) {
-
+			for (var j = 0; j < this.row; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
-					if (num > 0.99) {
+					// add trees to the map
+					if (num > 0.98) {
 						var terrain = new PIXI.Sprite(this.treeTexture);
 						this.grid[i][j] = "tree";
-					} else {
+						count = count + 1;
+						console.log('count value : '+count);
+						console.log('tree position x: ' + j);
+						console.log('tree position y: ' + i);
+		      } else {
 						var terrain = new PIXI.Sprite(this.grassTexture);
 						this.grid[i][j] = "grass";
 					}
-
 				} else {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";
@@ -55,6 +59,7 @@ class MapRenderer {
 				terrain.y = Math.floor(j % this.row) * this.squareSize;
 	      this.container.addChild(terrain);
 				this.litterArray[i][j] = null;
+				this.treeArray[i][j] = 0;
 			}
 		}
 
@@ -97,8 +102,8 @@ class MapRenderer {
 		this.roverSprite.followPath(path);
 	}
 
-	moveDrone(x, y) {
-		this.droneSprite.moveTo(x, y);
+	moveDrone(data) {
+		this.droneSprite.moveTo(data);
 	}
 
 }
@@ -116,7 +121,6 @@ function droneRoutine(m) {
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
 		setTimeout(droneRoutine, 1000, m);
-
 }
 
 function setButtons(mapRenderer) {
@@ -129,14 +133,16 @@ function randAddLitter(mapRenderer) {
 	var timer = Math.floor(Math.random() * 10001) + 5000;
 	mapRenderer.addLitter();
 	setTimeout(randAddLitter, timer, mapRenderer);
-
 }
 
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
 
-	droneRoutine(mapRenderer);
+	// the aim is to scan the area before it starts exploration
+	mapRenderer.moveDrone([[0,0]]);
+
+	setTimeout(droneRoutine(mapRenderer), 1000);
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
@@ -148,7 +154,7 @@ function main() {
 	socket.on('rover-frontEnd', function(data) {
 		console.log(data);
 		mapRenderer.moveRover(data);
-    randAddLitter(mapRenderer);
+    //randAddLitter(mapRenderer);
 
 	});
 

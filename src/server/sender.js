@@ -80,9 +80,12 @@ function sender(io) {
 			treeArray = data.slice();
 		});
 
-		socket.on('test-drone', function(data)) {
-			console.log(data.latitude)
-		}
+		socket.on('test-drone', function(data) {
+			console.log('Litter poisiton recived!')
+			if (latLongWidth != 0) {
+				converter.mapOnGrid(startPos, data, latLongWidth, latLongHeight)
+			}
+		});
 
 		//connection for recieving start position of the map
 		socket.on('app-startPos', function(data){
@@ -98,11 +101,11 @@ function sender(io) {
 			endPos.long = data.longitude
 			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
 			//!!!!!!!!!!!!
-			width = converter.calculateWidth(startPos, endPos, grid.length)
-			height = converter.calculateHeight(startPos, endPos, grid[0].length)
+			latLongWidth = converter.calculateWidth(startPos, endPos, grid.length)
+			latLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)
 
-			console.console.log("Calculated width: " + width)
-			console.console.log("Calculated height: " + height)
+			console.log("Calculated width: " + latLongWidth)
+			console.log("Calculated height: " + latLongHeight)
 		});
   });
 }

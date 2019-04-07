@@ -100,7 +100,4 @@ class DroneSprite {
 
 		}
 	}
-
-
-
 }

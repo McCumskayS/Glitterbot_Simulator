@@ -3,7 +3,7 @@ var count = 0;
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 20;
+		this.row = 30;
 		this.col = 30;
 		this.container = container;
 		this.squareSize = 20;
@@ -15,6 +15,8 @@ class MapRenderer {
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
+		//phone drone stuff
+		this.phoneDrone = null;
 
 		// new features
 		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
@@ -24,6 +26,7 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 
 
 	}
@@ -65,6 +68,7 @@ class MapRenderer {
 
 		this.roverSprite = new RoverSprite(this.container, this.squareSize, this);
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
+		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 
 		 console.log('grid size at front end, height: ' + this.grid.length);
@@ -110,6 +114,10 @@ class MapRenderer {
 		this.droneSprite.moveTo(data);
 	}
 
+	movePhoneDrone(data) {
+		this.phoneDrone.moveTo(data);
+	}
+
 }
 
 function startRoutine(m) {
@@ -134,33 +142,35 @@ function setButtons(mapRenderer) {
 }
 
 function randAddLitter(mapRenderer) {
-	var timer = Math.floor(Math.random() * 10001) + 5000;
-	mapRenderer.addLitter();
-	setTimeout(randAddLitter, timer, mapRenderer);
+	//var timer = Math.floor(Math.random() * 10001) + 5000;
+	//mapRenderer.addLitter();
+	//setTimeout(randAddLitter, timer, mapRenderer);
 }
 
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
-
 	// the aim is to scan the area before it starts exploration
 	mapRenderer.moveDrone([[0,0]]);
-
+  
 	droneRoutine(mapRenderer);
+
+	socket.on('phone', function(data) {
+		console.log('received data for the phone drone');
+		mapRenderer.movePhoneDrone(data);
+	});
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
-		console.log('it works for drone to move!');
    });
 
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
 	socket.on('rover-frontEnd', function(data) {
-		console.log(data);
 		mapRenderer.moveRover(data);
+		//What is this doing here??
     //randAddLitter(mapRenderer);
 	});
-
 }
 
 document.addEventListener('DOMContentLoaded', main);

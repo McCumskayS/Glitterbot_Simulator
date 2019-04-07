@@ -1,5 +1,6 @@
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
+const converter = require('./CoordinatesConversion.js')
 
 var scanRadius = 0;
 var grid = [];
@@ -9,14 +10,27 @@ var direction = 'right'
 var treeArray = [];
 var litterArray = [];
 var utilityArray = [];
+var startPos = {
+  lat: 0,
+	long: 0
+}
+var endPos = {
+	lat: 0,
+	long: 0
+}
+var latLongWidth = 0;
+var latLongHeight = 0;
 
 var litterArrayLocations = [];
 var roverX;
 var roverY;
+
 var width;
 var height;
 
 var count = 0;
+var clientId;
+
 
 function sender(io) {
 
@@ -41,9 +55,8 @@ function sender(io) {
 
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-
 		socket.on('rover-frontEnd', function(data) {
-
+			console.log('ID of the client is: ' + clientId);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
 			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
@@ -54,8 +67,11 @@ function sender(io) {
 		});
 
     socket.on('grid-channel', function(data) {
+			clientId = socket.id;
+			console.log('ID of the client is: ' + clientId);
 			grid = data.grid;
 			litterArrayLocations = data.litter;
+
 			height = grid.length;
 			console.log('the height of the grid: '+grid.length);
 			width = grid[0].length;
@@ -110,6 +126,43 @@ function sender(io) {
 			//console.log('x:'+data.x+'  y:'+data.y);
 		});
 
+		socket.on('mobile-channel', function(data) {
+			console.log('position received: ' + data.latitude + ' - ' + data.longitude)
+			let pos = {lat: data.latitude, long: data.longitude}
+			const gridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);
+			if (gridCoordinates.x > grid.length || gridCoordinates.x < 0) {
+				return;
+			}
+			else if (gridCoordinates.y > grid[0].length || gridCoordinates.y < 0) {
+				return;
+			} else {
+				//SEND COORDIANTES TO THE PURPLE DOT
+				//socket.emit('phone', gridCoordinates);
+				io.to(clientId).emit('phone', gridCoordinates);
+				console.log('YOLOOOOOO');
+			}
+		});
+
+		//connection for recieving start position of the map
+		socket.on('app-startPos', function(data){
+			console.log('Recived start positions')
+			startPos.lat = data.latitude
+			startPos.long = data.longitude
+		});
+
+		//connection for recieving end position of the map
+		socket.on('app-endPos', function(data){
+			console.log('Recived end position')
+			endPos.lat = data.latitude
+			endPos.long = data.longitude
+			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
+			//!!!!!!!!!!!!
+			latLongWidth = converter.calculateWidth(startPos, endPos, grid.length)
+			latLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)
+
+			console.log("Calculated width: " + latLongWidth)
+			console.log("Calculated height: " + latLongHeight)
+		});
   });
 }
 

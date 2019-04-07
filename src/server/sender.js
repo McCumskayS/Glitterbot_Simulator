@@ -33,26 +33,7 @@ var clientId;
 
 
 function sender(io) {
-
-	// test to know whtat the AStar function returns if failing to move to the target
-	// var PF = require('pathfinding');
-	// var Grid = new PF.Grid(5,5);
-	// for (var i = 0; i < 5; i++) {
-	// 	Grid.setWalkableAt(i, 3, false);
-	// }
-	// var finder = new PF.AStarFinder({
-	// 	allowDiagonal: false
-	// });
-	//
-	// var path = finder.findPath(0, 0, 4, 4, Grid);
-	// console.log('what the function would return failure: '+path.length);
-
-	 // var set = [[1,2], [3,4], [5,6], [7,8]];
-	 // console.log(set[0][0]);
-
 	//When a client connect display message on console
-
-
 	io.on('connection', function(socket){
 	  console.log('a user connected');
 		socket.on('rover-frontEnd', function(data) {
@@ -81,8 +62,6 @@ function sender(io) {
 			if (count == 0) {
 				treeArray = initializeTreeArray();
 				createUtility();
-				// initialize the grid map
-				// grid = droneEngine.initialisation(height, width);
 				console.log('successfully initialize grid');
 				count = 2;
 			}
@@ -91,25 +70,16 @@ function sender(io) {
 		// copy tre array from front end to back end
 		socket.on('treeArray', function(data) {
 			treeArray = data;
-			// for (var i = 0; i < treeArray.length; i++) {
-			//  	console.log(treeArray[i]);
-			// }
-			// console.log('卡拉斯打开撒娇的撒');
 		});
 
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
-			// console.log(data.state)
-			// console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
-			// console.log('scan radius: ' + scanRadius);
-
 			if (data.state != false) {
 				var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
 				console.log('the length of targets array: '+ targets.length);
 
 				var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
-				//console.log('before engine check the length: '+grid.length);
 				var newdata = droneEngine.engine(currentLocation, targets, grid, direction);
 				direction = newdata.direction;
 				console.log('the direction next is: ' + direction);
@@ -120,10 +90,9 @@ function sender(io) {
 			}
 		});
 
-		// receive litter from the drone 
+		// receive litter from the drone
 		socket.on('litter-channel', function(data) {
 			litterArray = data;
-			//console.log('x:'+data.x+'  y:'+data.y);
 		});
 
 		socket.on('mobile-channel', function(data) {
@@ -136,8 +105,6 @@ function sender(io) {
 			else if (gridCoordinates.y > grid[0].length || gridCoordinates.y < 0) {
 				return;
 			} else {
-				//SEND COORDIANTES TO THE PURPLE DOT
-				//socket.emit('phone', gridCoordinates);
 				io.to(clientId).emit('phone', gridCoordinates);
 				console.log('YOLOOOOOO');
 			}

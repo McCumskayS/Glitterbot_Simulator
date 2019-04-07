@@ -152,7 +152,7 @@ function main() {
 	mapRenderer.drawGrid();
 	// the aim is to scan the area before it starts exploration
 	mapRenderer.moveDrone([[0,0]]);
-  
+
 	droneRoutine(mapRenderer);
 
 	socket.on('phone', function(data) {
@@ -161,6 +161,9 @@ function main() {
 	});
 
 	socket.on('drone-frontEnd', function(data) {
+		for (let i = 0; i < data.length; i++) {
+			console.log(data[i]);
+		}
 		mapRenderer.moveDrone(data);
    });
 

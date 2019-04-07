@@ -60,9 +60,7 @@ class DroneSprite {
 					}
 					this.posx = targetX;
 					this.posy = targetY;
-
-					this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
-						onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+					this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 
 					this.searchLitter(this.posx, this.posy);
 

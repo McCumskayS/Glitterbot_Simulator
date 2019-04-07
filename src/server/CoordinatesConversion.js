@@ -14,6 +14,7 @@ function mapOnGrid(startPos, pos, width, height) {
 	deltaX = deltaX / width
 	deltaY = deltaY / height
 	console.log(deltaX + " - " + deltaY)
+	return {x: deltaX, y: deltaY}
 }
 
 module.exports = {calculateWidth, calculateHeight, mapOnGrid}

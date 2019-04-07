@@ -2,7 +2,7 @@ const socket = io();
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 20;
+		this.row = 30;
 		this.col = 30;
 		this.container = container;
 		this.squareSize = 20;
@@ -14,6 +14,8 @@ class MapRenderer {
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
+		//phone drone stuff
+		this.phoneDrone = null;
 
 		// new features
 		this.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');
@@ -23,6 +25,7 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 
 	}
 
@@ -52,6 +55,7 @@ class MapRenderer {
 
 		this.roverSprite = new RoverSprite(this.container, this.squareSize, this);
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
+		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 
 	}
@@ -93,6 +97,10 @@ class MapRenderer {
 		this.droneSprite.moveTo(x, y);
 	}
 
+	movePhoneDrone(data) {
+		this.phoneDrone.moveTo(data);
+	}
+
 }
 
 function startRoutine(m) {
@@ -127,9 +135,12 @@ function randAddLitter(mapRenderer) {
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
-
-
 	droneRoutine(mapRenderer);
+
+	socket.on('phone', function(data) {
+		console.log('received data for the phone drone');
+		mapRenderer.movePhoneDrone(data);
+	});
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
@@ -139,10 +150,9 @@ function main() {
 	startRoutine(mapRenderer);
 	socket.on('rover-frontEnd', function(data) {
 		mapRenderer.moveRover(data);
-    randAddLitter(mapRenderer);
-
+		//What is this doing here??
+    //randAddLitter(mapRenderer);
 	});
-
 }
 
 document.addEventListener('DOMContentLoaded', main);

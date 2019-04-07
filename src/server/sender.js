@@ -31,15 +31,15 @@ const converter = require('./CoordinatesConversion.js')
 var litterArrayLocations = [];
 var roverX;
 var roverY;
+var clientId;
 
 function sender(io) {
 
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-
 		socket.on('rover-frontEnd', function(data) {
-
+			console.log('ID of the client is: ' + clientId);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
 			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
@@ -50,21 +50,23 @@ function sender(io) {
 		});
 
     socket.on('grid-channel', function(data) {
+			clientId = socket.id;
+			console.log('ID of the client is: ' + clientId);
 			grid = data.grid;
 			litterArrayLocations = data.litter;
 		});
 
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
-			console.log(data.state)
-			console.log(data.coordinates.posx+"-"+data.coordinates.posy);
+			//console.log(data.state)
+			//console.log(data.coordinates.posx+"-"+data.coordinates.posy);
 			scanRadius = data.scanRadius;
-			console.log('scan radius: ' + scanRadius);
+			//console.log('scan radius: ' + scanRadius);
 
 			var newdata = routinePath(data.coordinates.posx, data.coordinates.posy, scanRadius, direction, prevDirection);
 			direction = newdata.direction;
 			prevDirection = newdata.prevDirection;
-			console.log('Direction: '+direction);
+			//console.log('Direction: '+direction);
 			if (data.state != false){
 				socket.emit('drone-frontEnd', newdata);
 			}
@@ -80,13 +82,26 @@ function sender(io) {
 			treeArray = data.slice();
 		});
 
-		socket.on('test-drone', function(data)) {
-			console.log(data.latitude)
-		}
+		socket.on('mobile-channel', function(data) {
+			console.log('position received: ' + data.latitude + ' - ' + data.longitude)
+			let pos = {lat: data.latitude, long: data.longitude}
+			const gridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);
+			if (gridCoordinates.x > grid.length || gridCoordinates.x < 0) {
+				return;
+			}
+			else if (gridCoordinates.y > grid[0].length || gridCoordinates.y < 0) {
+				return;
+			} else {
+				//SEND COORDIANTES TO THE PURPLE DOT
+				//socket.emit('phone', gridCoordinates);
+				io.to(clientId).emit('phone', gridCoordinates);
+				console.log('YOLOOOOOO');
+			}
+		});
 
 		//connection for recieving start position of the map
 		socket.on('app-startPos', function(data){
-			console.log('Recived start positions!')
+			console.log('Recived start positions')
 			startPos.lat = data.latitude
 			startPos.long = data.longitude
 		});
@@ -98,11 +113,11 @@ function sender(io) {
 			endPos.long = data.longitude
 			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
 			//!!!!!!!!!!!!
-			width = converter.calculateWidth(startPos, endPos, grid.length)
-			height = converter.calculateHeight(startPos, endPos, grid[0].length)
+			latLongWidth = converter.calculateWidth(startPos, endPos, grid.length)
+			latLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)
 
-			console.console.log("Calculated width: " + width)
-			console.console.log("Calculated height: " + height)
+			console.log("Calculated width: " + latLongWidth)
+			console.log("Calculated height: " + latLongHeight)
 		});
   });
 }
@@ -110,7 +125,7 @@ function sender(io) {
 function routinePath(posx, posy, scanRadius, direction, prevDirection) {
 	var width = 29;
 	var height = 19;
-	console.log('from server: '+posx+'-'+posy);
+	//console.log('from server: '+posx+'-'+posy);
 	var currentX = posx;
 	var currentY = posy;
 	var movement = scanRadius

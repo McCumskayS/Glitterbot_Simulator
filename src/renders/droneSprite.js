@@ -15,8 +15,8 @@ class DroneSprite {
 		this.droneTimeline = new TimelineLite();
 		//add new parameters
 		this.grid = mapGrid;
-		this.width = row-1;
-		this.height = column-1;
+		this.width = column;
+		this.height = row;
 		//camera system parameters
 		this.lens = 5;
 		this.droneHeight = 4;
@@ -25,34 +25,59 @@ class DroneSprite {
 		this.treeArray = treeArray;
 		this.searchLitter = this.searchLitter.bind(this);
 		this.waiting = true;
+
 	}
 
 	//TODO boundry system!
-	moveTo(position) {
-			this.waiting = false;
-			var targetX = position.coordinates.posx;
-			var targetY = position.coordinates.posy;
+	moveTo(data) {
+			// var targetX = position.coordinates.posx;
+			// var targetY = position.coordinates.posy;
+			//
+			// var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+			// distanceSquared = Math.abs(distanceSquared);
+	    // var distance = Math.sqrt(distanceSquared);
+			// var time = distance/this.animSpeed;
+			// this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
+			// 	onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+			//
+			// this.posx = targetX;
+			// this.posy = targetY;
+			// console.log("Drone: " +this.posx+"-"+this.posy);
+			// this.waiting = true;
+			if (this.waiting) {
+				this.waiting = false;
+				var path = data;
+				for (var i = 0; i < path.length; i++) {
+					var targetX = path[i][0];
+					var targetY = path[i][1];
 
-			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
-			distanceSquared = Math.abs(distanceSquared);
-	    var distance = Math.sqrt(distanceSquared);
-			var time = distance/this.animSpeed;
-			this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
-				onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
+					var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
+					distanceSquared = Math.abs(distanceSquared);
+			    var distance = Math.sqrt(distanceSquared);
+					var time = distance/this.animSpeed;
+					if (this.posx == 0 && this.posy == 0) {
+						this.searchLitter(this.posx, this.posy);
+					}
+					this.posx = targetX;
+					this.posy = targetY;
+					this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 
-			this.posx = targetX;
-			this.posy = targetY;
-			console.log("Drone: " +this.posx+"-"+this.posy);
-			this.waiting = true;
+					this.searchLitter(this.posx, this.posy);
+
+					console.log("Drone: " +this.posx+"-"+this.posy);
+				}
+			}
 	}
 
 	//A function that make the drone search litter in the surrounding area
 	searchLitter(posx, posy) {
+		//testting waiting boolean
+		this.waiting = true;
 		console.log(posx+'-'+posy);
 		for (let i = -this.scanRadius; i <= this.scanRadius; i++) {
 			for (let j = -this.scanRadius; j <= this.scanRadius; j++) {
 				//First check the boundary
-				if (posx+i > this.width || posy+j > this.height || posx+i < 0 || posy+j < 0) {
+				if (posx+i >= this.width || posy+j >= this.height || posx+i < 0 || posy+j < 0) {
 					continue;
 				}
 				else {
@@ -65,15 +90,12 @@ class DroneSprite {
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
-
+						//console.log('卡拉斯打开撒娇的撒');
 					}
 				}
-
+					//console.log("scanradius i" + i + "scanradius j" + j);
 			}
 
 		}
 	}
-
-
-
 }

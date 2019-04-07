@@ -1,4 +1,5 @@
 const socket = io();
+var count = 0;
 
 class MapRenderer {
 	constructor(container) {
@@ -27,29 +28,41 @@ class MapRenderer {
 		this.moveDrone = this.moveDrone.bind(this);
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 
+
 	}
 
 	drawGrid() {
-		for (var i = 0; i < this.col; i++) {
+		for (var i = 0; i < this.row; i++) {
 			this.grid[i] = [];
 			this.litterArray[i] = [];
 			this.treeArray[i] = [];
 			this.litterArrayLocations[i] = [];
-			for (var j = 0; j < this.col; j++) {
 
+			for (var j = 0; j < this.col; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
-					var terrain = new PIXI.Sprite(this.grassTexture);
-					this.grid[i][j] = "grass";
+					// add trees to the map
+					if (num > 0.94 && i != 0 && j != 0) {
+						var terrain = new PIXI.Sprite(this.treeTexture);
+						this.grid[i][j] = "tree";
+						count = count + 1;
+						console.log('count value : '+count);
+						console.log('tree position x: ' + j);
+						console.log('tree position y: ' + i);
+		      } else {
+						var terrain = new PIXI.Sprite(this.grassTexture);
+						this.grid[i][j] = "grass";
+					}
 				} else {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";
 				}
 				terrain.anchor.set(0.5, 0.5);
-				terrain.x = Math.floor(i % this.col) * this.squareSize;
-				terrain.y = Math.floor(j % this.row) * this.squareSize;
+				terrain.x = Math.floor(j % this.col) * this.squareSize;
+				terrain.y = Math.floor(i % this.row) * this.squareSize;
 	      this.container.addChild(terrain);
 				this.litterArray[i][j] = null;
+				this.treeArray[i][j] = 0;
 			}
 		}
 
@@ -58,6 +71,10 @@ class MapRenderer {
 		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 
+		 console.log('grid size at front end, height: ' + this.grid.length);
+		 console.log('grid size at front end, width: ' + this.grid[0].length);
+		 console.log('tree Array size at front end, height: ' + this.treeArray.length);
+		 console.log('tree Array size at front end, width: ' + this.treeArray[0].length);
 	}
 
 	addLitter() {
@@ -93,8 +110,8 @@ class MapRenderer {
 		this.roverSprite.followPath(path);
 	}
 
-	moveDrone(x, y) {
-		this.droneSprite.moveTo(x, y);
+	moveDrone(data) {
+		this.droneSprite.moveTo(data);
 	}
 
 	movePhoneDrone(data) {
@@ -115,8 +132,7 @@ function droneRoutine(m) {
 	console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
-		setTimeout(droneRoutine, 1000, m);
-
+		setTimeout(droneRoutine, 5000, m);
 }
 
 function setButtons(mapRenderer) {
@@ -129,12 +145,14 @@ function randAddLitter(mapRenderer) {
 	//var timer = Math.floor(Math.random() * 10001) + 5000;
 	//mapRenderer.addLitter();
 	//setTimeout(randAddLitter, timer, mapRenderer);
-
 }
 
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
+	// the aim is to scan the area before it starts exploration
+	mapRenderer.moveDrone([[0,0]]);
+  
 	droneRoutine(mapRenderer);
 
 	socket.on('phone', function(data) {

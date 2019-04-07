@@ -29,17 +29,17 @@ class MapRenderer {
 	}
 
 	drawGrid() {
-		for (var i = 0; i < this.col; i++) {
+		for (var i = 0; i < this.row; i++) {
 			this.grid[i] = [];
 			this.litterArray[i] = [];
 			this.treeArray[i] = [];
 			this.litterArrayLocations[i] = [];
 
-			for (var j = 0; j < this.row; j++) {
+			for (var j = 0; j < this.col; j++) {
 				var num = Math.random();
 				if (num > 0.03) {
 					// add trees to the map
-					if (num > 0.98) {
+					if (num > 0.94 && i != 0 && j != 0) {
 						var terrain = new PIXI.Sprite(this.treeTexture);
 						this.grid[i][j] = "tree";
 						count = count + 1;
@@ -55,8 +55,8 @@ class MapRenderer {
 					this.grid[i][j] = "rock";
 				}
 				terrain.anchor.set(0.5, 0.5);
-				terrain.x = Math.floor(i % this.col) * this.squareSize;
-				terrain.y = Math.floor(j % this.row) * this.squareSize;
+				terrain.x = Math.floor(j % this.col) * this.squareSize;
+				terrain.y = Math.floor(i % this.row) * this.squareSize;
 	      this.container.addChild(terrain);
 				this.litterArray[i][j] = null;
 				this.treeArray[i][j] = 0;
@@ -67,6 +67,10 @@ class MapRenderer {
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 
+		 console.log('grid size at front end, height: ' + this.grid.length);
+		 console.log('grid size at front end, width: ' + this.grid[0].length);
+		 console.log('tree Array size at front end, height: ' + this.treeArray.length);
+		 console.log('tree Array size at front end, width: ' + this.treeArray[0].length);
 	}
 
 	addLitter() {
@@ -120,7 +124,7 @@ function droneRoutine(m) {
 	console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
-		setTimeout(droneRoutine, 1000, m);
+		setTimeout(droneRoutine, 5000, m);
 }
 
 function setButtons(mapRenderer) {
@@ -142,7 +146,7 @@ function main() {
 	// the aim is to scan the area before it starts exploration
 	mapRenderer.moveDrone([[0,0]]);
 
-	setTimeout(droneRoutine(mapRenderer), 1000);
+	droneRoutine(mapRenderer);
 
 	socket.on('drone-frontEnd', function(data) {
 		mapRenderer.moveDrone(data);
@@ -155,7 +159,6 @@ function main() {
 		console.log(data);
 		mapRenderer.moveRover(data);
     //randAddLitter(mapRenderer);
-
 	});
 
 }

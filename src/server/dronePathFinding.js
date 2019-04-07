@@ -8,14 +8,11 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   var droneX = currentLocation.x;
   var droneY = currentLocation.y;
 
-
-  if (droneX == 0 && droneY == 0) {
+  if (temp.length == 0) {
     height = grid.length;
     console.log('the value of height at dronePathFinding: '+ height);
     width = grid[0].length;
     console.log('the value of width at dronePathFinding: '+ width);
-    // initialize the grid map for future use
-    // gridBackUp = initializeGrid(height, width);
     temp = transformGrid();
   }
   // then update grid map by update the walkable places
@@ -24,8 +21,12 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   // // preserve the old map and for update
   // var gridBackUp = newGrid.clone();
 
-
   temp = setWalkable(targets, temp);
+  console.log('print the map before calculate: ');
+  for (var i = 0; i < temp.length; i++) {
+    console.log(temp[i]);
+  }
+
   // console.log('temp is : '+ temp);
   var candidateTargets = [];
   var candidatePaths = [];
@@ -60,31 +61,11 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   return newdata;
 }
 
-// initialize the grid map by setting the whole map unwalkable
-function initializeGrid(height, width) {
-  var grid = new PF.Grid(width, height);
-  for (var i = 0; i < width; i++) {
-    for (var j =  0; j < height; j++) {
-      grid.setWalkableAt(i, j, true);
-      console.log("grid!" + grid[i][j]);
-    }
-  }
-  return grid;
-}
-
-// set the positions walkable
-function setMapWalkable(targets, grid) {
-  for (var i = 0; i < targets.length; i++) {
-    grid.setWalkableAt(targets[i][0], targets[i][1], true);
-  }
-  return grid;
-}
-
 function transformGrid() {
   var temp = [];
   for (var i = 0; i < height; i++) {
     temp[i] = [];
-    for (var j =0; j < width; j++) {
+    for (var j = 0; j < width; j++) {
       temp[i][j] = 1;
     }
   }
@@ -165,18 +146,42 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
 function changeDirection(data, candidateTargets, width) {
   var direction = data.direction;
   var target = candidateTargets[data.index];
-  if ((target[0] == width-1 && direction == 'right') ||(target[0] == 0 && direction == 'left')) {
+
+  console.log('show direction before changing it: ' + direction);
+  console.log('show target position x: ' + target[0]);
+
+  if ((target[0] == width-1 && direction == 'right') || (target[0] == 0 && direction == 'left')) {
     direction = 'down';
   }
-  if (target[0] == width-1 && direction == 'down') {
+  else if (target[0] == width-1 && direction == 'down') {
     direction = 'left';
   }
-  if (target[0] == 0 && direction == 'left') {
+  else if (target[0] == 0 && direction == 'down') {
     direction = 'right';
   }
 
   return direction;
 }
+// initialize the grid map by setting the whole map unwalkable
+// function initializeGrid(height, width) {
+//   var grid = new PF.Grid(width, height);
+//   for (var i = 0; i < width; i++) {
+//     for (var j =  0; j < height; j++) {
+//       grid.setWalkableAt(i, j, true);
+//       console.log("grid!" + grid[i][j]);
+//     }
+//   }
+//   return grid;
+// }
 
+// // set the positions walkable
+// function setMapWalkable(targets, grid) {
+//   for (var i = 0; i < targets.length; i++) {
+//     grid.setWalkableAt(targets[i][0], targets[i][1], true);
+//   }
+//   return grid;
+// }
+
+// let the whole map be unwalkable by setting the grid value to be 1
 module.exports.engine = pathFindingEngine;
-module.exports.initialisation = initializeGrid;
+// module.exports.initialisation = initializeGrid;

@@ -83,7 +83,7 @@ class MapRenderer {
 			var row = Math.floor(Math.random()*(this.row));
 			var col = Math.floor(Math.random()*(this.col));
 		}
-		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == "rock"));
+		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == "rock") || (this.grid[row][col] == "tree"));
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
 		litterSprite.anchor.set(0.5, 0.5);
 		litterSprite.x = Math.floor(col % this.col) * this.squareSize;
@@ -124,8 +124,7 @@ function startRoutine(m) {
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
 		state: m.roverSprite.waiting});
 	console.log("sending to the server");
-  setTimeout(startRoutine, 5000, m);
-
+  setTimeout(startRoutine, 2000, m);
 }
 
 function droneRoutine(m) {
@@ -170,6 +169,7 @@ function main() {
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
 	socket.on('rover-frontEnd', function(data) {
+		console.log(data);
 		mapRenderer.moveRover(data);
 		//What is this doing here??
     //randAddLitter(mapRenderer);

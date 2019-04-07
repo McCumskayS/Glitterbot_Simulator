@@ -42,20 +42,21 @@ import static com.example.myapplication.Coordinates.metersToGeoPoint;
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
     //Socket configurations
     private Socket socket;
+
+    //button declerations
     private Button litterBtn;
     private Button startBtn;
     private Button endBtn;
+    //Latitude Longitude object
     private LatLng predictedLatLng;
 
+    //Sensor intialisation objects
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor rotation;
-
-    private TextView linearAccelerationText;
-    private TextView absoluteAccelerationText;
 
     private float[] rotationMatrix;
     private float[] rotationMatrixInv;
@@ -64,13 +65,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     boolean rotationMatrixCreated = false;
     boolean isKalmanInitialised = false;
-    String linearString;
-    String absoluteString;
 
     private KalmanFilterManager kalmanFilterLat;
     private KalmanFilterManager kalmanFilterLon;
     private GoogleMap mMap;
 
+    //Sets up initial settings for location requests.
     protected void createLocationRequest() {
         locationRequest = new LocationRequest();
         locationRequest.setInterval(0);
@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    //called to start location services
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -88,14 +89,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, getMainLooper());
     }
 
+    //Code that runs when the application is first run.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //socket testing
         try {
-            socket = IO.socket("http://10.154.141.170:3000");
+            socket = IO.socket("http://10.154.133.165:3000");
             socket.connect();
-            String message = "Connection from app!";
-            socket.emit("test-drone", message);
+            //String message = "Connection from app!";
+            //socket.emit("test-drone", message);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -109,14 +111,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         litterBtn = findViewById(R.id.btnAddLitter);
         startBtn = findViewById(R.id.btnStart);
         endBtn = findViewById(R.id.btnEnd);
+
         litterBtn.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
                   JSONObject data = new JSONObject();
                   try {
-                      data.put("latitude", predictedLatLng.latitude);
-                      data.put("longitude", predictedLatLng.longitude);
-
+                      data.put("latitude", latitudeToMeters(predictedLatLng.latitude));
+                      data.put("longitude", longitudeToMeters(predictedLatLng.longitude));
                   } catch (JSONException e) {
                       // TODO Auto-generated catch block
                       e.printStackTrace();
@@ -130,9 +132,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 JSONObject data = new JSONObject();
                 try {
-                    data.put("latitude", predictedLatLng.latitude);
-                    data.put("longitude", predictedLatLng.longitude);
-
+                   data.put("latitude", latitudeToMeters(predictedLatLng.latitude));
+                   data.put("longitude", longitudeToMeters(predictedLatLng.longitude));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -146,9 +147,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 JSONObject data = new JSONObject();
                 try {
-                    data.put("latitude", predictedLatLng.latitude);
-                    data.put("longitude", predictedLatLng.longitude);
-
+                    data.put("latitude", latitudeToMeters(predictedLatLng.latitude));
+                    data.put("longitude", longitudeToMeters(predictedLatLng.longitude));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -166,10 +166,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         rotation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, rotation, SensorManager.SENSOR_DELAY_NORMAL);
-
-        //Getting textViews
-        linearAccelerationText = findViewById(R.id.linearAcceleration);
-        absoluteAccelerationText = findViewById(R.id.absoluteAcceleration);
 
         //Creating the necessary array that will be used for the absolute acceleration calculations
         rotationMatrix = new float[16];
@@ -206,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     }
                 });
 
+        //when a location is recieved the code below is run.
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -230,29 +227,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     mMap.animateCamera(cameraUpdate);
                     addCircleToMap(predictedLatLng, Color.GREEN, 0.5);
 
+                    JSONObject data = new JSONObject();
+                    try {
+                        // data.put("latitude", latitudeToMeters(predictedLatLng.latitude));
+                        // data.put("longitude", longitudeToMeters(predictedLatLng.longitude));
+                        data.put("latitude" ,   kalmanFilterLat.getPoint());
+                        data.put("longitude" ,  kalmanFilterLon.getPoint());
+                    } catch (JSONException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    socket.emit("mobile-channel" , data);
+
                 }
             }
         };
         startLocationUpdates();
     }
 
+    //checks for changes in sensors and then runs the code.
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             System.arraycopy(event.values, 0, linearAcceleration, 0, event.values.length);
             if (rotationMatrixCreated) {
                 android.opengl.Matrix.multiplyMV(absoluteAcceleration, 0, rotationMatrixInv, 0 , linearAcceleration, 0);
-                //Setting the linear acceleration values in a string
-                linearString = "ax = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[0])
-                        + " ay = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[1])
-                        + " az = " + String.format(Locale.getDefault(), "%.3f", linearAcceleration[2]);
-                linearAccelerationText.setText(linearString);
-
-                //Setting the absolute acceleration values in a string
-                absoluteString = "ABS EAST = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[0])
-                        + " ABS NORTH = " + String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[1])
-                        + " ABS DOWN = " +  String.format(Locale.getDefault(), "%.3f", absoluteAcceleration[2]);
-                absoluteAccelerationText.setText(absoluteString);
 
                 //Kalman predict phase
                 if (isKalmanInitialised) {
@@ -274,11 +273,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //No need to do anything if accuracy changes
     }
 
+    //setup for google maps
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
     }
 
+    //adds circle to the map
     public void addCircleToMap(LatLng position, int color, double size) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(position)

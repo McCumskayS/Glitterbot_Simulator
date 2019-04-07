@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 public class KalmanFilterManager {
     private int gpsStandardDeviation = 1;
-    private double accelerometerDeviation = 0.2;
+    private double accelerometerDeviation = 0.8;
     private Long deltaTime;
     private Long prevTime;
     private Long currentTime;

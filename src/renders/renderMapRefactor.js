@@ -57,6 +57,8 @@ class MapRenderer {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";
 				}
+
+
 				terrain.anchor.set(0.5, 0.5);
 				terrain.x = Math.floor(j % this.col) * this.squareSize;
 				terrain.y = Math.floor(i % this.row) * this.squareSize;
@@ -80,8 +82,10 @@ class MapRenderer {
 	addLitter() {
 		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
 		do {
-			var row = Math.floor(Math.random()*(this.row));
-			var col = Math.floor(Math.random()*(this.col));
+			// var row = Math.floor(Math.random()*(this.row));
+			// var col = Math.floor(Math.random()*(this.col));
+			var row = 4;
+			var col = 0;
 		}
 		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == "rock") || (this.grid[row][col] == "tree"));
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
@@ -115,7 +119,7 @@ class MapRenderer {
 	}
 
 	movePhoneDrone(data) {
-		this.phoneDrone.moveTo(data);
+		this.phoneDrone.moveTo({x: 0, y: 3});
 	}
 
 }

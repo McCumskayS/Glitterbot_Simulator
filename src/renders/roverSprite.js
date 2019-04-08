@@ -1,6 +1,7 @@
 //Rover robot front end object handler
 //Authors: Zain Ali, Asad Mahmood
 //Date: 21/11/2018
+var purplePosition;
 
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
@@ -18,14 +19,21 @@ class RoverSprite {
 		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
+		this.purplePosition = {};
 	}
 
 	//Follows a path of nodes!
 	followPath(path) {
+		gridXY();
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i][0];
 			var targetY = path[i][1];
+
+			if (targetX == purplePosition.x && targetY == purplePosition.y) {
+				console.log('THIS MEANS THE ROVER RECALCULATES');
+				break;
+			}
 			this.posx = targetX;
 			this.posy = targetY;
 			this.roverTimeline.to(this.sprite, this.animSpeed,
@@ -41,6 +49,7 @@ class RoverSprite {
 			console.log("litter collected");
 		}
 	}
+
 
 	//The functions below this line will be used by the operator in case of overriding
 	//Check is rover can go over the next 'tile'
@@ -87,4 +96,12 @@ class RoverSprite {
 			console.log("Can't go there\n");
 		}
 	}*/
+}
+
+function gridXY () {
+		socket.on('gridCoordinates', function(data){
+			purplePosition = {x:0, y:3};
+			console.log('阿克琉斯大家哈上课的会撒娇的火辣上课');
+		});
+
 }

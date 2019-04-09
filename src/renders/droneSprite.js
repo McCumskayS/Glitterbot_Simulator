@@ -4,14 +4,16 @@
 
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(squareSize, container) {
+	constructor(squareSize, container, baseX, baseY) {
 		this.texture = PIXI.Texture.fromImage('./sprites/drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
+		this.sprite.x = baseX * squareSize;
+		this.sprite.y = baseY * squareSize;
 		this.sprite.anchor.set(0.5, 0.5);
 		this.container = container;
 		this.container.addChild(this.sprite);
-		this.posx = 0;
-		this.posy = 0;
+		this.posx = baseX;
+		this.posy = baseY;
 		this.animSpeed = 2;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();

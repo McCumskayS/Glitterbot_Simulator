@@ -3,18 +3,22 @@
 //Date: 21/11/2018
 
 class RoverSprite {
-	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(container, squareSize, mapRenderer) {
+	//Creates the rover sprite and adds it to the map at the base location
+	constructor(container, squareSize, mapRenderer, baseX, baseY) {
 		this.texture = PIXI.Texture.fromImage('./sprites/rover.png');
 		this.sprite = new PIXI.Sprite(this.texture);
+		this.sprite.x = baseX * squareSize;
+		this.sprite.y = baseY * squareSize;
 		this.sprite.anchor.set(0.5, 0.5);
 		this.container = container;
-		this.mapRenderer  = mapRenderer;
+		this.mapRenderer = mapRenderer;
 		this.roverTimeline = new TimelineLite();
 		this.squareSize = squareSize;
+		this.posx = baseX;
+		this.posy = baseY;
+		this.baseX = baseX;
+		this.baseY = baseY;
 		this.container.addChild(this.sprite);
-		this.posx = 0;
-		this.posy = 0;
 		this.capacity = 5;
 		this.animSpeed = 0.5;
 		this.waiting = true;
@@ -24,6 +28,8 @@ class RoverSprite {
 
 	//Follows a path of nodes!
 	followPath(path) {
+		console.log("from rover " + this.posx + this.posy);
+		console.log(this.posx + this.posy);
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i][0];
@@ -33,6 +39,9 @@ class RoverSprite {
 			this.roverTimeline.to(this.sprite, this.animSpeed,
 				{x:this.squareSize*targetX, y:this.squareSize*targetY,
 					onComplete:this.collectLitter, onCompleteParams: [this.posx, this.posy]});
+		}
+		if(this.posx === this.baseX && this.posy === this.baseY) {
+			this.capacity = 5;
 		}
 		this.waiting = true;
 	}
@@ -47,9 +56,6 @@ class RoverSprite {
 		}
 		else {
 			console.log("rover full, returning to base");
-			if(this.capacity === 0 && this.posx === 0 && this.posy === 0) {
-				this.capacity = 5;
-			}
 		}
 	}
 

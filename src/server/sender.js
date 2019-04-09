@@ -3,6 +3,8 @@ var grid = [];
 var litterArrayLocations = [];
 var roverX;
 var roverY;
+var baseX;
+var baseY;
 var capacity;
 
 function sender(io) {
@@ -15,8 +17,10 @@ function sender(io) {
 			console.log("rover is waiting: "+data.state);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
+			baseX = data.coordinates.basex;
+			baseY = data.coordinates.basey;
 			capacity = data.capacity;
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, capacity);
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, capacity, baseX, baseY);
 			console.log(path);
 			if (data.state != false) {
 				socket.emit('rover-frontEnd', path);

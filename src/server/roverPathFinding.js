@@ -1,10 +1,19 @@
 //function that calculates the h for all the litters
 var PF = require('pathfinding');
 
-function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity, baseX, baseY)  {
+function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity, baseX, baseY, battery)  {
 	var shortestPath = [];
 	var length = 1000000; //for now test
-	
+	var litterArrayCopy = []	
+	var foundPath = 0;
+		
+	for (var i = 0; i < litterArrayLocations.length; i++) {
+	for (var j = 0; j < litterArrayLocations[i].length; j++) {
+		litterArrayCopy[i] = [];
+		litterArrayCopy[i][j] = litterArrayLocations[i][j];
+		}
+	}
+		
 	if (capacity == 0) {
 		for (var k = 0; k < litterArrayLocations.length; k++) {
 			for (var l = 0; l < litterArrayLocations[k].length; l++) {
@@ -29,14 +38,31 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 				});
 				var path = finder.findPath(currentLocation.x, currentLocation.y, j, i, gridCopy);
 				if (path.length < length) {
-					shortestPath = path;
-					length = path.length;
+					var basePath = finder.findPath(j, i, baseX, baseY, gridCopy);
+					var	batteryToBase = pathBatteryUse(basePath);
+					console.log("basePath " + basePath);
+					console.log("batteryToBase " + batteryToBase);
+					if ((batteryToBase + pathBatteryUse(path)) <= battery) {
+						shortestPath = path;
+						length = path.length;
+						foundPath = 1;
+					}
 				}
 				litterArrayLocations[i][j] = 0;
-			}
+		
+		}
 		}
 	}
-	return shortestPath;
+	if (foundPath == 0) {
+		var temp = transformGrid(grid);
+		var gridCopy = new PF.Grid(temp);
+		var finder = new PF.AStarFinder({
+					allowDiagonal: true
+				});
+		return(finder.findPath(currentLocation.x, currentLocation.y, baseX, baseY, gridCopy));
+	} else {
+		return shortestPath;
+	}
 }
 
 function transformGrid(grid) {
@@ -52,6 +78,23 @@ function transformGrid(grid) {
 		}
 	}
 	return temp;
+}
+
+function pathBatteryUse(path) {
+	var batteryUse = 0;
+	for (var i = 1; i < path.length; i++) {
+		var x = path[i][0];
+		var y = path[i][1];
+		var prevX = path[i-1][0];
+		var prevY = path[i-1][1];
+		if(x == prevX || y == prevY) {
+			batteryUse = batteryUse + 10
+		}
+		else {
+			batteryUse = batteryUse + 15;
+		}
+	}
+	return batteryUse;
 }
 
 module.exports = pathFindingEngine;

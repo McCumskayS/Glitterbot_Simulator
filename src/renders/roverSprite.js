@@ -23,7 +23,7 @@ class RoverSprite {
 		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
-		this.battery = 100;
+		this.battery = 200;
 	}
 
 	//Follows a path of nodes!
@@ -31,9 +31,16 @@ class RoverSprite {
 		console.log("from rover " + this.posx + this.posy);
 		console.log(this.posx + this.posy);
 		this.waiting = false;
-		for (let i = 0; i < path.length; i++) {
+		for (let i = 1; i < path.length; i++) {
 			var targetX = path[i][0];
 			var targetY = path[i][1];
+			if(targetX == this.posx || targetY == this.posy) {
+				this.battery = this.battery - 10;
+			}
+			else {
+				this.battery = this.battery - 15;
+			}
+			console.log("battery: " + this.battery);
 			this.posx = targetX;
 			this.posy = targetY;
 			this.roverTimeline.to(this.sprite, this.animSpeed,
@@ -42,6 +49,7 @@ class RoverSprite {
 		}
 		if(this.posx === this.baseX && this.posy === this.baseY) {
 			this.capacity = 5;
+			this.battery = 200;
 		}
 		this.waiting = true;
 	}

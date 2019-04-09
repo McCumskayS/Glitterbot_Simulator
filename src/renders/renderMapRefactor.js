@@ -97,13 +97,13 @@ class MapRenderer {
 function startRoutine(m) {
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
-		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity});
+		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
 	console.log("sending to the server");
 	setTimeout(startRoutine, 5000, m);
 }
 
 function updateUI(m) {
-	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity;
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
 	setTimeout(updateUI, 1000, m);
 }

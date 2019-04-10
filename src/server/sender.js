@@ -31,7 +31,6 @@ function sender(io) {
 		socket.on('grid-channel', function(data) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-			console.log(litterArrayLocations);
 		})
 	});
 }

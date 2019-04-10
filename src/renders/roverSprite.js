@@ -31,30 +31,44 @@ class RoverSprite {
 		console.log("from rover " + this.posx + this.posy);
 		console.log(this.posx + this.posy);
 		this.waiting = false;
+
+		if(path.length <= 1){
+			this.waiting = true;
+		}
+
 		for (let i = 1; i < path.length; i++) {
 			var targetX = path[i][0];
 			var targetY = path[i][1];
-			if(targetX == this.posx || targetY == this.posy) {
-				this.battery = this.battery - 10;
-			}
-			else {
-				this.battery = this.battery - 15;
-			}
+
 			console.log("battery: " + this.battery);
-			this.posx = targetX;
-			this.posy = targetY;
+
 			this.roverTimeline.to(this.sprite, this.animSpeed,
 				{x:this.squareSize*targetX, y:this.squareSize*targetY,
-					onComplete:this.collectLitter, onCompleteParams: [this.posx, this.posy]});
+					onComplete:this.collectLitter, onCompleteParams: [this.posx, this.posy, targetX, targetY, path]});
 		}
-		if(this.posx === this.baseX && this.posy === this.baseY) {
+	}
+
+	collectLitter(posx, posy, targetX, targetY, path){
+
+		if(targetX == this.posx || targetY == this.posy) {
+			this.battery = this.battery - 10;
+		}
+		else {
+			this.battery = this.battery - 15;
+		}
+
+		posx = targetX;
+		posy = targetY;
+		this.posx = posx;
+		this.posy = posy;
+
+
+
+		if(posx === this.baseX && posy === this.baseY) {
 			this.capacity = 5;
 			this.battery = 200;
 		}
-		this.waiting = true;
-	}
 
-	collectLitter(posx, posy){
 		if (this.capacity > 0) {
 			console.log(posx+'-'+posy);
 			if (this.mapRenderer.removeLitter(posx, posy)) {
@@ -65,6 +79,12 @@ class RoverSprite {
 		else {
 			console.log("rover full, returning to base");
 		}
+
+		if(posx == path[path.length-1][0] && posy == path[path.length-1][1])
+		{
+			this.waiting = true;
+		}
+
 	}
 
 	//The functions below this line will be used by the operator in case of overriding

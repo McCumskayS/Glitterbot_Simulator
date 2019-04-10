@@ -4,16 +4,8 @@ var PF = require('pathfinding');
 function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity, baseX, baseY, battery)  {
 	var shortestPath = [];
 	var length = 1000000; //for now test
-	var litterArrayCopy = []	
 	var foundPath = 0;
-		
-	for (var i = 0; i < litterArrayLocations.length; i++) {
-	for (var j = 0; j < litterArrayLocations[i].length; j++) {
-		litterArrayCopy[i] = [];
-		litterArrayCopy[i][j] = litterArrayLocations[i][j];
-		}
-	}
-		
+
 	if (capacity == 0) {
 		for (var k = 0; k < litterArrayLocations.length; k++) {
 			for (var l = 0; l < litterArrayLocations[k].length; l++) {
@@ -26,8 +18,8 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 			}
 		}
 	}
-	
-	
+
+
 	for (var i = 0; i < litterArrayLocations.length; i++) {
 		for (var j = 0; j < litterArrayLocations[i].length; j++) {
 			if (litterArrayLocations[i][j] == 1) {
@@ -37,8 +29,11 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 					allowDiagonal: true
 				});
 				var path = finder.findPath(currentLocation.x, currentLocation.y, j, i, gridCopy);
+				var gridBatteryCopy = new PF.Grid(temp);
+
 				if (path.length < length) {
-					var basePath = finder.findPath(j, i, baseX, baseY, gridCopy);
+					console.log("j val : " + j + " i val: " + i + " base x : " + baseX + " base y : " + baseY);
+					var basePath = finder.findPath(j, i, baseX, baseY, gridBatteryCopy);
 					var	batteryToBase = pathBatteryUse(basePath);
 					console.log("basePath " + basePath);
 					console.log("batteryToBase " + batteryToBase);
@@ -49,7 +44,7 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 					}
 				}
 				litterArrayLocations[i][j] = 0;
-		
+
 		}
 		}
 	}

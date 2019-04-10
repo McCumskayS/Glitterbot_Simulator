@@ -105,7 +105,7 @@ function startRoutine(m) {
 function updateUI(m) {
 	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
-	setTimeout(updateUI, 1000, m);
+	setTimeout(updateUI, 100, m);
 }
 
 function setButtons(mapRenderer) {
@@ -130,11 +130,12 @@ function main() {
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
+	randAddLitter(mapRenderer);
+	updateUI(mapRenderer);
+
 	socket.on('rover-frontEnd', function(data) {
 		console.log(data);
 		mapRenderer.moveRover(data);
-    randAddLitter(mapRenderer);
-	updateUI(mapRenderer);
 	});
 
 }

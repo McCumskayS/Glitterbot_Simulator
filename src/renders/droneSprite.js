@@ -8,7 +8,7 @@ class DroneSprite {
 		this.container.addChild(this.sprite);
 		this.posx = 0;
 		this.posy = 0;
-		this.animSpeed = 2;
+		this.animSpeed = 1;
 		this.squareSize = squareSize;
 		this.droneTimeline = new TimelineLite();
 		//add new parameters
@@ -37,14 +37,13 @@ class DroneSprite {
 					var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
 					distanceSquared = Math.abs(distanceSquared);
 			    var distance = Math.sqrt(distanceSquared);
-					var time = distance/this.animSpeed;
 					if (this.posx == 0 && this.posy == 0) {
 						this.searchLitter(this.posx, this.posy);
 					}
 					this.posx = targetX;
 					this.posy = targetY;
-					this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 
+					this.droneTimeline.to(this.sprite, this.animSpeed, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 					this.searchLitter(this.posx, this.posy);
 				}
 			}

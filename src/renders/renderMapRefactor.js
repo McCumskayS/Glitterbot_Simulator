@@ -128,7 +128,7 @@ function startRoutine(m) {
 }
 
 function droneRoutine(m) {
-	console.log(m.droneSprite.waiting)
+	//console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
 		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
 		setTimeout(droneRoutine, 5000, m);

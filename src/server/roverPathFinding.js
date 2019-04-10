@@ -17,10 +17,11 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, gridCoor
 					shortestPath = path;
 					length = path.length;
 				}
-				litterArrayLocations[i][j] = 0;
+				//litterArrayLocations[i][j] = 0;
 			}
 		}
 	}
+
 	return shortestPath;
 }
 
@@ -29,9 +30,12 @@ function transformGrid(grid, gridCoordinates) {
 	for (var i = 0; i < grid.length; i++) {
 		temp[i] = [];
 		for (var j = 0; j < grid[i].length; j++) {
-			if (grid[i][j] == "grass" && i != gridCoordinates.x && j != gridCoordinates.y) {
+			if (grid[i][j] == "grass") {
 				temp[i][j] = 0;
 			} else {
+				temp[i][j] = 1;
+			}
+			if(j == gridCoordinates.x && i == gridCoordinates.y){
 				temp[i][j] = 1;
 			}
 		}

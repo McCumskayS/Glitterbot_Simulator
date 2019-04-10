@@ -3,8 +3,8 @@ var count = 0;
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 30;
-		this.col = 30;
+		this.row = 10;
+		this.col = 10;
 		this.container = container;
 		this.squareSize = 20;
 		this.grid = [];
@@ -82,10 +82,8 @@ class MapRenderer {
 	addLitter() {
 		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
 		do {
-			// var row = Math.floor(Math.random()*(this.row));
-			// var col = Math.floor(Math.random()*(this.col));
-			var row = 4;
-			var col = 0;
+			var row = Math.floor(Math.random()*(this.row));
+			var col = Math.floor(Math.random()*(this.col));
 		}
 		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == "rock") || (this.grid[row][col] == "tree"));
 		var litterSprite = new PIXI.Sprite(this.litterTexture);
@@ -119,7 +117,7 @@ class MapRenderer {
 	}
 
 	movePhoneDrone(data) {
-		this.phoneDrone.moveTo({x: 0, y: 3});
+		this.phoneDrone.moveTo(data);
 	}
 
 }

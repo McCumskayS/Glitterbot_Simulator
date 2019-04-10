@@ -24,7 +24,7 @@ class RoverSprite {
 
 	//Follows a path of nodes!
 	followPath(path) {
-		gridXY();
+		purplePosition = {x:0, y:3};
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i][0];
@@ -44,10 +44,7 @@ class RoverSprite {
 	}
 
 	collectLitter(posx, posy){
-		console.log(posx+'-'+posy);
-		if (this.mapRenderer.removeLitter(posx, posy)) {
-			console.log("litter collected");
-		}
+		this.mapRenderer.removeLitter(posx, posy)
 	}
 
 
@@ -100,8 +97,7 @@ class RoverSprite {
 
 function gridXY () {
 		socket.on('gridCoordinates', function(data){
-			purplePosition = {x:0, y:3};
-			console.log('阿克琉斯大家哈上课的会撒娇的火辣上课');
+			purplePosition = {x:data.x, y:data.y};
 		});
 
 }

@@ -10,9 +10,9 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
 
   if (temp.length == 0) {
     height = grid.length;
-    console.log('the value of height at dronePathFinding: '+ height);
+    //console.log('the value of height at dronePathFinding: '+ height);
     width = grid[0].length;
-    console.log('the value of width at dronePathFinding: '+ width);
+    //console.log('the value of width at dronePathFinding: '+ width);
     temp = transformGrid();
   }
   // then update grid map by update the walkable places
@@ -22,10 +22,6 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   // var gridBackUp = newGrid.clone();
 
   temp = setWalkable(targets, temp);
-  console.log('print the map before calculate: ');
-  for (var i = 0; i < temp.length; i++) {
-    console.log(temp[i]);
-  }
 
   // console.log('temp is : '+ temp);
   var candidateTargets = [];

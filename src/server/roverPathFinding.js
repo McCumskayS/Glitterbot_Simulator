@@ -1,13 +1,13 @@
 //function that calculates the h for all the litters
 var PF = require('pathfinding');
 
-function pathFindingEngine(litterArrayLocations, currentLocation, grid)  {
+function pathFindingEngine(litterArrayLocations, currentLocation, grid, gridCoordinates)  {
 	var shortestPath = [];
 	var length = 1000000; //for now test
 	for (var i = 0; i < litterArrayLocations.length; i++) {
 		for (var j = 0; j < litterArrayLocations[i].length; j++) {
 			if (litterArrayLocations[i][j] == 1) {
-				var temp = transformGrid(grid);
+				var temp = transformGrid(grid, gridCoordinates);
 				var gridCopy = new PF.Grid(temp);
 				var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -17,14 +17,15 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid)  {
 					shortestPath = path;
 					length = path.length;
 				}
-				litterArrayLocations[i][j] = 0;
+				//litterArrayLocations[i][j] = 0;
 			}
 		}
 	}
+
 	return shortestPath;
 }
 
-function transformGrid(grid) {
+function transformGrid(grid, gridCoordinates) {
 	var temp = [];
 	for (var i = 0; i < grid.length; i++) {
 		temp[i] = [];
@@ -32,6 +33,9 @@ function transformGrid(grid) {
 			if (grid[i][j] == "grass") {
 				temp[i][j] = 0;
 			} else {
+				temp[i][j] = 1;
+			}
+			if(j == gridCoordinates.x && i == gridCoordinates.y){
 				temp[i][j] = 1;
 			}
 		}

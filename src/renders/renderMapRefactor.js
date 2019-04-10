@@ -57,6 +57,8 @@ class MapRenderer {
 					var terrain = new PIXI.Sprite(this.rockTexture);
 					this.grid[i][j] = "rock";
 				}
+
+
 				terrain.anchor.set(0.5, 0.5);
 				terrain.x = Math.floor(j % this.col) * this.squareSize;
 				terrain.y = Math.floor(i % this.row) * this.squareSize;

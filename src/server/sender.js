@@ -1,12 +1,13 @@
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
 const converter = require('./CoordinatesConversion.js')
-
+var gridCoordinates;
+var purpleChange = false;
 var scanRadius = 0;
 var grid = [];
 // 0 for left and 1 for right
 var direction = 'right'
-// var prevDirection = 'left'
+//var prevDirection = 'left'
 var treeArray = [];
 var litterArray = [];
 var startPos = {
@@ -30,20 +31,28 @@ var height;
 var count = 0;
 var clientId;
 
+function roverPath(posx, posy) {
+  var path = engine(litterArrayLocations, {x:posx, y:posy}, grid, gridCoordinates);
+
+}
 
 function sender(io) {
 	//When a client connect display message on console
 	io.on('connection', function(socket){
 	  console.log('a user connected');
-		socket.on('rover-frontEnd', function(data) {
+
+    socket.on('rover-frontEnd', function(data) {
 			console.log('ID of the client is: ' + clientId);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid);
-			//console.log(path);
+      console.log('the position of the rover: '+ roverX+', '+roverY);
+      console.log('the truth of the litterArray: ' + litterArrayLocations);
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, {x:0, y:3});
+			console.log(path);
 			if (data.state != false) {
 				socket.emit('rover-frontEnd', path);
 			}
+
 		});
 
     socket.on('grid-channel', function(data) {
@@ -51,7 +60,6 @@ function sender(io) {
 			console.log('ID of the client is: ' + clientId);
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-
 			height = grid.length;
 			//console.log('the height of the grid: '+grid.length);
 			width = grid[0].length;
@@ -76,7 +84,6 @@ function sender(io) {
       var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
 
 			if (data.state != false) {
-
         if (direction != 'utility random') {
           var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
   				console.log('the length of targets array: '+ targets.length);
@@ -101,7 +108,7 @@ function sender(io) {
 		socket.on('mobile-channel', function(data) {
 			console.log('position received: ' + data.latitude + ' - ' + data.longitude)
 			let pos = {lat: data.latitude, long: data.longitude}
-			const gridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);
+			gridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);
 			if (gridCoordinates.x > grid.length || gridCoordinates.x < 0) {
 				return;
 			}
@@ -109,6 +116,8 @@ function sender(io) {
 				return;
 			} else {
 				io.to(clientId).emit('phone', gridCoordinates);
+        io.to(clientId).emit('gridCoordinates', gridCoordinates);
+        purpleChange = true;
 				console.log('YOLOOOOOO');
 			}
 		});

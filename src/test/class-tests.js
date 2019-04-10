@@ -32,5 +32,14 @@ describe('DroneSprite class', function(){
 });
 
 describe('RoverSprite class', function(){
+  const connt = new PIXI.Container();
+  const mapRenderer = new MapRenderer(connt);
+  mapRenderer.drawGrid();
+	setButtons(mapRenderer);
+	setInterval(startRoutine, 5000, mapRenderer);
+  var rover = new RoverSprite(mapRenderer.grid,connt,20,mapRenderer);
 
+  it('RoverSprite animation speed should be 1.2',function(){
+    assert.equal(rover.animSpeed,1.2);
+  });
 });

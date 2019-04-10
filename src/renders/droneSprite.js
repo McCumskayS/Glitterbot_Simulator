@@ -1,5 +1,3 @@
-
-
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray) {
@@ -28,22 +26,7 @@ class DroneSprite {
 
 	}
 
-	//TODO boundry system!
 	moveTo(data) {
-			// var targetX = position.coordinates.posx;
-			// var targetY = position.coordinates.posy;
-			//
-			// var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
-			// distanceSquared = Math.abs(distanceSquared);
-	    // var distance = Math.sqrt(distanceSquared);
-			// var time = distance/this.animSpeed;
-			// this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,
-			// 	onComplete:this.searchLitter, onCompleteParams: [this.posx, this.posy]});
-			//
-			// this.posx = targetX;
-			// this.posy = targetY;
-			// console.log("Drone: " +this.posx+"-"+this.posy);
-			// this.waiting = true;
 			if (this.waiting) {
 				this.waiting = false;
 				var path = data;
@@ -63,8 +46,6 @@ class DroneSprite {
 					this.droneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY});
 
 					this.searchLitter(this.posx, this.posy);
-
-					console.log("Drone: " +this.posx+"-"+this.posy);
 				}
 			}
 	}
@@ -90,12 +71,10 @@ class DroneSprite {
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
-						//console.log('卡拉斯打开撒娇的撒');
 					}
 				}
-					//console.log("scanradius i" + i + "scanradius j" + j);
 			}
-
 		}
 	}
+
 }

@@ -1,5 +1,4 @@
 var PF = require('pathfinding');
-var girdBackUp = [];
 var height = 0;
 var width = 0;
 var temp = [];
@@ -11,24 +10,16 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
 
   if (temp.length == 0) {
     height = grid.length;
-    //console.log('the value of height at dronePathFinding: '+ height);
     width = grid[0].length;
-    //console.log('the value of width at dronePathFinding: '+ width);
     temp = transformGrid();
     // initialize utility array
     utilityInitialisation();
-    // console.log('the height of utility array: ' + utilityArray.length);
-    // console.log('the width of utility array: ' + utilityArray[0].length);
   }
 
   updateUtility(treeArray);
 
   temp = setWalkable(targets, temp);
-  // console.log('print the map before calculate: ');
-  // for (var i = 0; i < temp.length; i++) {
-  //   console.log(temp[i]);
-  // }
-  // console.log('temp is : '+ temp);
+
   var candidateTargets = [];
   var candidatePaths = [];
 
@@ -37,10 +28,8 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
     allowDiagonal: true
   });
   // console.log('target length: '+targets.length);
-
   for (var i = 0; i < targets.length; i++) {
     var newGrid = new PF.Grid(temp);
-
     var path = finder.findPath(droneX, droneY, targets[i][0], targets[i][1], newGrid);
     // console.log('the target x: '+targets[i][0]+'  the target y: '+targets[i][1])
     // console.log('the length for path '+i+' is: '+path.length);
@@ -53,12 +42,10 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
     }
   }
   // console.log('the number of path in engine: '+candidatePaths.length);
-
   // evaluate the candidate targets to get the best destination to go
   var data = evaluateTarget(candidateTargets, droneX, droneY, direction);
   data.direction = changeDirection(data, candidateTargets, width);
   var newdata = {path: candidatePaths[data.index], direction: data.direction};
-
   // all the points on the path shall minus 1 to remain unchanged according to the utility array value
   for (var i = 0; i < newdata.path.length; i++) {
     var path = newdata.path;
@@ -93,7 +80,7 @@ function utilityMovement(currentLocation, treeArray) {
   }
   console.log('candidate targets utility length: ' + candidateTargets.length);
   // calculate which candidate target is the farthest from the current position
-  var index = Math.floor(Math.random()*(candidateTargets.length + 1));
+  var index = Math.floor(Math.random()*(candidateTargets.length));
   var target = [candidateTargets[index][0], candidateTargets[index][1]];
   // var maxDistance = 0;
   // var target = [0,0];
@@ -133,7 +120,6 @@ function transformGrid() {
 
   return temp;
 }
-
 // initialize an empty utility array with the same height and width of the grid map
 function utilityInitialisation () {
   var utility = [];
@@ -144,7 +130,6 @@ function utilityInitialisation () {
     utilityArray[j] = utility;
   }
 }
-
 // update the utility array and set the tree positions to be -1 and the other positions +2
 function updateUtility (treeArray) {
   for (var i = 0; i < height; i++) {
@@ -173,7 +158,6 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
   var bestIndex = 0;
   var differenceX = 0;
   var differenceY = 0;
-
   // method 1
   for (var i = 0; i < candidateTargets.length; i++) {
     // from left to right
@@ -231,10 +215,8 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
 function changeDirection(data, candidateTargets, width) {
   var direction = data.direction;
   var target = candidateTargets[data.index];
-
   console.log('show direction before changing it: ' + direction);
   //console.log('show target position x: ' + target[0]);
-
   if ((target[0] == width-1 && direction == 'right') || (target[0] == 0 && direction == 'left')) {
     if (target[1] == height-1) {
       direction = 'utility random';

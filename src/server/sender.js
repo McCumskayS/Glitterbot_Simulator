@@ -135,7 +135,6 @@ function sender(io) {
 		});
   });
 }
-
 // move drone to the next position
 // returns both the path to the target and updated grid
 function moveDrone(posx, posy) {
@@ -150,18 +149,10 @@ function moveDrone(posx, posy) {
 	}
 
 }
-
 // a function that checks the scanning area and returns positions that can be the target
 function checkTrees(posx, posy, scanRadius) {
 	var targets = [];
-	// console.log('print tree array before check trees: \n');
-	// if (posx == 1 && posy == 1){
-	 // for (var i = 0; i < treeArray.length; i++) {
-	 // 	console.log(treeArray[i]);
-	 // }
-
 	console.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);
-
 	for (var i = -scanRadius; i <= scanRadius; i++) {
 		for (var j = -scanRadius; j <= scanRadius; j++) {
 			if (posx+i >= width || posy+j >= height || posx+i < 0 || posy+j < 0) {
@@ -174,7 +165,6 @@ function checkTrees(posx, posy, scanRadius) {
 
 	return targets;
 }
-
  //initialize treeArray to be a 2D array/
  function initializeTreeArray() {
  	var trees = [];

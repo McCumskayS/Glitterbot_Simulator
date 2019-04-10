@@ -9,7 +9,6 @@ var direction = 'right'
 // var prevDirection = 'left'
 var treeArray = [];
 var litterArray = [];
-var utilityArray = [];
 var startPos = {
   lat: 0,
 	long: 0
@@ -54,14 +53,13 @@ function sender(io) {
 			litterArrayLocations = data.litter;
 
 			height = grid.length;
-			console.log('the height of the grid: '+grid.length);
+			//console.log('the height of the grid: '+grid.length);
 			width = grid[0].length;
-			console.log('the width of the grid: '+grid[0].length);
+			//console.log('the width of the grid: '+grid[0].length);
 
 			// initialize the utilityArray for the first time it sends the information of grid map
 			if (count == 0) {
 				treeArray = initializeTreeArray();
-				createUtility();
 				console.log('successfully initialize grid');
 				count = 2;
 			}
@@ -75,17 +73,22 @@ function sender(io) {
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
 			scanRadius = data.scanRadius;
+      var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
+
 			if (data.state != false) {
-				var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
-				console.log('the length of targets array: '+ targets.length);
 
-				var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
-				var newdata = droneEngine.engine(currentLocation, targets, grid, direction);
-				direction = newdata.direction;
-				console.log('the direction next is: ' + direction);
-				var path = newdata.path;
+        if (direction != 'utility random') {
+          var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
+  				console.log('the length of targets array: '+ targets.length);
+  				var newdata = droneEngine.engine(currentLocation, targets, grid, direction, treeArray);
+  				direction = newdata.direction;
+  				console.log('the direction next is: ' + direction);
+  				var path = newdata.path;
+  				// console.log('the length of the drone path is: '+path.length);
+        } else {
+          var path = droneEngine.utility(currentLocation, treeArray);
+        }
 
-				console.log('the length of the drone path is: '+path.length);
 				socket.emit('drone-frontEnd', path);
 			}
 		});
@@ -133,19 +136,6 @@ function sender(io) {
   });
 }
 
-function createUtility() {
-	for (var i = 0; i < height; i++) {
-		utilityArray[i] = 0;
-		for (var j = 0; j < width; j++) {
-			if (grid[i][j] == 'tree') {
-				utilityArray[i][j] = -1;
-			} else {
-				utilityArray[i][j] = 0;
-			}
-		}
-	}
-}
-
 // move drone to the next position
 // returns both the path to the target and updated grid
 function moveDrone(posx, posy) {
@@ -166,9 +156,9 @@ function checkTrees(posx, posy, scanRadius) {
 	var targets = [];
 	// console.log('print tree array before check trees: \n');
 	// if (posx == 1 && posy == 1){
-	 for (var i = 0; i < treeArray.length; i++) {
-	 	console.log(treeArray[i]);
-	 }
+	 // for (var i = 0; i < treeArray.length; i++) {
+	 // 	console.log(treeArray[i]);
+	 // }
 
 	console.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);
 
@@ -178,7 +168,6 @@ function checkTrees(posx, posy, scanRadius) {
 					continue;
 			} else if (treeArray[posy+j][posx+i] != 1) {
 				targets.push([posx+i,posy+j]);
-				//console.log('the target x: '+(posx+i)+'  the target y: '+(posy+j));
 			}
 		}
 	}

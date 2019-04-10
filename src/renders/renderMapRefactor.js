@@ -3,7 +3,7 @@ var count = 0;
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 30;
+		this.row = 20;
 		this.col = 30;
 		this.container = container;
 		this.squareSize = 20;

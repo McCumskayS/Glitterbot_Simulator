@@ -3,30 +3,31 @@ var girdBackUp = [];
 var height = 0;
 var width = 0;
 var temp = [];
+var utilityArray = [];
 
-function pathFindingEngine(currentLocation, targets, grid, direction) {
+function pathFindingEngine(currentLocation, targets, grid, direction, treeArray) {
   var droneX = currentLocation.x;
   var droneY = currentLocation.y;
 
   if (temp.length == 0) {
     height = grid.length;
-    console.log('the value of height at dronePathFinding: '+ height);
+    //console.log('the value of height at dronePathFinding: '+ height);
     width = grid[0].length;
-    console.log('the value of width at dronePathFinding: '+ width);
+    //console.log('the value of width at dronePathFinding: '+ width);
     temp = transformGrid();
+    // initialize utility array
+    utilityInitialisation();
+    // console.log('the height of utility array: ' + utilityArray.length);
+    // console.log('the width of utility array: ' + utilityArray[0].length);
   }
-  // then update grid map by update the walkable places
-  // var newGrid = setMapWalkable(targets, gridBackUp);
-  // console.log('sgdkjhsaldhka'+newGrid);
-  // // preserve the old map and for update
-  // var gridBackUp = newGrid.clone();
+
+  updateUtility(treeArray);
 
   temp = setWalkable(targets, temp);
-  console.log('print the map before calculate: ');
-  for (var i = 0; i < temp.length; i++) {
-    console.log(temp[i]);
-  }
-
+  // console.log('print the map before calculate: ');
+  // for (var i = 0; i < temp.length; i++) {
+  //   console.log(temp[i]);
+  // }
   // console.log('temp is : '+ temp);
   var candidateTargets = [];
   var candidatePaths = [];
@@ -35,7 +36,6 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   var finder = new PF.AStarFinder({
     allowDiagonal: true
   });
-
   // console.log('target length: '+targets.length);
 
   for (var i = 0; i < targets.length; i++) {
@@ -44,13 +44,14 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
     var path = finder.findPath(droneX, droneY, targets[i][0], targets[i][1], newGrid);
     // console.log('the target x: '+targets[i][0]+'  the target y: '+targets[i][1])
     // console.log('the length for path '+i+' is: '+path.length);
+    utilityArray[targets[i][1]][targets[i][0]] -= 1;
+
     if (path.length != 0) {
       // store the targets and the corresponding path
       candidateTargets.push([targets[i][0], targets[i][1]]);
       candidatePaths.push(path);
     }
   }
-
   // console.log('the number of path in engine: '+candidatePaths.length);
 
   // evaluate the candidate targets to get the best destination to go
@@ -58,7 +59,67 @@ function pathFindingEngine(currentLocation, targets, grid, direction) {
   data.direction = changeDirection(data, candidateTargets, width);
   var newdata = {path: candidatePaths[data.index], direction: data.direction};
 
+  // all the points on the path shall minus 1 to remain unchanged according to the utility array value
+  for (var i = 0; i < newdata.path.length; i++) {
+    var path = newdata.path;
+    utilityArray[path[i][1]][path[i][0]] -= 1;
+  }
+
   return newdata;
+}
+
+function utilityMovement(currentLocation, treeArray) {
+  var droneX = currentLocation.x;
+  var droneY = currentLocation.y;
+  // update the utility array
+  updateUtility(treeArray);
+  // according to the utility array, calculate which is the next target
+  // rank the 2D utilityArray
+  var maxUtility = 0;
+  var candidateTargets = [];
+  // calculate the candidate targets with the highest utility value
+  for (var i = 0; i < height; i++) {
+    for (var j = 0; j < width; j++) {
+      if (utilityArray[i][j] > maxUtility) {
+        maxUtility = utilityArray[i][j];
+        if (candidateTargets.length != 0) {
+          candidateTargets = [];
+        }
+        candidateTargets.push([j,i]);
+      } else if (utilityArray[i][j] == maxUtility) {
+      candidateTargets.push([j,i]);
+      }
+    }
+  }
+  console.log('candidate targets utility length: ' + candidateTargets.length);
+  // calculate which candidate target is the farthest from the current position
+  var index = Math.floor(Math.random()*(candidateTargets.length + 1));
+  var target = [candidateTargets[index][0], candidateTargets[index][1]];
+  // var maxDistance = 0;
+  // var target = [0,0];
+  // for (var i = 0; i < candidateTargets.length; i++) {
+  //   var posx = candidateTargets[i][0];
+  //   var posy = candidateTargets[i][1];
+  //   var distance = Math.sqrt((droneX-posx)^2 + (droneY-posy)^2);
+  //   if (distance >= maxDistance) {
+  //     target = [posx, posy];
+  //     maxDistance = distance;
+  //   }
+  // }
+
+  // get path using AStarFinder
+  var finder = new PF.AStarFinder({
+    allowDiagonal: true
+  });
+
+  console.log('第三方的身份 the utility target should be: '+target[0]+ ', '+target[1]);
+  var utilityGrid = new PF.Grid(temp);
+  var path = finder.findPath(droneX, droneY, target[0], target[1], utilityGrid);
+  for (var i = 0; i < path.length; i++) {
+    utilityArray[path[i][1]][path[i][0]] = 0;
+  }
+
+  return path;
 }
 
 function transformGrid() {
@@ -71,6 +132,30 @@ function transformGrid() {
   }
 
   return temp;
+}
+
+// initialize an empty utility array with the same height and width of the grid map
+function utilityInitialisation () {
+  var utility = [];
+  for (var i = 0; i < width; i++) {
+    utility[i] = 0;
+  }
+  for (var j = 0; j < height; j++) {
+    utilityArray[j] = utility;
+  }
+}
+
+// update the utility array and set the tree positions to be -1 and the other positions +2
+function updateUtility (treeArray) {
+  for (var i = 0; i < height; i++) {
+    for (var j = 0; j < width; j++) {
+      if (treeArray[i][j] != 1) {
+        utilityArray[i][j] += 2;
+      } else {
+        utilityArray[i][j] = -1;
+      }
+    }
+  }
 }
 
 function setWalkable(targets, temp) {
@@ -148,10 +233,14 @@ function changeDirection(data, candidateTargets, width) {
   var target = candidateTargets[data.index];
 
   console.log('show direction before changing it: ' + direction);
-  console.log('show target position x: ' + target[0]);
+  //console.log('show target position x: ' + target[0]);
 
   if ((target[0] == width-1 && direction == 'right') || (target[0] == 0 && direction == 'left')) {
-    direction = 'down';
+    if (target[1] == height-1) {
+      direction = 'utility random';
+    } else {
+      direction = 'down';
+    }
   }
   else if (target[0] == width-1 && direction == 'down') {
     direction = 'left';
@@ -162,26 +251,6 @@ function changeDirection(data, candidateTargets, width) {
 
   return direction;
 }
-// initialize the grid map by setting the whole map unwalkable
-// function initializeGrid(height, width) {
-//   var grid = new PF.Grid(width, height);
-//   for (var i = 0; i < width; i++) {
-//     for (var j =  0; j < height; j++) {
-//       grid.setWalkableAt(i, j, true);
-//       console.log("grid!" + grid[i][j]);
-//     }
-//   }
-//   return grid;
-// }
 
-// // set the positions walkable
-// function setMapWalkable(targets, grid) {
-//   for (var i = 0; i < targets.length; i++) {
-//     grid.setWalkableAt(targets[i][0], targets[i][1], true);
-//   }
-//   return grid;
-// }
-
-// let the whole map be unwalkable by setting the grid value to be 1
 module.exports.engine = pathFindingEngine;
-// module.exports.initialisation = initializeGrid;
+module.exports.utility = utilityMovement;

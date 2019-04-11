@@ -23,7 +23,7 @@ class RoverSprite {
 		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
-		this.battery = 200;
+		this.battery = 1000;
 	}
 
 	//Follows a path of nodes!
@@ -66,7 +66,7 @@ class RoverSprite {
 
 		if(posx === this.baseX && posy === this.baseY) {
 			this.capacity = 5;
-			this.battery = 200;
+			this.battery = 1000;
 		}
 
 		if (this.capacity > 0) {

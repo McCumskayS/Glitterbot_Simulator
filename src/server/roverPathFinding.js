@@ -35,8 +35,6 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 					console.log("j val : " + j + " i val: " + i + " base x : " + baseX + " base y : " + baseY);
 					var basePath = finder.findPath(j, i, baseX, baseY, gridBatteryCopy);
 					var	batteryToBase = pathBatteryUse(basePath);
-					console.log("basePath " + basePath);
-					console.log("batteryToBase " + batteryToBase);
 					if ((batteryToBase + pathBatteryUse(path)) <= battery) {
 						shortestPath = path;
 						length = path.length;

@@ -1,7 +1,7 @@
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
 const converter = require('./CoordinatesConversion.js')
-var gridCoordinates;
+var gridCoordinates = {x:0, y:1};
 var purpleChange = false;
 var scanRadius = 0;
 var grid = [];
@@ -76,17 +76,19 @@ function sender(io) {
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
 			scanRadius = data.scanRadius;
+      var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
 			if (data.state != false) {
-				var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
-				//console.log('the length of targets array: '+ targets.length);
-
-				var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
-				var newdata = droneEngine.engine(currentLocation, targets, grid, direction);
-				direction = newdata.direction;
-				//console.log('the direction next is: ' + direction);
-				var path = newdata.path;
-
-				//console.log('the length of the drone path is: '+path.length);
+        if (direction != 'utility random') {
+          var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
+  				console.log('the length of targets array: '+ targets.length);
+  				var newdata = droneEngine.engine(currentLocation, targets, grid, direction, treeArray);
+  				direction = newdata.direction;
+  				console.log('the direction next is: ' + direction);
+  				var path = newdata.path;
+  				// console.log('the length of the drone path is: '+path.length);
+        } else {
+          var path = droneEngine.utility(currentLocation, treeArray);
+        }
 				socket.emit('drone-frontEnd', path);
 			}
 		});

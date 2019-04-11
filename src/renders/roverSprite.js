@@ -1,7 +1,7 @@
 //Rover robot front end object handler
 //Authors: Zain Ali, Asad Mahmood
 //Date: 21/11/2018
-var purplePosition;
+var purplePosition = {x:0, y:1};
 
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
@@ -24,7 +24,7 @@ class RoverSprite {
 
 	//Follows a path of nodes!
 	followPath(path) {
-		gridXY();
+		//gridXY();
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i][0];

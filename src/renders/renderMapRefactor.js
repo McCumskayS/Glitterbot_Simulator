@@ -6,8 +6,8 @@ class MapRenderer {
 		this.col = 30;
 		this.container = container;
 		this.squareSize = 20;
-		this.baseX = 1;
-		this.baseY = 2;
+		this.baseX = 15;
+		this.baseY = 10;
 		this.grid = [];
 		this.litterArray = [];
 		this.litterArrayLocations = [];

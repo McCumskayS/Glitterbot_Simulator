@@ -10,7 +10,6 @@ var direction = 'right'
 //var prevDirection = 'left'
 var treeArray = [];
 var litterArray = [];
-var utilityArray = [];
 var startPos = {
   lat: 0,
 	long: 0
@@ -32,11 +31,6 @@ var height;
 var count = 0;
 var clientId;
 
-function roverPath(posx, posy) {
-  var path = engine(litterArrayLocations, {x:posx, y:posy}, grid, gridCoordinates);
-
-}
-
 function sender(io) {
 	//When a client connect display message on console
 	io.on('connection', function(socket){
@@ -48,7 +42,7 @@ function sender(io) {
 			roverY = data.coordinates.posy;
       console.log('the position of the rover: '+ roverX+', '+roverY);
       console.log('the truth of the litterArray: ' + litterArrayLocations);
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, {x:0, y:3});
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, gridCoordinates);
 			console.log(path);
 			if (data.state != false) {
 				socket.emit('rover-frontEnd', path);
@@ -69,7 +63,6 @@ function sender(io) {
 			// initialize the utilityArray for the first time it sends the information of grid map
 			if (count == 0) {
 				treeArray = initializeTreeArray();
-				createUtility();
 				console.log('successfully initialize grid');
 				count = 2;
 			}
@@ -141,19 +134,6 @@ function sender(io) {
 			console.log("Calculated height: " + latLongHeight)
 		});
   });
-}
-
-function createUtility() {
-	for (var i = 0; i < height; i++) {
-		utilityArray[i] = 0;
-		for (var j = 0; j < width; j++) {
-			if (grid[i][j] == 'tree') {
-				utilityArray[i][j] = -1;
-			} else {
-				utilityArray[i][j] = 0;
-			}
-		}
-	}
 }
 
 // move drone to the next position

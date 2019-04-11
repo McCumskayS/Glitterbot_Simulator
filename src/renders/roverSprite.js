@@ -24,7 +24,7 @@ class RoverSprite {
 
 	//Follows a path of nodes!
 	followPath(path) {
-		purplePosition = {x:0, y:3};
+		gridXY();
 		this.waiting = false;
 		for (let i = 0; i < path.length; i++) {
 			var targetX = path[i][0];

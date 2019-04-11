@@ -3,8 +3,8 @@ var count = 0;
 
 class MapRenderer {
 	constructor(container) {
-		this.row = 30;
-		this.col = 30;
+		this.row = 10;
+		this.col = 10;
 		this.container = container;
 		this.squareSize = 20;
 		this.baseX = 15;

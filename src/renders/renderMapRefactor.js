@@ -54,7 +54,8 @@ class MapRenderer {
 		this.droneSprite = new DroneSprite(this.squareSize, this.container, this.baseX, this.baseY);
 		//Sending grid array and litter array, to delete in the future
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-	}
+		addDraggableLitter(this);
+	}	
 
 	addLitter() {
 		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
@@ -121,8 +122,36 @@ function randAddLitter(mapRenderer) {
 	console.log
 }
 
-function batteryLevel(){
-	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
+function addDraggableLitter(m) {
+		var litter = new PIXI.Sprite(m.litterTexture);
+		litter.interactive = true;
+		litter.buttonMode = true;
+		litter.anchor.set(0.5, 0.5);
+		litter
+			.on('mousedown', onDragStart(m))
+			.on('mouseup', onDragEnd(m))
+			.on('mouseupoutside', onDragEnd(m))
+			.on('mousemove', onDragMove(m));
+		litter.x = -1 * m.squareSize;
+		litter.y = m.squareSize;
+		m.container.addChild(litter);
+	}
+	
+function onDragStart(m) {
+	m.interactive = false;
+	this.dragging = true;
+}
+function onDragEnd(m) {
+	this.dragging = false;
+	m.interactive = true;
+}
+function onDragMove(m) {
+	if (this.dragging)
+    {
+        var newPosition = this.data.getLocalPosition(m.container);
+        this.position.x = newPosition.x;
+        this.position.y = newPosition.y;
+    }
 }
 
 function main() {

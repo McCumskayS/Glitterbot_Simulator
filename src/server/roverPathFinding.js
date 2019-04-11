@@ -7,16 +7,12 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 	var foundPath = 0;
 
 	if (capacity == 0) {
-		for (var k = 0; k < litterArrayLocations.length; k++) {
-			for (var l = 0; l < litterArrayLocations[k].length; l++) {
-				if(k == baseY && l == baseX) {
-					litterArrayLocations[k][l] = 1;
-				}
-				else {
-					litterArrayLocations[k][l] = 0;
-				}
-			}
-		}
+		var temp = transformGrid(grid);
+		var gridCopy = new PF.Grid(temp);
+		var finder = new PF.AStarFinder({
+					allowDiagonal: true
+				});
+		return(finder.findPath(currentLocation.x, currentLocation.y, baseX, baseY, gridCopy));
 	}
 
 

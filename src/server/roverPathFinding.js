@@ -7,7 +7,7 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, gridCoor
 	var foundPath = 0;
 
 	if (capacity == 0) {
-		var temp = transformGrid(grid);
+		var temp = transformGrid(grid, gridCoordinates);
 		var gridCopy = new PF.Grid(temp);
 		var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -19,7 +19,9 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, gridCoor
 	for (var i = 0; i < litterArrayLocations.length; i++) {
 		for (var j = 0; j < litterArrayLocations[i].length; j++) {
 			if (litterArrayLocations[i][j] == 1) {
+				console.log('阿什顿就撒的：'+ gridCoordinates.x);
 				var temp = transformGrid(grid, gridCoordinates);
+
 				var gridCopy = new PF.Grid(temp);
 				var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -44,7 +46,7 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, gridCoor
 		}
 	}
 	if (foundPath == 0) {
-		var temp = transformGrid(grid);
+		var temp = transformGrid(grid, gridCoordinates);
 		var gridCopy = new PF.Grid(temp);
 		var finder = new PF.AStarFinder({
 					allowDiagonal: true

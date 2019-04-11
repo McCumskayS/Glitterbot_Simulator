@@ -7,12 +7,15 @@ class MapRenderer {
 		this.col = 10;
 		this.container = container;
 		this.squareSize = 20;
+		this.baseX = 15;
+		this.baseY = 10;
 		this.grid = [];
 		this.litterArray = [];
 		this.litterArrayLocations = [];
 		this.grassTexture = PIXI.Texture.fromImage('./sprites/grass.png');
 		this.rockTexture = PIXI.Texture.fromImage('./sprites/rock.png');
 		this.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');
+		this.baseTexture = PIXI.Texture.fromImage('./sprites/base.png');
 		this.roverSprite = null;
 		this.droneSprite = null;
 		//phone drone stuff
@@ -39,7 +42,11 @@ class MapRenderer {
 			this.litterArrayLocations[i] = [];
 
 			for (var j = 0; j < this.col; j++) {
-				var num = Math.random();
+				if(j == this.baseX && i == this.baseY) {
+					var terrain = new PIXI.Sprite(this.baseTexture);
+					this.grid[i][j] = "base";
+        } else {
+           var num = Math.random();
 				if (num > 0.03) {
 					// add trees to the map
 					if (num > 0.94 && i != 0 && j != 0) {
@@ -54,29 +61,31 @@ class MapRenderer {
 						this.grid[i][j] = "grass";
 					}
 				} else {
-					var terrain = new PIXI.Sprite(this.rockTexture);
-					this.grid[i][j] = "rock";
+					var num = Math.random();
+					if (num > 0.03) {
+						var terrain = new PIXI.Sprite(this.grassTexture);
+						this.grid[i][j] = "grass";
+					} else {
+						var terrain = new PIXI.Sprite(this.rockTexture);
+						this.grid[i][j] = "rock";
+					}
 				}
-
-
+  
+       }
+				
 				terrain.anchor.set(0.5, 0.5);
 				terrain.x = Math.floor(j % this.col) * this.squareSize;
 				terrain.y = Math.floor(i % this.row) * this.squareSize;
-	      this.container.addChild(terrain);
+				this.container.addChild(terrain);
 				this.litterArray[i][j] = null;
 				this.treeArray[i][j] = 0;
 			}
 		}
 
-		this.roverSprite = new RoverSprite(this.container, this.squareSize, this);
-		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray);
+		this.roverSprite = new RoverSprite(this.container, this.squareSize, this, this.baseX, this.baseY);
+		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray, this.baseX, this.baseY);
 		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-
-		 console.log('grid size at front end, height: ' + this.grid.length);
-		 console.log('grid size at front end, width: ' + this.grid[0].length);
-		 console.log('tree Array size at front end, height: ' + this.treeArray.length);
-		 console.log('tree Array size at front end, width: ' + this.treeArray[0].length);
 	}
 
 	addLitter() {
@@ -123,8 +132,10 @@ class MapRenderer {
 }
 
 function startRoutine(m) {
-	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy},
-		state: m.roverSprite.waiting});
+
+	console.log(m.roverSprite.posx);
+	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
+		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
 	console.log("sending to the server");
   setTimeout(startRoutine, 2000, m);
 }
@@ -136,16 +147,26 @@ function droneRoutine(m) {
 		setTimeout(droneRoutine, 5000, m);
 }
 
+function updateUI(m) {
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
+	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
+	setTimeout(updateUI, 100, m);
+}
+
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
-	const genLitterBtn = document.getElementById("litterBtn");
+	const genLitterBtn = document.getElementById("litter");
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
 }
 
 function randAddLitter(mapRenderer) {
-	//var timer = Math.floor(Math.random() * 10001) + 5000;
-	//mapRenderer.addLitter();
-	//setTimeout(randAddLitter, timer, mapRenderer);
+	var timer = Math.floor(Math.random() * 20001) + 10000;
+	mapRenderer.addLitter();
+	setTimeout(randAddLitter, timer, mapRenderer);
+}
+
+function batteryLevel(){
+	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
 
 function main() {
@@ -170,11 +191,12 @@ function main() {
 
 	setButtons(mapRenderer);
 	startRoutine(mapRenderer);
+	randAddLitter(mapRenderer);
+	updateUI(mapRenderer);
+
 	socket.on('rover-frontEnd', function(data) {
 		console.log(data);
 		mapRenderer.moveRover(data);
-		//What is this doing here??
-    //randAddLitter(mapRenderer);
 	});
 }
 

@@ -24,6 +24,10 @@ var latLongHeight = 0;
 var litterArrayLocations = [];
 var roverX;
 var roverY;
+var baseX;
+var baseY;
+var capacity;
+var battery;
 
 var width;
 var height;
@@ -40,10 +44,16 @@ function sender(io) {
 			console.log('ID of the client is: ' + clientId);
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
+
       console.log('the position of the rover: '+ roverX+', '+roverY);
       console.log('the truth of the litterArray: ' + litterArrayLocations);
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, gridCoordinates);
+			baseX = data.coordinates.basex;
+			baseY = data.coordinates.basey;
+			capacity = data.capacity;
+			battery = data.battery;
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, gridCoordinates, capacity, baseX, baseY, battery);
 			console.log(path);
+
 			if (data.state != false) {
 				socket.emit('rover-frontEnd', path);
 			}
@@ -136,21 +146,6 @@ function sender(io) {
 			console.log("Calculated height: " + latLongHeight)
 		});
   });
-}
-
-// move drone to the next position
-// returns both the path to the target and updated grid
-function moveDrone(posx, posy) {
-	// check trees
-	var targets = checkTrees(posx, posy, scanRadius);
-	if (targets.length != 0) {
-		currentLocation = {x: posx, y: posy};
-		var data = droneEngine.pathFindingEngine(treeArray, currentLocation, target, grid, direction);
-		return data;
-	} else {
-		// start using utility function to set new target
-	}
-
 }
 
 // a function that checks the scanning area and returns positions that can be the target

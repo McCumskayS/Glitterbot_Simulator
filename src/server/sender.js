@@ -6,6 +6,7 @@ var roverY;
 var baseX;
 var baseY;
 var capacity;
+var battery;
 
 function sender(io) {
 	//When a client connect display message on console
@@ -20,7 +21,8 @@ function sender(io) {
 			baseX = data.coordinates.basex;
 			baseY = data.coordinates.basey;
 			capacity = data.capacity;
-			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, capacity, baseX, baseY);
+			battery = data.battery;
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, capacity, baseX, baseY, battery);
 			console.log(path);
 			if (data.state != false) {
 				socket.emit('rover-frontEnd', path);
@@ -29,7 +31,6 @@ function sender(io) {
 		socket.on('grid-channel', function(data) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
-			console.log(litterArrayLocations);
 		})
 	});
 }

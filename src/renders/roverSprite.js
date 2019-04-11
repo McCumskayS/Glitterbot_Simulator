@@ -30,7 +30,6 @@ class RoverSprite {
 
 	//Follows a path of nodes!
 	followPath(path) {
-
 		//gridXY();
 		this.waiting = false;
 
@@ -47,7 +46,7 @@ class RoverSprite {
 			}
 			this.posx = targetX;
 			this.posy = targetY;
-			
+
       console.log("battery: " + this.battery);
 
 			this.roverTimeline.to(this.sprite, this.animSpeed,
@@ -57,9 +56,8 @@ class RoverSprite {
 	}
 
 
-	collectLitter(posx, posy, targetX, targetY, path){
-
-		if(targetX == this.posx || targetY == this.posy) {
+	collectLitter (posx, posy, targetX, targetY, path) {
+		if (targetX == this.posx || targetY == this.posy) {
 			this.battery = this.battery - 10;
 		}
 		else {
@@ -71,9 +69,7 @@ class RoverSprite {
 		this.posx = posx;
 		this.posy = posy;
 
-
-
-		if(posx === this.baseX && posy === this.baseY) {
+		if (posx === this.baseX && posy === this.baseY) {
 			this.capacity = 5;
 			this.battery = 1000;
 		}
@@ -89,8 +85,7 @@ class RoverSprite {
 			console.log("rover full, returning to base");
 		}
 
-		if(posx == path[path.length-1][0] && posy == path[path.length-1][1])
-		{
+		if (posx == path[path.length-1][0] && posy == path[path.length-1][1]) {
 			this.waiting = true;
 		}
 

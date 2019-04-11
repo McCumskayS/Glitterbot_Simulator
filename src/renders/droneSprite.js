@@ -1,5 +1,3 @@
-
-
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY) {
@@ -56,7 +54,7 @@ class DroneSprite {
 			}
 	}
 
-	//A function that make the drone search litter in the surrounding area
+	// A function that make the drone search litter in the surrounding area
 	searchLitter(posx, posy) {
 		//testting waiting boolean
 		this.waiting = true;
@@ -69,20 +67,20 @@ class DroneSprite {
 				}
 				else {
 					//check whether there is a litter in the terrain
-					//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
 					if (this.litterArray[posy+j][posx+i] != null) {
 						socket.emit('litter-channel', {x:posx+i, y:posy+j});
+						//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));
 					}
 					// check whether there is a tree
 					if (this.grid[posy+j][posx+i] == "tree") {
 						this.treeArray[posy+j][posx+i] = 1;
 						socket.emit('treeArray', this.treeArray);
-						//console.log('卡拉斯打开撒娇的撒');
 					}
 				}
-					//console.log("scanradius i" + i + "scanradius j" + j);
 			}
 
 		}
 	}
+
+
 }

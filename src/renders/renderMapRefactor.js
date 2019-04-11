@@ -30,8 +30,6 @@ class MapRenderer {
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
-
-
 	}
 
 	drawGrid() {
@@ -41,12 +39,12 @@ class MapRenderer {
 			this.treeArray[i] = [];
 			this.litterArrayLocations[i] = [];
 
-			for (var j = 0; j < this.col; j++) {
-				if(j == this.baseX && i == this.baseY) {
-					var terrain = new PIXI.Sprite(this.baseTexture);
-					this.grid[i][j] = "base";
-        } else {
-           var num = Math.random();
+		for (var j = 0; j < this.col; j++) {
+			if (j == this.baseX && i == this.baseY) {
+				var terrain = new PIXI.Sprite(this.baseTexture);
+				this.grid[i][j] = "base";
+      } else {
+        var num = Math.random();
 				if (num > 0.03) {
 					// add trees to the map
 					if (num > 0.94 && i != 0 && j != 0) {
@@ -61,27 +59,19 @@ class MapRenderer {
 						this.grid[i][j] = "grass";
 					}
 				} else {
-					var num = Math.random();
-					if (num > 0.03) {
-						var terrain = new PIXI.Sprite(this.grassTexture);
-						this.grid[i][j] = "grass";
-					} else {
 						var terrain = new PIXI.Sprite(this.rockTexture);
 						this.grid[i][j] = "rock";
 					}
 				}
 
-       }
-
-				terrain.anchor.set(0.5, 0.5);
-				terrain.x = Math.floor(j % this.col) * this.squareSize;
-				terrain.y = Math.floor(i % this.row) * this.squareSize;
-				this.container.addChild(terrain);
-				this.litterArray[i][j] = null;
-				this.treeArray[i][j] = 0;
-			}
+			terrain.anchor.set(0.5, 0.5);
+			terrain.x = Math.floor(j % this.col) * this.squareSize;
+			terrain.y = Math.floor(i % this.row) * this.squareSize;
+			this.container.addChild(terrain);
+			this.litterArray[i][j] = null;
+			this.treeArray[i][j] = 0;
 		}
-
+	}
 		this.roverSprite = new RoverSprite(this.container, this.squareSize, this, this.baseX, this.baseY);
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray, this.baseX, this.baseY);
 		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);

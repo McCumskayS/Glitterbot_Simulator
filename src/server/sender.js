@@ -1,13 +1,12 @@
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
 const converter = require('./CoordinatesConversion.js')
+
 var gridCoordinates = {x:0, y:1};
 var purpleChange = false;
 var scanRadius = 0;
 var grid = [];
-// 0 for left and 1 for right
 var direction = 'right'
-//var prevDirection = 'left'
 var treeArray = [];
 var litterArray = [];
 var startPos = {
@@ -45,8 +44,6 @@ function sender(io) {
 			roverX = data.coordinates.posx;
 			roverY = data.coordinates.posy;
 
-      console.log('the position of the rover: '+ roverX+', '+roverY);
-      console.log('the truth of the litterArray: ' + litterArrayLocations);
 			baseX = data.coordinates.basex;
 			baseY = data.coordinates.basey;
 			capacity = data.capacity;
@@ -66,10 +63,7 @@ function sender(io) {
 			grid = data.grid;
 			litterArrayLocations = data.litter;
 			height = grid.length;
-			//console.log('the height of the grid: '+grid.length);
 			width = grid[0].length;
-			//console.log('the width of the grid: '+grid[0].length);
-
 			// initialize the utilityArray for the first time it sends the information of grid map
 			if (count == 0) {
 				treeArray = initializeTreeArray();
@@ -77,12 +71,10 @@ function sender(io) {
 				count = 2;
 			}
 		});
-
 		// copy tre array from front end to back end
 		socket.on('treeArray', function(data) {
 			treeArray = data;
 		});
-
 		//receive the location of the drone and send back the path
 		socket.on('drone-frontEnd', function(data) {
 			scanRadius = data.scanRadius;
@@ -102,7 +94,6 @@ function sender(io) {
 				socket.emit('drone-frontEnd', path);
 			}
 		});
-
 		// receive litter from the drone
 		socket.on('litter-channel', function(data) {
 			litterArray = data;
@@ -124,14 +115,12 @@ function sender(io) {
 				console.log('YOLOOOOOO');
 			}
 		});
-
 		//connection for recieving start position of the map
 		socket.on('app-startPos', function(data){
 			console.log('Recived start positions')
 			startPos.lat = data.latitude
 			startPos.long = data.longitude
 		});
-
 		//connection for recieving end position of the map
 		socket.on('app-endPos', function(data){
 			console.log('Recived end position')
@@ -146,13 +135,12 @@ function sender(io) {
 			console.log("Calculated height: " + latLongHeight)
 		});
   });
+
 }
 
 // a function that checks the scanning area and returns positions that can be the target
 function checkTrees(posx, posy, scanRadius) {
 	var targets = [];
-	// console.log('print tree array before check trees: \n');
-	// if (posx == 1 && posy == 1){
 	console.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);
 
 	for (var i = -scanRadius; i <= scanRadius; i++) {
@@ -161,7 +149,6 @@ function checkTrees(posx, posy, scanRadius) {
 					continue;
 			} else if (treeArray[posy+j][posx+i] != 1) {
 				targets.push([posx+i,posy+j]);
-				//console.log('the target x: '+(posx+i)+'  the target y: '+(posy+j));
 			}
 		}
 	}
@@ -179,7 +166,9 @@ function checkTrees(posx, posy, scanRadius) {
  	for (var i = 0; i < height; i++) {
  		treesArray[i] = trees;
  	}
- 	return treesArray;
- }
+
+  return treesArray;
+
+  }
 
 module.exports = sender;

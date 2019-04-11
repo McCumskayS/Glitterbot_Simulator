@@ -31,8 +31,7 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
   for (var i = 0; i < targets.length; i++) {
     var newGrid = new PF.Grid(temp);
     var path = finder.findPath(droneX, droneY, targets[i][0], targets[i][1], newGrid);
-    // console.log('the target x: '+targets[i][0]+'  the target y: '+targets[i][1])
-    // console.log('the length for path '+i+' is: '+path.length);
+
     utilityArray[targets[i][1]][targets[i][0]] -= 1;
 
     if (path.length != 0) {
@@ -41,7 +40,6 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
       candidatePaths.push(path);
     }
   }
-  // console.log('the number of path in engine: '+candidatePaths.length);
   // evaluate the candidate targets to get the best destination to go
   var data = evaluateTarget(candidateTargets, droneX, droneY, direction);
   data.direction = changeDirection(data, candidateTargets, width);
@@ -99,7 +97,7 @@ function utilityMovement(currentLocation, treeArray) {
     allowDiagonal: true
   });
 
-  console.log('第三方的身份 the utility target should be: '+target[0]+ ', '+target[1]);
+  console.log('the utility target should be: '+target[0]+ ', '+target[1]);
   var utilityGrid = new PF.Grid(temp);
   var path = finder.findPath(droneX, droneY, target[0], target[1], utilityGrid);
   for (var i = 0; i < path.length; i++) {

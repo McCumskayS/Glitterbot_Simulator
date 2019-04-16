@@ -2,8 +2,8 @@
 	* This is the Drone Sprite Class
 */
 class DroneSprite {
-	//Creates the rover sprite and adds it to the map at x:0;y:0
 	/**
+	  *	Creates the rover sprite and adds it to the map at x:0;y:0
 		* @constructor
 		* @param {integer} row - the number of rows of the map where the drone will be placed
 		* @param {integer} column - the number of columns of the map where the drone will be placed
@@ -48,7 +48,7 @@ class DroneSprite {
 	/**
 	* function that moves the rover in a specified x and y coordiante
 	* @function
-	* @param {Object[]} data - an array of coordinates objects 
+	* @param {Object[]} data - an array of coordinates objects
 	*/
 	moveTo(data) {
 			if (this.waiting) {

@@ -1,34 +1,36 @@
 {
-  "coverage": "0.59%",
-  "expectCount": 167,
-  "actualCount": 1,
+  "coverage": "8.67%",
+  "expectCount": 173,
+  "actualCount": 15,
   "files": {
     "src/renders/droneSprite.js": {
       "expectCount": 22,
-      "actualCount": 1,
+      "actualCount": 4,
       "undocumentLines": [
-        8,
-        9,
-        10,
-        14,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        23,
-        24,
-        25,
-        27,
-        28,
-        29,
-        30,
-        31,
-        33,
-        37,
-        63
+        45,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        56,
+        58,
+        59,
+        60,
+        61,
+        62,
+        64,
+        68,
+        94
       ]
+    },
+    "src/renders/ok.js": {
+      "expectCount": 6,
+      "actualCount": 6,
+      "undocumentLines": []
     },
     "src/renders/phoneDrone.js": {
       "expectCount": 13,
@@ -51,14 +53,8 @@
     },
     "src/renders/pixiSetup.js": {
       "expectCount": 5,
-      "actualCount": 0,
-      "undocumentLines": [
-        2,
-        3,
-        25,
-        34,
-        41
-      ]
+      "actualCount": 5,
+      "undocumentLines": []
     },
     "src/renders/renderMap.js": {
       "expectCount": 23,

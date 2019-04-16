@@ -288,6 +288,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/renders/ok.js",
+    "file/src/renders/ok.js.html",
+    "src/renders/ok.js",
+    "file"
+  ],
+  [
     "src/renders/phonedrone.js",
     "file/src/renders/phoneDrone.js.html",
     "src/renders/phoneDrone.js",

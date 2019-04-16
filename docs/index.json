@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "src/renders/droneSprite.js",
-    "content": "/**\n\t* @param {number} a - this is a value.\n\t* @param {number} b - this is a value.\n\t* @return {number} result of the sum value.\n*/\nclass DroneSprite {\n\t//Creates the rover sprite and adds it to the map at x:0;y:0\n\tconstructor(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY) {\n\t\tthis.texture = PIXI.Texture.fromImage('./sprites/drone.png');\n\t\tthis.sprite = new PIXI.Sprite(this.texture);\n\t\tthis.sprite.x = baseX * squareSize;\n\t\tthis.sprite.y = baseY * squareSize;\n\t\tthis.sprite.anchor.set(0.5, 0.5);\n\t\tthis.container = container;\n\t\tthis.container.addChild(this.sprite);\n\t\tthis.posx = baseX;\n\t\tthis.posy = baseY;\n\t\tthis.animSpeed = 2;\n\t\tthis.squareSize = squareSize;\n\t\tthis.droneTimeline = new TimelineLite();\n\t\tthis.battery = 100;\n\t\t//add new parameters\n\t\tthis.grid = mapGrid;\n\t\tthis.width = column;\n\t\tthis.height = row;\n\t\t//camera system parameters\n\t\tthis.lens = 5;\n\t\tthis.droneHeight = 4;\n\t\tthis.scanRadius = 5;\n\t\tthis.litterArray = litterArray;\n\t\tthis.treeArray = treeArray;\n\t\tthis.searchLitter = this.searchLitter.bind(this);\n\t\tthis.waiting = true;\n\t}\n\n\t//TODO boundry system!\n\tmoveTo(data) {\n\t\t\tif (this.waiting) {\n\t\t\t\tthis.waiting = false;\n\t\t\t\tvar path = data;\n\t\t\t\tfor (var i = 0; i < path.length; i++) {\n\t\t\t\t\tvar targetX = path[i][0];\n\t\t\t\t\tvar targetY = path[i][1];\n\n\t\t\t\t\tvar distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);\n\t\t\t\t\tdistanceSquared = Math.abs(distanceSquared);\n\t\t\t    var distance = Math.sqrt(distanceSquared);\n\t\t\t\t\tif (this.posx == 0 && this.posy == 0) {\n\t\t\t\t\t\tthis.searchLitter(this.posx, this.posy);\n\t\t\t\t\t}\n\t\t\t\t\tthis.posx = targetX;\n\t\t\t\t\tthis.posy = targetY;\n\t\t\t\t\tthis.droneTimeline.to(this.sprite, 1/this.animSpeed, {x:this.squareSize*targetX, y:this.squareSize*targetY});\n\n\t\t\t\t\tthis.searchLitter(this.posx, this.posy);\n\n\t\t\t\t\tconsole.log(\"Drone: \" +this.posx+\"-\"+this.posy);\n\t\t\t\t}\n\t\t\t}\n\t}\n\n\t// A function that make the drone search litter in the surrounding area\n\tsearchLitter(posx, posy) {\n\t\t//testting waiting boolean\n\t\tthis.waiting = true;\n\t\tconsole.log(posx+'-'+posy);\n\t\tfor (let i = -this.scanRadius; i <= this.scanRadius; i++) {\n\t\t\tfor (let j = -this.scanRadius; j <= this.scanRadius; j++) {\n\t\t\t\t//First check the boundary\n\t\t\t\tif (posx+i >= this.width || posy+j >= this.height || posx+i < 0 || posy+j < 0) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t//check whether there is a litter in the terrain\n\t\t\t\t\tif (this.litterArray[posy+j][posx+i] != null) {\n\t\t\t\t\t\tsocket.emit('litter-channel', {x:posx+i, y:posy+j});\n\t\t\t\t\t\t//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));\n\t\t\t\t\t}\n\t\t\t\t\t// check whether there is a tree\n\t\t\t\t\tif (this.grid[posy+j][posx+i] == \"tree\") {\n\t\t\t\t\t\tthis.treeArray[posy+j][posx+i] = 1;\n\t\t\t\t\t\tsocket.emit('treeArray', this.treeArray);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\n\t\t}\n\t}\n\n\n}\n",
+    "content": "/**\n\t* This is the Drone Sprite Class\n*/\nclass DroneSprite {\n\t//Creates the rover sprite and adds it to the map at x:0;y:0\n\t/**\n\t\t* @constructor\n\t\t* @param {integer} row - the number of rows of the map where the drone will be placed\n\t\t* @param {integer} column - the number of columns of the map where the drone will be placed\n\t\t* @param {2Darray} mapGrid - the 2D array that rapresents the map\n\t\t* @param {number} squareSize - the size of each cell of the map in pixels\n\t\t* @param {object} container - the pixiJS object container\n\t\t* @param {2Darray} litterArray - the 2D array that holds the positions of the litters\n\t\t* @param {2Darray} treeArray - the 2D array that holds the positiions of the trees\n\t\t* @param {integer} baseX - this X location of the base on the map\n\t\t* @param {integer} baseY - this Y location of the base on the map\n\t\t* @return {DroneSprite} an instance of the drone\n\t*/\n\tconstructor(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY) {\n    /**\n     * the texture of the drone\n     * @type {object}\n     * @private\n     */\n\t\tthis.texture = PIXI.Texture.fromImage('./sprites/drone.png');\n\t\t/**\n     * the sprite of the drone\n     * @type {object}\n     * @private\n     */\n\t\tthis.sprite = new PIXI.Sprite(this.texture);\n\t\t/**\n     * the pixel coordinate X of the sprite\n     * @type {number}\n     * @private\n     */\n\t\tthis.sprite.x = baseX * squareSize;\n\t\t/**\n     * the pixel coordinate Y of the sprite\n     * @type {number}\n     * @private\n     */\n\t\tthis.sprite.y = baseY * squareSize;\n\t\tthis.sprite.anchor.set(0.5, 0.5);\n\t\tthis.container = container;\n\t\tthis.container.addChild(this.sprite);\n\t\tthis.posx = baseX;\n\t\tthis.posy = baseY;\n\t\tthis.animSpeed = 2;\n\t\tthis.squareSize = squareSize;\n\t\tthis.droneTimeline = new TimelineLite();\n\t\tthis.battery = 100;\n\t\t//add new parameters\n\t\tthis.grid = mapGrid;\n\t\tthis.width = column;\n\t\tthis.height = row;\n\t\t//camera system parameters\n\t\tthis.lens = 5;\n\t\tthis.droneHeight = 4;\n\t\tthis.scanRadius = 5;\n\t\tthis.litterArray = litterArray;\n\t\tthis.treeArray = treeArray;\n\t\tthis.searchLitter = this.searchLitter.bind(this);\n\t\tthis.waiting = true;\n\t}\n\n\t//TODO boundry system!\n\tmoveTo(data) {\n\t\t\tif (this.waiting) {\n\t\t\t\tthis.waiting = false;\n\t\t\t\tvar path = data;\n\t\t\t\tfor (var i = 0; i < path.length; i++) {\n\t\t\t\t\tvar targetX = path[i][0];\n\t\t\t\t\tvar targetY = path[i][1];\n\n\t\t\t\t\tvar distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);\n\t\t\t\t\tdistanceSquared = Math.abs(distanceSquared);\n\t\t\t    var distance = Math.sqrt(distanceSquared);\n\t\t\t\t\tif (this.posx == 0 && this.posy == 0) {\n\t\t\t\t\t\tthis.searchLitter(this.posx, this.posy);\n\t\t\t\t\t}\n\t\t\t\t\tthis.posx = targetX;\n\t\t\t\t\tthis.posy = targetY;\n\t\t\t\t\tthis.droneTimeline.to(this.sprite, 1/this.animSpeed, {x:this.squareSize*targetX, y:this.squareSize*targetY});\n\n\t\t\t\t\tthis.searchLitter(this.posx, this.posy);\n\n\t\t\t\t\tconsole.log(\"Drone: \" +this.posx+\"-\"+this.posy);\n\t\t\t\t}\n\t\t\t}\n\t}\n\n\t// A function that make the drone search litter in the surrounding area\n\tsearchLitter(posx, posy) {\n\t\t//testting waiting boolean\n\t\tthis.waiting = true;\n\t\tconsole.log(posx+'-'+posy);\n\t\tfor (let i = -this.scanRadius; i <= this.scanRadius; i++) {\n\t\t\tfor (let j = -this.scanRadius; j <= this.scanRadius; j++) {\n\t\t\t\t//First check the boundary\n\t\t\t\tif (posx+i >= this.width || posy+j >= this.height || posx+i < 0 || posy+j < 0) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t//check whether there is a litter in the terrain\n\t\t\t\t\tif (this.litterArray[posy+j][posx+i] != null) {\n\t\t\t\t\t\tsocket.emit('litter-channel', {x:posx+i, y:posy+j});\n\t\t\t\t\t\t//console.log('litter candidate location: '+(posx+i)+' '+(posy+j));\n\t\t\t\t\t}\n\t\t\t\t\t// check whether there is a tree\n\t\t\t\t\tif (this.grid[posy+j][posx+i] == \"tree\") {\n\t\t\t\t\t\tthis.treeArray[posy+j][posx+i] = 1;\n\t\t\t\t\t\tsocket.emit('treeArray', this.treeArray);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\n\t\t}\n\t}\n\n\n}\n",
     "static": true,
     "longname": "/Users/zain/Documents/Uni/2ndYear/Glitterbot_Simulator/src/renders/droneSprite.js",
     "access": "public",
@@ -585,38 +585,8 @@
     "export": false,
     "importPath": "glitterbot/src/renders/droneSprite.js",
     "importStyle": null,
-    "description": "",
-    "lineNumber": 6,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "number"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "a",
-        "description": "this is a value."
-      },
-      {
-        "nullable": null,
-        "types": [
-          "number"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "b",
-        "description": "this is a value."
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "number"
-      ],
-      "spread": false,
-      "description": "result of the sum value."
-    },
+    "description": "This is the Drone Sprite Class",
+    "lineNumber": 4,
     "interface": false,
     "ignore": true
   },
@@ -630,9 +600,114 @@
     "static": false,
     "longname": "src/renders/droneSprite.js~DroneSprite#constructor",
     "access": "public",
-    "description": null,
-    "lineNumber": 8,
-    "undocument": true
+    "description": "",
+    "lineNumber": 19,
+    "unknown": [
+      {
+        "tagName": "@constructor",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "integer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "row",
+        "description": "the number of rows of the map where the drone will be placed"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "integer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "column",
+        "description": "the number of columns of the map where the drone will be placed"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "2Darray"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "mapGrid",
+        "description": "the 2D array that rapresents the map"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "squareSize",
+        "description": "the size of each cell of the map in pixels"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "container",
+        "description": "the pixiJS object container"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "2Darray"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "litterArray",
+        "description": "the 2D array that holds the positions of the litters"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "2Darray"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "treeArray",
+        "description": "the 2D array that holds the positiions of the trees"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "integer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "baseX",
+        "description": "this X location of the base on the map"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "integer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "baseY",
+        "description": "this Y location of the base on the map"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "DroneSprite"
+      ],
+      "spread": false,
+      "description": "an instance of the drone"
+    }
   },
   {
     "__docId__": 51,
@@ -641,14 +716,16 @@
     "memberof": "src/renders/droneSprite.js~DroneSprite",
     "static": false,
     "longname": "src/renders/droneSprite.js~DroneSprite#texture",
-    "access": "public",
-    "description": null,
-    "lineNumber": 9,
-    "undocument": true,
+    "access": "private",
+    "description": "the texture of the drone",
+    "lineNumber": 25,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "object"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -658,14 +735,16 @@
     "memberof": "src/renders/droneSprite.js~DroneSprite",
     "static": false,
     "longname": "src/renders/droneSprite.js~DroneSprite#sprite",
-    "access": "public",
-    "description": null,
-    "lineNumber": 10,
-    "undocument": true,
+    "access": "private",
+    "description": "the sprite of the drone",
+    "lineNumber": 31,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "object"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -677,7 +756,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#container",
     "access": "public",
     "description": null,
-    "lineNumber": 14,
+    "lineNumber": 45,
     "undocument": true,
     "type": {
       "types": [
@@ -694,7 +773,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#posx",
     "access": "public",
     "description": null,
-    "lineNumber": 16,
+    "lineNumber": 47,
     "undocument": true,
     "type": {
       "types": [
@@ -711,7 +790,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#posy",
     "access": "public",
     "description": null,
-    "lineNumber": 17,
+    "lineNumber": 48,
     "undocument": true,
     "type": {
       "types": [
@@ -728,7 +807,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#animSpeed",
     "access": "public",
     "description": null,
-    "lineNumber": 18,
+    "lineNumber": 49,
     "undocument": true,
     "type": {
       "types": [
@@ -745,7 +824,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#squareSize",
     "access": "public",
     "description": null,
-    "lineNumber": 19,
+    "lineNumber": 50,
     "undocument": true,
     "type": {
       "types": [
@@ -762,7 +841,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#droneTimeline",
     "access": "public",
     "description": null,
-    "lineNumber": 20,
+    "lineNumber": 51,
     "undocument": true,
     "type": {
       "types": [
@@ -779,7 +858,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#battery",
     "access": "public",
     "description": null,
-    "lineNumber": 21,
+    "lineNumber": 52,
     "undocument": true,
     "type": {
       "types": [
@@ -796,7 +875,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#grid",
     "access": "public",
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 54,
     "undocument": true,
     "type": {
       "types": [
@@ -813,7 +892,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#width",
     "access": "public",
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 55,
     "undocument": true,
     "type": {
       "types": [
@@ -830,7 +909,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#height",
     "access": "public",
     "description": null,
-    "lineNumber": 25,
+    "lineNumber": 56,
     "undocument": true,
     "type": {
       "types": [
@@ -847,7 +926,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#lens",
     "access": "public",
     "description": null,
-    "lineNumber": 27,
+    "lineNumber": 58,
     "undocument": true,
     "type": {
       "types": [
@@ -864,7 +943,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#droneHeight",
     "access": "public",
     "description": null,
-    "lineNumber": 28,
+    "lineNumber": 59,
     "undocument": true,
     "type": {
       "types": [
@@ -881,7 +960,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#scanRadius",
     "access": "public",
     "description": null,
-    "lineNumber": 29,
+    "lineNumber": 60,
     "undocument": true,
     "type": {
       "types": [
@@ -898,7 +977,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#litterArray",
     "access": "public",
     "description": null,
-    "lineNumber": 30,
+    "lineNumber": 61,
     "undocument": true,
     "type": {
       "types": [
@@ -915,7 +994,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#treeArray",
     "access": "public",
     "description": null,
-    "lineNumber": 31,
+    "lineNumber": 62,
     "undocument": true,
     "type": {
       "types": [
@@ -932,7 +1011,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#waiting",
     "access": "public",
     "description": null,
-    "lineNumber": 33,
+    "lineNumber": 64,
     "undocument": true,
     "type": {
       "types": [
@@ -951,7 +1030,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#moveTo",
     "access": "public",
     "description": null,
-    "lineNumber": 37,
+    "lineNumber": 68,
     "undocument": true,
     "params": [
       {
@@ -974,7 +1053,7 @@
     "longname": "src/renders/droneSprite.js~DroneSprite#searchLitter",
     "access": "public",
     "description": null,
-    "lineNumber": 63,
+    "lineNumber": 94,
     "undocument": true,
     "params": [
       {
@@ -995,6 +1074,177 @@
   {
     "__docId__": 76,
     "kind": "file",
+    "name": "src/renders/ok.js",
+    "content": "/**\n * this is BaseClass.\n */\n class BaseClass {\n  /**\n   * this is a method of BaseClass.\n\t * @memberOf module:ok\n   * @returns {string} a greeting.\n   */\n  baseMethod(){\n    return 'this is base method';\n  }\n}\n\n/**\n * this is MyClass.\n */\nclass MyClass extends BaseClass {\n  /**\n   * creates a instance of MyClass.\n   * @param {number} value - initial value.\n   */\n  constructor(value){\n    /**\n     * this is property of MyClass.\n     * @type {number}\n     * @private\n     */\n    this._property = value;\n  }\n\n  /**\n   * this is method of MyClass.\n   * @param {number} a - this is a 1st number value.\n   * @param {number} b - this is a 2nd number value.\n   * @returns {string} repeated Hello\n   */\n  method(a, b){\n    return 'Hello'.repeat((a + b) * this._property);\n  }\n}\n",
+    "static": true,
+    "longname": "/Users/zain/Documents/Uni/2ndYear/Glitterbot_Simulator/src/renders/ok.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 77,
+    "kind": "class",
+    "name": "BaseClass",
+    "memberof": "src/renders/ok.js",
+    "static": true,
+    "longname": "src/renders/ok.js~BaseClass",
+    "access": "public",
+    "export": false,
+    "importPath": "glitterbot/src/renders/ok.js",
+    "importStyle": null,
+    "description": "this is BaseClass.",
+    "lineNumber": 4,
+    "interface": false,
+    "ignore": true
+  },
+  {
+    "__docId__": 78,
+    "kind": "method",
+    "name": "baseMethod",
+    "memberof": "src/renders/ok.js~BaseClass",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/renders/ok.js~BaseClass#baseMethod",
+    "access": "public",
+    "description": "this is a method of BaseClass.",
+    "lineNumber": 10,
+    "unknown": [
+      {
+        "tagName": "@memberOf",
+        "tagValue": "module:ok"
+      },
+      {
+        "tagName": "@returns",
+        "tagValue": "{string} a greeting."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": "a greeting."
+    },
+    "params": []
+  },
+  {
+    "__docId__": 79,
+    "kind": "class",
+    "name": "MyClass",
+    "memberof": "src/renders/ok.js",
+    "static": true,
+    "longname": "src/renders/ok.js~MyClass",
+    "access": "public",
+    "export": false,
+    "importPath": "glitterbot/src/renders/ok.js",
+    "importStyle": null,
+    "description": "this is MyClass.",
+    "lineNumber": 18,
+    "interface": false,
+    "extends": [
+      "BaseClass"
+    ],
+    "ignore": true
+  },
+  {
+    "__docId__": 80,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/renders/ok.js~MyClass",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/renders/ok.js~MyClass#constructor",
+    "access": "public",
+    "description": "creates a instance of MyClass.",
+    "lineNumber": 23,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "value",
+        "description": "initial value."
+      }
+    ]
+  },
+  {
+    "__docId__": 81,
+    "kind": "member",
+    "name": "_property",
+    "memberof": "src/renders/ok.js~MyClass",
+    "static": false,
+    "longname": "src/renders/ok.js~MyClass#_property",
+    "access": "private",
+    "description": "this is property of MyClass.",
+    "lineNumber": 29,
+    "type": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 82,
+    "kind": "method",
+    "name": "method",
+    "memberof": "src/renders/ok.js~MyClass",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/renders/ok.js~MyClass#method",
+    "access": "public",
+    "description": "this is method of MyClass.",
+    "lineNumber": 38,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string} repeated Hello"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "a",
+        "description": "this is a 1st number value."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "b",
+        "description": "this is a 2nd number value."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": "repeated Hello"
+    }
+  },
+  {
+    "__docId__": 83,
+    "kind": "file",
     "name": "src/renders/phoneDrone.js",
     "content": "class PhoneDrone {\n\t//Creates the rover sprite and adds it to the map at x:0;y:0\n\tconstructor(squareSize, container) {\n\t\tthis.texture = PIXI.Texture.fromImage('./sprites/phone_drone.png');\n\t\tthis.sprite = new PIXI.Sprite(this.texture);\n\t\tthis.sprite.anchor.set(0.5, 0.5);\n\t\tthis.container = container;\n\t\tthis.container.addChild(this.sprite);\n\t\tthis.posx = 0;\n\t\tthis.posy = 0;\n\t\tthis.animSpeed = 2;\n\t\tthis.squareSize = squareSize;\n\t\tthis.phoneDroneTimeline = new TimelineLite();\n\t\tthis.waiting = true;\n\n\t\tthis.moveTo = this.moveTo.bind(this);\n\t\tthis.makeTrue = this.makeTrue.bind(this);\n\t}\n\n\t//TODO boundry system!\n\tmoveTo(position) {\n\t\tif (this.waiting) {\n\t\t\tthis.waiting = false;\n\t\t\tvar targetX = position.x;\n\t\t\tvar targetY = position.y;\n\n\t\t\tvar distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);\n\t\t\tdistanceSquared = Math.abs(distanceSquared);\n\t    var distance = Math.sqrt(distanceSquared);\n\t\t\tvar time = distance/this.animSpeed;\n\t\t\tthis.phoneDroneTimeline.to(this.sprite, time, {x:this.squareSize*targetX, y:this.squareSize*targetY,\n\t\t\t\tonComplete: this.makeTrue});\n\n\t\t\tthis.posx = targetX;\n\t\t\tthis.posy = targetY;\n\t\t\tconsole.log(\"Drone: \" +this.posx+\"-\"+this.posy);\n\t\t}\n\t}\n\n\tmakeTrue() {\n\t\tthis.waiting = true;\n\t}\n}\n",
     "static": true,
@@ -1004,7 +1254,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 77,
+    "__docId__": 84,
     "kind": "class",
     "name": "PhoneDrone",
     "memberof": "src/renders/phoneDrone.js",
@@ -1021,7 +1271,7 @@
     "ignore": true
   },
   {
-    "__docId__": 78,
+    "__docId__": 85,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1035,7 +1285,7 @@
     "undocument": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 86,
     "kind": "member",
     "name": "texture",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1052,7 +1302,7 @@
     }
   },
   {
-    "__docId__": 80,
+    "__docId__": 87,
     "kind": "member",
     "name": "sprite",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1069,7 +1319,7 @@
     }
   },
   {
-    "__docId__": 81,
+    "__docId__": 88,
     "kind": "member",
     "name": "container",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1086,7 +1336,7 @@
     }
   },
   {
-    "__docId__": 82,
+    "__docId__": 89,
     "kind": "member",
     "name": "posx",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1103,7 +1353,7 @@
     }
   },
   {
-    "__docId__": 83,
+    "__docId__": 90,
     "kind": "member",
     "name": "posy",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1120,7 +1370,7 @@
     }
   },
   {
-    "__docId__": 84,
+    "__docId__": 91,
     "kind": "member",
     "name": "animSpeed",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1137,7 +1387,7 @@
     }
   },
   {
-    "__docId__": 85,
+    "__docId__": 92,
     "kind": "member",
     "name": "squareSize",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1154,7 +1404,7 @@
     }
   },
   {
-    "__docId__": 86,
+    "__docId__": 93,
     "kind": "member",
     "name": "phoneDroneTimeline",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1171,7 +1421,7 @@
     }
   },
   {
-    "__docId__": 87,
+    "__docId__": 94,
     "kind": "member",
     "name": "waiting",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1188,7 +1438,7 @@
     }
   },
   {
-    "__docId__": 90,
+    "__docId__": 97,
     "kind": "method",
     "name": "moveTo",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1211,7 +1461,7 @@
     "return": null
   },
   {
-    "__docId__": 94,
+    "__docId__": 101,
     "kind": "method",
     "name": "makeTrue",
     "memberof": "src/renders/phoneDrone.js~PhoneDrone",
@@ -1227,10 +1477,10 @@
     "return": null
   },
   {
-    "__docId__": 96,
+    "__docId__": 103,
     "kind": "file",
     "name": "src/renders/pixiSetup.js",
-    "content": "PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;\nconst container = new PIXI.Container();\nconst app = new PIXI.Application({\n\t\twidth: 800,\n\t\theight: 400,\n\t\tantialias: false,\n\t\ttransparent: true,\n\t\tresolution: 1,\n\t\tview: document.getElementById(\"map-canvas\"),\n\t\tbackgroundColor : 0x1099bb,\n});\napp.renderer.autoResize = true;\napp.stage.addChild(container);\ncontainer.pivot.x = container.width/2;\ncontainer.pivot.y = container.height/2;\ncontainer.x = 10;\ncontainer.y = 10;\ncontainer.interactive = true;\ncontainer\n\t\t\t .on('pointerdown', onDragStart)\n\t\t\t .on('pointerup', onDragEnd)\n\t\t\t .on('pointerupoutside', onDragEnd)\n\t\t\t .on('pointermove', onDragMove);\n\nfunction onDragStart(event) {\n\tthis.data = event.data;\n\tvar position = this.data.getLocalPosition(this);\n\tthis.pivot.set(position.x, position.y)\n\t\t//keep this in case stuff breaks\n\t\t//this.position.set(position.x, position.y)\n\tthis.dragging = true;\n}\n\nfunction onDragEnd() {\n\tdocument.body.style.cursor = 'auto';\n\tthis.alpha = 1;\n\tthis.dragging = false;\n\tthis.data = null;\n}\n\nfunction onDragMove() {\n\tif (this.dragging) {\n\t\tdocument.body.style.cursor = 'move';\n\t\tvar newPosition = this.data.getLocalPosition(this.parent);\n\t\tthis.position.set(newPosition.x, newPosition.y);\n\t}\n}\n",
+    "content": "PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;\n/**\n * the object container for pixi\n * @type {object}\n * @public\n */\nconst container = new PIXI.Container();\n/**\n * the pixel coordinate Y of the sprite\n * @type {object}\n * @public\n */\nconst app = new PIXI.Application({\n\t\twidth: 800,\n\t\theight: 400,\n\t\tantialias: false,\n\t\ttransparent: true,\n\t\tresolution: 1,\n\t\tview: document.getElementById(\"map-canvas\"),\n\t\tbackgroundColor : 0x1099bb,\n});\napp.renderer.autoResize = true;\napp.stage.addChild(container);\ncontainer.pivot.x = container.width/2;\ncontainer.pivot.y = container.height/2;\ncontainer.x = 10;\ncontainer.y = 10;\ncontainer.interactive = true;\ncontainer\n\t\t\t .on('pointerdown', onDragStart)\n\t\t\t .on('pointerup', onDragEnd)\n\t\t\t .on('pointerupoutside', onDragEnd)\n\t\t\t .on('pointermove', onDragMove);\n\n\n/**\n\t* This function handles the beginning of the drag for the map\n\t* @function\n\t* @param {event} event - the mouse event on screen\n\t* @return {void}\n*/\nfunction onDragStart(event) {\n\tthis.data = event.data;\n\tvar position = this.data.getLocalPosition(this);\n\tthis.pivot.set(position.x, position.y)\n\t\t//keep this in case stuff breaks\n\t\t//this.position.set(position.x, position.y)\n\tthis.dragging = true;\n}\n\n/**\n\t* This function handles what happens when the drag ends\n\t* @function\n\t* @return {void}\n*/\nfunction onDragEnd() {\n\tdocument.body.style.cursor = 'auto';\n\tthis.alpha = 1;\n\tthis.dragging = false;\n\tthis.data = null;\n}\n\n/**\n\t* This function handles what happens during the drag\n\t* @function\n\t* @return {void}\n*/\nfunction onDragMove() {\n\tif (this.dragging) {\n\t\tdocument.body.style.cursor = 'move';\n\t\tvar newPosition = this.data.getLocalPosition(this.parent);\n\t\tthis.position.set(newPosition.x, newPosition.y);\n\t}\n}\n",
     "static": true,
     "longname": "/Users/zain/Documents/Uni/2ndYear/Glitterbot_Simulator/src/renders/pixiSetup.js",
     "access": "public",
@@ -1238,7 +1488,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 97,
+    "__docId__": 104,
     "kind": "variable",
     "name": "container",
     "memberof": "src/renders/pixiSetup.js",
@@ -1248,18 +1498,20 @@
     "export": false,
     "importPath": "glitterbot/src/renders/pixiSetup.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 2,
-    "undocument": true,
+    "description": "the object container for pixi",
+    "lineNumber": 7,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "object"
+      ],
+      "spread": false,
+      "description": null
     },
     "ignore": true
   },
   {
-    "__docId__": 98,
+    "__docId__": 105,
     "kind": "variable",
     "name": "app",
     "memberof": "src/renders/pixiSetup.js",
@@ -1269,18 +1521,20 @@
     "export": false,
     "importPath": "glitterbot/src/renders/pixiSetup.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 3,
-    "undocument": true,
+    "description": "the pixel coordinate Y of the sprite",
+    "lineNumber": 13,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "object"
+      ],
+      "spread": false,
+      "description": null
     },
     "ignore": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 106,
     "kind": "function",
     "name": "onDragStart",
     "memberof": "src/renders/pixiSetup.js",
@@ -1292,22 +1546,38 @@
     "export": false,
     "importPath": "glitterbot/src/renders/pixiSetup.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 25,
-    "undocument": true,
-    "params": [
+    "description": "This function handles the beginning of the drag for the map",
+    "lineNumber": 42,
+    "unknown": [
       {
-        "name": "event",
-        "types": [
-          "*"
-        ]
+        "tagName": "@function",
+        "tagValue": ""
       }
     ],
-    "return": null,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "event"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": "the mouse event on screen"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "void"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "ignore": true
   },
   {
-    "__docId__": 100,
+    "__docId__": 107,
     "kind": "function",
     "name": "onDragEnd",
     "memberof": "src/renders/pixiSetup.js",
@@ -1319,15 +1589,27 @@
     "export": false,
     "importPath": "glitterbot/src/renders/pixiSetup.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 34,
-    "undocument": true,
+    "description": "This function handles what happens when the drag ends",
+    "lineNumber": 56,
+    "unknown": [
+      {
+        "tagName": "@function",
+        "tagValue": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "void"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "params": [],
-    "return": null,
     "ignore": true
   },
   {
-    "__docId__": 101,
+    "__docId__": 108,
     "kind": "function",
     "name": "onDragMove",
     "memberof": "src/renders/pixiSetup.js",
@@ -1339,15 +1621,27 @@
     "export": false,
     "importPath": "glitterbot/src/renders/pixiSetup.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 41,
-    "undocument": true,
+    "description": "This function handles what happens during the drag",
+    "lineNumber": 68,
+    "unknown": [
+      {
+        "tagName": "@function",
+        "tagValue": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "void"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "params": [],
-    "return": null,
     "ignore": true
   },
   {
-    "__docId__": 102,
+    "__docId__": 109,
     "kind": "file",
     "name": "src/renders/renderMap.js",
     "content": "//Main Js file! Handles everything related to the visual aspects of the simulation\n//Authors: Zain Ali, Asad Mahmood\n//Date: 21/11/2018\n\n//Setup\nconst canvas = document.getElementById(\"map-canvas\");\nconst genLitterBtn = document.getElementById(\"litterBtn\");\nconst divCanvas = document.getElementById(\"canvas-id\");\nvar roverTimeline = new TimelineLite();\nvar droneTimeline = new TimelineLite();\nconst row = 25;\nconst col = 50;\nconst container = new PIXI.Container();\nconst squareSize = 20;\nconst grid = [];\nconst litterArray = [];\nconst app = new PIXI.Application({\n    width: col*squareSize,\n    height: row*squareSize,\n    antialias: false,\n    transparent: true,\n    resolution: 1,\n\t\tview: document.getElementById(\"map-canvas\"),\n\t}\n);\napp.renderer.autoResize = true;\napp.stage.addChild(container);\ngenerateLitterArray();\ndrawGrid();\n//Center container\ncontainer.x = (app.screen.width) / 2;\ncontainer.y = (app.screen.height) / 2;\n\n//Add drone & rover on the grid/map\nvar roverSprite = new RoverSprite();\nvar droneSprite = new DroneSprite();\n\nfunction startRoutine() {\n  socket.emit(\"rover-frontEnd\", {coordinates: {posx:roverSprite.posx, posy:roverSprite.posy}, state: roverSprite.waiting});\n  console.log(\"sending to the server\");\n}\nsetInterval(this.startRoutine, 1000);\n//Reads path from server and moves the roverSprite\nfunction roverPath(path) {\n\troverSprite.followPath(path);\n}\n//socket.on('rover-frontEnd', roverPath);\n//Reads path from server and moves the droneSprite\n/*function dronePath(coordinates) {\n  droneSprite.moveTo(coordinates.x, coordinates.y)\n}\nsocket.on('drone-frontEnd', dronePath);\n*/\n\nfunction generateLitterArray(){\n  for (var i = 0; i < col; i++) {\n    litterArray[i] = [];\n    for (var j = 0; j < row; j++) {\n    }\n  }\n}\n\n//Creating square sprites and add them to the 2D array 'grid'\nfunction drawGrid() {\n\tfor (var i = 0; i < col; i++) {\n\t\tgrid[i] = [];\n\t\tfor (var j = 0; j < row; j++) {\n\t\t\tvar num = Math.random();\n\t\t\tif (num > 0.03) {\n\t\t\t\tvar terrain = new GrassSprite(i, j, col, row);\n\t\t\t} else {\n\t\t\t\tvar terrain = new RockSprite(i, j, col, row);\n\t\t\t}\n\t\t\tterrain.posx = i;\n\t\t\tterrain.posy = j;\n\t\t\tterrain.sprite.x = Math.floor(i % col) * squareSize;\n\t\t\tterrain.sprite.y = Math.floor(j % row) * squareSize;\n      container.addChild(terrain.sprite);\n\t\t\tgrid[i][j] = terrain;\n\t\t}\n\t}\n  var terrain = new LitterSprite();\n  var gridRef = grid[5][1];\n  terrain.posx = 5;\n  terrain.posy = 1;\n  terrain.sprite.x = Math.floor(5 % col) * squareSize;\n  terrain.sprite.y = Math.floor(1 % row) * squareSize;\n  container.addChild(terrain.sprite);\n  gridRef.setTerrainLitter(true);\n  gridRef = terrain;\n  litterArray[5][1] = terrain.sprite;\n\n}\n\n\n\n//function for generating litter\n  genLitterBtn.addEventListener('click', function(action){\n\n    //generate random value between 0 and amount of rows/cols\n    var numRow = Math.floor(Math.random()*(row));\n    var numCol = Math.floor(Math.random()*(col));\n    //get terrain from array\n    var terrain = grid[numCol][numRow];\n\n    //keep getting new terrain col and row until you find one that doesn't already contain a litter\n    //TODO : Fix while loop getting stuck once the screen is full of litter\n    while ((terrain.getTerrainLitter() == true) || (terrain.getTerrainType() == \"Rock\"))\n    {\n      var numRow = Math.floor(Math.random()*(row));\n      var numCol = Math.floor(Math.random()*(col));\n      var terrain = grid[numCol][numRow];\n    }\n    //generate a new litter instance\n    var litter = new LitterSprite();\n    //get terrain from grid\n    var terrain = grid[numCol][numRow];\n\n    //\n    litter.sprite.x = Math.floor(numCol % col) * squareSize;\n    litter.sprite.y = Math.floor(numRow % row) * squareSize;\n\n    //set terrain litter to be true\n    terrain.setTerrainLitter(true);\n    container.addChild(litter.sprite);\n    litterArray[numCol][numRow] = litter.sprite;\n  });\n\n\n//Used for nice pixel scaling\nPIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;\n\n//Setting pivot for the container\ncontainer.pivot.x = container.width/2;\ncontainer.pivot.y = container.height/2;\ncontainer.interactive = true;\n\n//Set various interaction for the container, mouse+touchscreen\ncontainer\n       .on('pointerdown', onDragStart)\n       .on('pointerup', onDragEnd)\n       .on('pointerupoutside', onDragEnd)\n       .on('pointermove', onDragMove);\n\nfunction onDragStart(event) {\n  this.data = event.data;\n  var position = this.data.getLocalPosition(this);\n  this.pivot.set(position.x, position.y)\n    //keep this in case stuff breaks\n    //this.position.set(position.x, position.y)\n  this.dragging = true;\n}\n\nfunction onDragEnd() {\n  document.body.style.cursor = 'auto';\n  this.alpha = 1;\n  this.dragging = false;\n  this.data = null;\n}\n\nfunction onDragMove() {\n  if (this.dragging) {\n    document.body.style.cursor = 'move';\n    var newPosition = this.data.getLocalPosition(this.parent);\n    this.position.set(newPosition.x, newPosition.y);\n  }\n}\n\n//TEMPORARY: Used for having a default zoom level\n//TODO set MAX zoom level\nvar defaultScaleX = container.scale.x;\nvar defaultScaleY = container.scale.y;\n\n//Canvas zoom event listener\ncanvas.addEventListener(\"wheel\", function(event) {\n  if (event.deltaY < 0) {\n    container.scale.x += 0.05;\n    container.scale.y += 0.05;\n  }\n  if (event.deltaY > 0) {\n    if ((container.scale.x - 0.05) >= defaultScaleX) {\n      container.scale.x -= 0.05;\n      container.scale.y -= 0.05;\n    }\n  }\n});\n",
@@ -1358,7 +1652,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 103,
+    "__docId__": 110,
     "kind": "variable",
     "name": "canvas",
     "memberof": "src/renders/renderMap.js",
@@ -1379,7 +1673,7 @@
     "ignore": true
   },
   {
-    "__docId__": 104,
+    "__docId__": 111,
     "kind": "variable",
     "name": "genLitterBtn",
     "memberof": "src/renders/renderMap.js",
@@ -1400,7 +1694,7 @@
     "ignore": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 112,
     "kind": "variable",
     "name": "divCanvas",
     "memberof": "src/renders/renderMap.js",
@@ -1421,7 +1715,7 @@
     "ignore": true
   },
   {
-    "__docId__": 106,
+    "__docId__": 113,
     "kind": "variable",
     "name": "roverTimeline",
     "memberof": "src/renders/renderMap.js",
@@ -1442,7 +1736,7 @@
     "ignore": true
   },
   {
-    "__docId__": 107,
+    "__docId__": 114,
     "kind": "variable",
     "name": "droneTimeline",
     "memberof": "src/renders/renderMap.js",
@@ -1463,7 +1757,7 @@
     "ignore": true
   },
   {
-    "__docId__": 108,
+    "__docId__": 115,
     "kind": "variable",
     "name": "row",
     "memberof": "src/renders/renderMap.js",
@@ -1484,7 +1778,7 @@
     "ignore": true
   },
   {
-    "__docId__": 109,
+    "__docId__": 116,
     "kind": "variable",
     "name": "col",
     "memberof": "src/renders/renderMap.js",
@@ -1505,7 +1799,7 @@
     "ignore": true
   },
   {
-    "__docId__": 110,
+    "__docId__": 117,
     "kind": "variable",
     "name": "container",
     "memberof": "src/renders/renderMap.js",
@@ -1526,7 +1820,7 @@
     "ignore": true
   },
   {
-    "__docId__": 111,
+    "__docId__": 118,
     "kind": "variable",
     "name": "squareSize",
     "memberof": "src/renders/renderMap.js",
@@ -1547,7 +1841,7 @@
     "ignore": true
   },
   {
-    "__docId__": 112,
+    "__docId__": 119,
     "kind": "variable",
     "name": "grid",
     "memberof": "src/renders/renderMap.js",
@@ -1568,7 +1862,7 @@
     "ignore": true
   },
   {
-    "__docId__": 113,
+    "__docId__": 120,
     "kind": "variable",
     "name": "litterArray",
     "memberof": "src/renders/renderMap.js",
@@ -1589,7 +1883,7 @@
     "ignore": true
   },
   {
-    "__docId__": 114,
+    "__docId__": 121,
     "kind": "variable",
     "name": "app",
     "memberof": "src/renders/renderMap.js",
@@ -1610,7 +1904,7 @@
     "ignore": true
   },
   {
-    "__docId__": 115,
+    "__docId__": 122,
     "kind": "variable",
     "name": "roverSprite",
     "memberof": "src/renders/renderMap.js",
@@ -1631,7 +1925,7 @@
     "ignore": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 123,
     "kind": "variable",
     "name": "droneSprite",
     "memberof": "src/renders/renderMap.js",
@@ -1652,7 +1946,7 @@
     "ignore": true
   },
   {
-    "__docId__": 117,
+    "__docId__": 124,
     "kind": "function",
     "name": "startRoutine",
     "memberof": "src/renders/renderMap.js",
@@ -1672,7 +1966,7 @@
     "ignore": true
   },
   {
-    "__docId__": 118,
+    "__docId__": 125,
     "kind": "function",
     "name": "roverPath",
     "memberof": "src/renders/renderMap.js",
@@ -1699,7 +1993,7 @@
     "ignore": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 126,
     "kind": "function",
     "name": "generateLitterArray",
     "memberof": "src/renders/renderMap.js",
@@ -1719,7 +2013,7 @@
     "ignore": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 127,
     "kind": "function",
     "name": "drawGrid",
     "memberof": "src/renders/renderMap.js",
@@ -1739,7 +2033,7 @@
     "ignore": true
   },
   {
-    "__docId__": 121,
+    "__docId__": 128,
     "kind": "function",
     "name": "onDragStart",
     "memberof": "src/renders/renderMap.js",
@@ -1766,7 +2060,7 @@
     "ignore": true
   },
   {
-    "__docId__": 122,
+    "__docId__": 129,
     "kind": "function",
     "name": "onDragEnd",
     "memberof": "src/renders/renderMap.js",
@@ -1786,7 +2080,7 @@
     "ignore": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 130,
     "kind": "function",
     "name": "onDragMove",
     "memberof": "src/renders/renderMap.js",
@@ -1806,7 +2100,7 @@
     "ignore": true
   },
   {
-    "__docId__": 124,
+    "__docId__": 131,
     "kind": "variable",
     "name": "defaultScaleX",
     "memberof": "src/renders/renderMap.js",
@@ -1827,7 +2121,7 @@
     "ignore": true
   },
   {
-    "__docId__": 125,
+    "__docId__": 132,
     "kind": "variable",
     "name": "defaultScaleY",
     "memberof": "src/renders/renderMap.js",
@@ -1848,7 +2142,7 @@
     "ignore": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 133,
     "kind": "file",
     "name": "src/renders/renderMapRefactor.js",
     "content": "const socket = io();\nvar count = 0;\n\nclass MapRenderer {\n\tconstructor(container) {\n\t\tthis.row = 20;\n\t\tthis.col = 30;\n\t\tthis.container = container;\n\t\tthis.squareSize = 20;\n\t\tthis.baseX = 15;\n\t\tthis.baseY = 10;\n\t\tthis.grid = [];\n\t\tthis.litterArray = [];\n\t\tthis.litterArrayLocations = [];\n\t\tthis.grassTexture = PIXI.Texture.fromImage('./sprites/grass.png');\n\t\tthis.rockTexture = PIXI.Texture.fromImage('./sprites/rock.png');\n\t\tthis.litterTexture = PIXI.Texture.fromImage('./sprites/litter.png');\n\t\tthis.baseTexture = PIXI.Texture.fromImage('./sprites/base.png');\n\t\tthis.roverSprite = null;\n\t\tthis.droneSprite = null;\n\t\t//phone drone stuff\n\t\tthis.phoneDrone = null;\n\n\t\t// new features\n\t\tthis.treeTexture = PIXI.Texture.fromImage('./sprites/tree.png');\n\t\tthis.treeArray = [];\n\n\t\tthis.addLitter = this.addLitter.bind(this);\n\t\tthis.drawGrid = this.drawGrid.bind(this);\n\t\tthis.removeLitter = this.removeLitter.bind(this);\n\t\tthis.moveDrone = this.moveDrone.bind(this);\n\t\tthis.movePhoneDrone = this.movePhoneDrone.bind(this);\n\t}\n\n\tdrawGrid() {\n\t\tfor (var i = 0; i < this.row; i++) {\n\t\t\tthis.grid[i] = [];\n\t\t\tthis.litterArray[i] = [];\n\t\t\tthis.treeArray[i] = [];\n\t\t\tthis.litterArrayLocations[i] = [];\n\n\t\tfor (var j = 0; j < this.col; j++) {\n\t\t\tif (j == this.baseX && i == this.baseY) {\n\t\t\t\tvar terrain = new PIXI.Sprite(this.baseTexture);\n\t\t\t\tthis.grid[i][j] = \"base\";\n      } else {\n        var num = Math.random();\n\t\t\t\tif (num > 0.03) {\n\t\t\t\t\t// add trees to the map\n\t\t\t\t\tif (num > 0.94 && i != 0 && j != 0) {\n\t\t\t\t\t\tvar terrain = new PIXI.Sprite(this.treeTexture);\n\t\t\t\t\t\tthis.grid[i][j] = \"tree\";\n\t\t\t\t\t\tcount = count + 1;\n\t\t\t\t\t\tconsole.log('count value : '+count);\n\t\t\t\t\t\tconsole.log('tree position x: ' + j);\n\t\t\t\t\t\tconsole.log('tree position y: ' + i);\n\t\t      } else {\n\t\t\t\t\t\tvar terrain = new PIXI.Sprite(this.grassTexture);\n\t\t\t\t\t\tthis.grid[i][j] = \"grass\";\n\t\t\t\t\t}\n\t\t\t\t} else {\n\t\t\t\t\t\tvar terrain = new PIXI.Sprite(this.rockTexture);\n\t\t\t\t\t\tthis.grid[i][j] = \"rock\";\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\tterrain.anchor.set(0.5, 0.5);\n\t\t\tterrain.x = Math.floor(j % this.col) * this.squareSize;\n\t\t\tterrain.y = Math.floor(i % this.row) * this.squareSize;\n\t\t\tthis.container.addChild(terrain);\n\t\t\tthis.litterArray[i][j] = null;\n\t\t\tthis.treeArray[i][j] = 0;\n\t\t}\n\t}\n\t\tthis.roverSprite = new RoverSprite(this.container, this.squareSize, this, this.baseX, this.baseY);\n\t\tthis.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray, this.baseX, this.baseY);\n\t\tthis.phoneDrone = new PhoneDrone(this.squareSize, this.container);\n\t\tsocket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});\n\t}\n\n\taddLitter() {\n\t\t//TODO: this function gets stuck in the while loop if there's not free spot to place new litter\n\t\tdo {\n\t\t\tvar row = Math.floor(Math.random()*(this.row));\n\t\t\tvar col = Math.floor(Math.random()*(this.col));\n\t\t}\n\t\twhile ((this.litterArray[row][col] != null) || (this.grid[row][col] == \"rock\") || (this.grid[row][col] == \"tree\"));\n\t\tvar litterSprite = new PIXI.Sprite(this.litterTexture);\n\t\tlitterSprite.anchor.set(0.5, 0.5);\n\t\tlitterSprite.x = Math.floor(col % this.col) * this.squareSize;\n\t\tlitterSprite.y = Math.floor(row % this.row) * this.squareSize;\n\t\tthis.litterArray[row][col] = litterSprite; //tochange maybe\n\t\tthis.litterArrayLocations[row][col] = 1;\n\t\t//test update the litter array on the server\n\t\tsocket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});\n\t\tthis.container.addChild(litterSprite);\n\t}\n\n\tremoveLitter(x, y) {\n\t\tif (this.litterArray[y][x] != null) {\n\t\t\tthis.container.removeChild(this.litterArray[y][x]);\n\t\t\tdelete this.litterArray[y][x];\n\t\t\tthis.litterArrayLocations[y][x] = 0;\n\t\t\tsocket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});\n\t\t\treturn true;\n\t\t}\n\t\treturn false;\n\t}\n\n\tmoveRover(path) {\n\t\tthis.roverSprite.followPath(path);\n\t}\n\n\tmoveDrone(data) {\n\t\tthis.droneSprite.moveTo(data);\n\t}\n\n\tmovePhoneDrone(data) {\n\t\tthis.phoneDrone.moveTo(data);\n\t}\n\n}\n\nfunction startRoutine(m) {\n\n\tconsole.log(m.roverSprite.posx);\n\tsocket.emit(\"rover-frontEnd\", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},\n\t\tstate: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});\n\tconsole.log(\"sending to the server\");\n  setTimeout(startRoutine, 2000, m);\n}\n\nfunction droneRoutine(m) {\n\tconsole.log(m.droneSprite.waiting)\n\tsocket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},\n\t\tscanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});\n\t\tsetTimeout(droneRoutine, 5000, m);\n}\n\nfunction updateUI(m) {\n\tdocument.getElementById(\"roverDisplay\").innerHTML = \"X: \" + m.roverSprite.posx + \" Y: \" + m.roverSprite.posy + \" Capacity: \" + m.roverSprite.capacity + \" | Battery Remaining: \" + m.roverSprite.battery;\n\tdocument.getElementById(\"droneDisplay\").innerHTML = \"X: \" + m.droneSprite.posx + \" Y: \" + m.droneSprite.posy;\n\tsetTimeout(updateUI, 100, m);\n}\n\nfunction setButtons(mapRenderer) {\n\t//Linking the litter generations button to the addLitter method\n\tconst genLitterBtn = document.getElementById(\"litter\");\n\tgenLitterBtn.addEventListener('click', mapRenderer.addLitter);\n}\n\nfunction randAddLitter(mapRenderer) {\n\tvar timer = Math.floor(Math.random() * 20001) + 10000;\n\tmapRenderer.addLitter();\n\tsetTimeout(randAddLitter, timer, mapRenderer);\n}\n\nfunction batteryLevel(){\n\tdocument.getElementByClassName(\"span_3\").innerHTML = this.roverSprite.battery;\n}\n\nfunction main() {\n\tconst mapRenderer = new MapRenderer(container);\n\tmapRenderer.drawGrid();\n\t// the aim is to scan the area before it starts exploration\n\tmapRenderer.moveDrone([[0,0]]);\n\n\tdroneRoutine(mapRenderer);\n\n\tsocket.on('phone', function(data) {\n\t\tconsole.log('received data for the phone drone');\n\t\tmapRenderer.movePhoneDrone(data);\n\t});\n\n\tsocket.on('drone-frontEnd', function(data) {\n\t\tfor (let i = 0; i < data.length; i++) {\n\t\t\tconsole.log(data[i]);\n\t\t}\n\t\tmapRenderer.moveDrone(data);\n   });\n\n\tsetButtons(mapRenderer);\n\tstartRoutine(mapRenderer);\n\trandAddLitter(mapRenderer);\n\tupdateUI(mapRenderer);\n\n\tsocket.on('rover-frontEnd', function(data) {\n\t\tconsole.log(data);\n\t\tmapRenderer.moveRover(data);\n\t});\n}\n\ndocument.addEventListener('DOMContentLoaded', main);\n",
@@ -1859,7 +2153,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 127,
+    "__docId__": 134,
     "kind": "variable",
     "name": "socket",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -1880,7 +2174,7 @@
     "ignore": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 135,
     "kind": "variable",
     "name": "count",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -1901,7 +2195,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 136,
     "kind": "class",
     "name": "MapRenderer",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -1918,7 +2212,7 @@
     "ignore": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 137,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -1932,7 +2226,7 @@
     "undocument": true
   },
   {
-    "__docId__": 131,
+    "__docId__": 138,
     "kind": "member",
     "name": "row",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -1949,7 +2243,7 @@
     }
   },
   {
-    "__docId__": 132,
+    "__docId__": 139,
     "kind": "member",
     "name": "col",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -1966,7 +2260,7 @@
     }
   },
   {
-    "__docId__": 133,
+    "__docId__": 140,
     "kind": "member",
     "name": "container",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -1983,7 +2277,7 @@
     }
   },
   {
-    "__docId__": 134,
+    "__docId__": 141,
     "kind": "member",
     "name": "squareSize",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2000,7 +2294,7 @@
     }
   },
   {
-    "__docId__": 135,
+    "__docId__": 142,
     "kind": "member",
     "name": "baseX",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2017,7 +2311,7 @@
     }
   },
   {
-    "__docId__": 136,
+    "__docId__": 143,
     "kind": "member",
     "name": "baseY",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2034,7 +2328,7 @@
     }
   },
   {
-    "__docId__": 137,
+    "__docId__": 144,
     "kind": "member",
     "name": "grid",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2051,7 +2345,7 @@
     }
   },
   {
-    "__docId__": 138,
+    "__docId__": 145,
     "kind": "member",
     "name": "litterArray",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2068,7 +2362,7 @@
     }
   },
   {
-    "__docId__": 139,
+    "__docId__": 146,
     "kind": "member",
     "name": "litterArrayLocations",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2085,7 +2379,7 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 147,
     "kind": "member",
     "name": "grassTexture",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2102,7 +2396,7 @@
     }
   },
   {
-    "__docId__": 141,
+    "__docId__": 148,
     "kind": "member",
     "name": "rockTexture",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2119,7 +2413,7 @@
     }
   },
   {
-    "__docId__": 142,
+    "__docId__": 149,
     "kind": "member",
     "name": "litterTexture",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2136,7 +2430,7 @@
     }
   },
   {
-    "__docId__": 143,
+    "__docId__": 150,
     "kind": "member",
     "name": "baseTexture",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2153,7 +2447,7 @@
     }
   },
   {
-    "__docId__": 144,
+    "__docId__": 151,
     "kind": "member",
     "name": "roverSprite",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2170,7 +2464,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 152,
     "kind": "member",
     "name": "droneSprite",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2187,7 +2481,7 @@
     }
   },
   {
-    "__docId__": 146,
+    "__docId__": 153,
     "kind": "member",
     "name": "phoneDrone",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2204,7 +2498,7 @@
     }
   },
   {
-    "__docId__": 147,
+    "__docId__": 154,
     "kind": "member",
     "name": "treeTexture",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2221,7 +2515,7 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 155,
     "kind": "member",
     "name": "treeArray",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2238,7 +2532,7 @@
     }
   },
   {
-    "__docId__": 154,
+    "__docId__": 161,
     "kind": "method",
     "name": "drawGrid",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2254,7 +2548,7 @@
     "return": null
   },
   {
-    "__docId__": 158,
+    "__docId__": 165,
     "kind": "method",
     "name": "addLitter",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2270,7 +2564,7 @@
     "return": null
   },
   {
-    "__docId__": 159,
+    "__docId__": 166,
     "kind": "method",
     "name": "removeLitter",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2303,7 +2597,7 @@
     }
   },
   {
-    "__docId__": 160,
+    "__docId__": 167,
     "kind": "method",
     "name": "moveRover",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2326,7 +2620,7 @@
     "return": null
   },
   {
-    "__docId__": 161,
+    "__docId__": 168,
     "kind": "method",
     "name": "moveDrone",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2349,7 +2643,7 @@
     "return": null
   },
   {
-    "__docId__": 162,
+    "__docId__": 169,
     "kind": "method",
     "name": "movePhoneDrone",
     "memberof": "src/renders/renderMapRefactor.js~MapRenderer",
@@ -2372,7 +2666,7 @@
     "return": null
   },
   {
-    "__docId__": 163,
+    "__docId__": 170,
     "kind": "function",
     "name": "startRoutine",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2399,7 +2693,7 @@
     "ignore": true
   },
   {
-    "__docId__": 164,
+    "__docId__": 171,
     "kind": "function",
     "name": "droneRoutine",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2426,7 +2720,7 @@
     "ignore": true
   },
   {
-    "__docId__": 165,
+    "__docId__": 172,
     "kind": "function",
     "name": "updateUI",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2453,7 +2747,7 @@
     "ignore": true
   },
   {
-    "__docId__": 166,
+    "__docId__": 173,
     "kind": "function",
     "name": "setButtons",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2480,7 +2774,7 @@
     "ignore": true
   },
   {
-    "__docId__": 167,
+    "__docId__": 174,
     "kind": "function",
     "name": "randAddLitter",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2507,7 +2801,7 @@
     "ignore": true
   },
   {
-    "__docId__": 168,
+    "__docId__": 175,
     "kind": "function",
     "name": "batteryLevel",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2527,7 +2821,7 @@
     "ignore": true
   },
   {
-    "__docId__": 169,
+    "__docId__": 176,
     "kind": "function",
     "name": "main",
     "memberof": "src/renders/renderMapRefactor.js",
@@ -2547,7 +2841,7 @@
     "ignore": true
   },
   {
-    "__docId__": 170,
+    "__docId__": 177,
     "kind": "file",
     "name": "src/renders/roverSprite.js",
     "content": "//Rover robot front end object handler\n//Authors: Zain Ali, Asad Mahmood\n//Date: 21/11/2018\nvar purplePosition = {x:0, y:1};\n\nclass RoverSprite {\n\t//Creates the rover sprite and adds it to the map at the base location\n\tconstructor(container, squareSize, mapRenderer, baseX, baseY) {\n\t\tthis.texture = PIXI.Texture.fromImage('./sprites/rover.png');\n\t\tthis.sprite = new PIXI.Sprite(this.texture);\n\t\tthis.sprite.x = baseX * squareSize;\n\t\tthis.sprite.y = baseY * squareSize;\n\t\tthis.sprite.anchor.set(0.5, 0.5);\n\t\tthis.container = container;\n\t\tthis.mapRenderer = mapRenderer;\n\t\tthis.roverTimeline = new TimelineLite();\n\t\tthis.squareSize = squareSize;\n\t\tthis.posx = baseX;\n\t\tthis.posy = baseY;\n\t\tthis.baseX = baseX;\n\t\tthis.baseY = baseY;\n\t\tthis.container.addChild(this.sprite);\n\t\tthis.capacity = 5;\n\t\tthis.animSpeed = 0.5;\n\t\tthis.waiting = true;\n\t\tthis.collectLitter = this.collectLitter.bind(this);\n\t\tthis.purplePosition = {};\n\t\tthis.battery = 1000;\n\t}\n\n\t//Follows a path of nodes!\n\tfollowPath(path) {\n\t\t//gridXY();\n\t\tthis.waiting = false;\n\n\t\tif(path.length <= 1){\n\t\t\tthis.waiting = true;\n\t\t}\n\n\t\tfor (let i = 1; i < path.length; i++) {\n\t\t\tvar targetX = path[i][0];\n\t\t\tvar targetY = path[i][1];\n\t\t\tif (targetX == purplePosition.x && targetY == purplePosition.y) {\n\t\t\t\tconsole.log('THIS MEANS THE ROVER RECALCULATES');\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tthis.posx = targetX;\n\t\t\tthis.posy = targetY;\n\n      console.log(\"battery: \" + this.battery);\n\n\t\t\tthis.roverTimeline.to(this.sprite, this.animSpeed,\n\t\t\t\t{x:this.squareSize*targetX, y:this.squareSize*targetY,\n\t\t\t\t\tonComplete:this.collectLitter, onCompleteParams: [this.posx, this.posy, targetX, targetY, path]});\n\t\t}\n\t}\n\n\n\tcollectLitter (posx, posy, targetX, targetY, path) {\n\t\tif (targetX == this.posx || targetY == this.posy) {\n\t\t\tthis.battery = this.battery - 10;\n\t\t}\n\t\telse {\n\t\t\tthis.battery = this.battery - 15;\n\t\t}\n\n\t\tposx = targetX;\n\t\tposy = targetY;\n\t\tthis.posx = posx;\n\t\tthis.posy = posy;\n\n\t\tif (posx === this.baseX && posy === this.baseY) {\n\t\t\tthis.capacity = 5;\n\t\t\tthis.battery = 1000;\n\t\t}\n\n\t\tif (this.capacity > 0) {\n\t\t\tconsole.log(posx+'-'+posy);\n\t\t\tif (this.mapRenderer.removeLitter(posx, posy)) {\n\t\t\t\tthis.capacity = this.capacity - 1;\n\t\t\t\tconsole.log(\"litter collected, capacity remaining = \" + this.capacity);\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tconsole.log(\"rover full, returning to base\");\n\t\t}\n\n\t\tif (posx == path[path.length-1][0] && posy == path[path.length-1][1]) {\n\t\t\tthis.waiting = true;\n\t\t}\n\n\t}\n\n\n\t//The functions below this line will be used by the operator in case of overriding\n\t//Check is rover can go over the next 'tile'\n\t/*isWalkable(x, y) {\n\t\treturn grid[x][y].walkable;\n\t}\n\n\tmoveRight() {\n\t\tif (this.isWalkable(this.posx+1, this.posy)) {\n\t\t\tthis.posx += 1;\n\t\t\tTweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx][this.posy].posx, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})\n\t\t\tconsole.log('('+this.posx+' - '+this.posy+')');\n\t\t} else {\n\t\t\tconsole.log(\"Can't go there\\n\");\n\t\t}\n\t}\n\n\tmoveLeft() {\n\t\tif (this.isWalkable(this.posx-1, this.posy)) {\n\t\t\tthis.posx -= 1;\n\t\t\tTweenMax.to(this.sprite, this.animSpeed, {x:squareSize*grid[this.posx][this.posy].posx, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})\n\t\t\tconsole.log('('+this.posx+' - '+this.posy+')');\n\t\t} else {\n\t\t\tconsole.log(\"Can't go there\\n\");\n\t\t}\n\t}\n\n\tmoveUp() {\n\t\tif (this.isWalkable(this.posx, this.posy-1)) {\n\t\t\tthis.posy -= 1;\n\t\t\tTweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy].posy, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})\n\t\t\tconsole.log('('+this.posx+' - '+this.posy+')');\n\t\t} else {\n\t\t\tconsole.log(\"Can't go there\\n\");\n\t\t}\n\t}\n\n\tmoveDown() {\n\t\tif (this.isWalkable(this.posx, this.posy+1)) {\n\t\t\tthis.posy += 1;\n\t\t\tTweenMax.to(this.sprite, this.animSpeed, {y:squareSize*grid[this.posx][this.posy].posy, onComplete:this.deleteLitter, onCompleteParams: [this.posx, this.posy]})\n\t\t\tconsole.log('('+this.posx+' - '+this.posy+')');\n\t\t} else {\n\t\t\tconsole.log(\"Can't go there\\n\");\n\t\t}\n\t}*/\n}\n\nfunction gridXY () {\n\t\tsocket.on('gridCoordinates', function(data){\n\t\t\tpurplePosition = {x:data.x, y:data.y};\n\t\t});\n\n}\n",
@@ -2558,7 +2852,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 171,
+    "__docId__": 178,
     "kind": "variable",
     "name": "purplePosition",
     "memberof": "src/renders/roverSprite.js",
@@ -2579,7 +2873,7 @@
     "ignore": true
   },
   {
-    "__docId__": 172,
+    "__docId__": 179,
     "kind": "class",
     "name": "RoverSprite",
     "memberof": "src/renders/roverSprite.js",
@@ -2596,7 +2890,7 @@
     "ignore": true
   },
   {
-    "__docId__": 173,
+    "__docId__": 180,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2610,7 +2904,7 @@
     "undocument": true
   },
   {
-    "__docId__": 174,
+    "__docId__": 181,
     "kind": "member",
     "name": "texture",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2627,7 +2921,7 @@
     }
   },
   {
-    "__docId__": 175,
+    "__docId__": 182,
     "kind": "member",
     "name": "sprite",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2644,7 +2938,7 @@
     }
   },
   {
-    "__docId__": 176,
+    "__docId__": 183,
     "kind": "member",
     "name": "container",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2661,7 +2955,7 @@
     }
   },
   {
-    "__docId__": 177,
+    "__docId__": 184,
     "kind": "member",
     "name": "mapRenderer",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2678,7 +2972,7 @@
     }
   },
   {
-    "__docId__": 178,
+    "__docId__": 185,
     "kind": "member",
     "name": "roverTimeline",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2695,7 +2989,7 @@
     }
   },
   {
-    "__docId__": 179,
+    "__docId__": 186,
     "kind": "member",
     "name": "squareSize",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2712,7 +3006,7 @@
     }
   },
   {
-    "__docId__": 180,
+    "__docId__": 187,
     "kind": "member",
     "name": "posx",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2729,7 +3023,7 @@
     }
   },
   {
-    "__docId__": 181,
+    "__docId__": 188,
     "kind": "member",
     "name": "posy",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2746,7 +3040,7 @@
     }
   },
   {
-    "__docId__": 182,
+    "__docId__": 189,
     "kind": "member",
     "name": "baseX",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2763,7 +3057,7 @@
     }
   },
   {
-    "__docId__": 183,
+    "__docId__": 190,
     "kind": "member",
     "name": "baseY",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2780,7 +3074,7 @@
     }
   },
   {
-    "__docId__": 184,
+    "__docId__": 191,
     "kind": "member",
     "name": "capacity",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2797,7 +3091,7 @@
     }
   },
   {
-    "__docId__": 185,
+    "__docId__": 192,
     "kind": "member",
     "name": "animSpeed",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2814,7 +3108,7 @@
     }
   },
   {
-    "__docId__": 186,
+    "__docId__": 193,
     "kind": "member",
     "name": "waiting",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2831,7 +3125,7 @@
     }
   },
   {
-    "__docId__": 188,
+    "__docId__": 195,
     "kind": "member",
     "name": "purplePosition",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2848,7 +3142,7 @@
     }
   },
   {
-    "__docId__": 189,
+    "__docId__": 196,
     "kind": "member",
     "name": "battery",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2865,7 +3159,7 @@
     }
   },
   {
-    "__docId__": 190,
+    "__docId__": 197,
     "kind": "method",
     "name": "followPath",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2888,7 +3182,7 @@
     "return": null
   },
   {
-    "__docId__": 195,
+    "__docId__": 202,
     "kind": "method",
     "name": "collectLitter",
     "memberof": "src/renders/roverSprite.js~RoverSprite",
@@ -2935,7 +3229,7 @@
     "return": null
   },
   {
-    "__docId__": 204,
+    "__docId__": 211,
     "kind": "function",
     "name": "gridXY",
     "memberof": "src/renders/roverSprite.js",
@@ -2955,7 +3249,7 @@
     "ignore": true
   },
   {
-    "__docId__": 205,
+    "__docId__": 212,
     "kind": "file",
     "name": "src/server/CoordinatesConversion.js",
     "content": "function calculateWidth(startPos, endPos, maxX) {\n\tlet width = Math.abs((endPos.long - startPos.long)) / maxX\n\treturn width\n}\n\nfunction calculateHeight(startPos, endPos, maxY) {\n\tlet height = Math.abs((endPos.lat - startPos.lat)) / maxY\n\treturn height\n}\n\nfunction mapOnGrid(startPos, pos, width, height) {\n\tlet deltaX = Math.abs(pos.long - startPos.long)\n\tlet deltaY = Math.abs(pos.lat - startPos.lat)\n\tdeltaX = deltaX / width\n\tdeltaY = deltaY / height\n\tconsole.log(deltaX + \" - \" + deltaY)\n\treturn {x: deltaX, y: deltaY}\n}\n\nmodule.exports = {calculateWidth, calculateHeight, mapOnGrid}\n",
@@ -2966,7 +3260,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 206,
+    "__docId__": 213,
     "kind": "function",
     "name": "calculateWidth",
     "memberof": "src/server/CoordinatesConversion.js",
@@ -3009,7 +3303,7 @@
     "ignore": true
   },
   {
-    "__docId__": 207,
+    "__docId__": 214,
     "kind": "function",
     "name": "calculateHeight",
     "memberof": "src/server/CoordinatesConversion.js",
@@ -3052,7 +3346,7 @@
     "ignore": true
   },
   {
-    "__docId__": 208,
+    "__docId__": 215,
     "kind": "function",
     "name": "mapOnGrid",
     "memberof": "src/server/CoordinatesConversion.js",
@@ -3101,7 +3395,7 @@
     "ignore": true
   },
   {
-    "__docId__": 209,
+    "__docId__": 216,
     "kind": "file",
     "name": "src/server/dronePathFinding.js",
     "content": "var PF = require('pathfinding');\nvar height = 0;\nvar width = 0;\nvar temp = [];\nvar utilityArray = [];\n\nfunction pathFindingEngine(currentLocation, targets, grid, direction, treeArray) {\n  var droneX = currentLocation.x;\n  var droneY = currentLocation.y;\n\n  if (temp.length == 0) {\n    height = grid.length;\n    width = grid[0].length;\n    temp = transformGrid();\n    // initialize utility array\n    utilityInitialisation();\n  }\n\n  updateUtility(treeArray);\n\n  temp = setWalkable(targets, temp);\n\n  var candidateTargets = [];\n  var candidatePaths = [];\n\n  // get path\n  var finder = new PF.AStarFinder({\n    allowDiagonal: true\n  });\n  // console.log('target length: '+targets.length);\n  for (var i = 0; i < targets.length; i++) {\n    var newGrid = new PF.Grid(temp);\n    var path = finder.findPath(droneX, droneY, targets[i][0], targets[i][1], newGrid);\n\n    utilityArray[targets[i][1]][targets[i][0]] -= 1;\n\n    if (path.length != 0) {\n      // store the targets and the corresponding path\n      candidateTargets.push([targets[i][0], targets[i][1]]);\n      candidatePaths.push(path);\n    }\n  }\n  // evaluate the candidate targets to get the best destination to go\n  var data = evaluateTarget(candidateTargets, droneX, droneY, direction);\n  data.direction = changeDirection(data, candidateTargets, width);\n  var newdata = {path: candidatePaths[data.index], direction: data.direction};\n  // all the points on the path shall minus 1 to remain unchanged according to the utility array value\n  for (var i = 0; i < newdata.path.length; i++) {\n    var path = newdata.path;\n    utilityArray[path[i][1]][path[i][0]] -= 1;\n  }\n\n  return newdata;\n}\n\nfunction utilityMovement(currentLocation, treeArray) {\n  var droneX = currentLocation.x;\n  var droneY = currentLocation.y;\n  // update the utility array\n  updateUtility(treeArray);\n  // according to the utility array, calculate which is the next target\n  // rank the 2D utilityArray\n  var maxUtility = 0;\n  var candidateTargets = [];\n  // calculate the candidate targets with the highest utility value\n  for (var i = 0; i < height; i++) {\n    for (var j = 0; j < width; j++) {\n      if (utilityArray[i][j] > maxUtility) {\n        maxUtility = utilityArray[i][j];\n        if (candidateTargets.length != 0) {\n          candidateTargets = [];\n        }\n        candidateTargets.push([j,i]);\n      } else if (utilityArray[i][j] == maxUtility) {\n      candidateTargets.push([j,i]);\n      }\n    }\n  }\n  console.log('candidate targets utility length: ' + candidateTargets.length);\n  // calculate which candidate target is the farthest from the current position\n  var index = Math.floor(Math.random()*(candidateTargets.length));\n  var target = [candidateTargets[index][0], candidateTargets[index][1]];\n  // var maxDistance = 0;\n  // var target = [0,0];\n  // for (var i = 0; i < candidateTargets.length; i++) {\n  //   var posx = candidateTargets[i][0];\n  //   var posy = candidateTargets[i][1];\n  //   var distance = Math.sqrt((droneX-posx)^2 + (droneY-posy)^2);\n  //   if (distance >= maxDistance) {\n  //     target = [posx, posy];\n  //     maxDistance = distance;\n  //   }\n  // }\n\n  // get path using AStarFinder\n  var finder = new PF.AStarFinder({\n    allowDiagonal: true\n  });\n\n  console.log('the utility target should be: '+target[0]+ ', '+target[1]);\n  var utilityGrid = new PF.Grid(temp);\n  var path = finder.findPath(droneX, droneY, target[0], target[1], utilityGrid);\n  for (var i = 0; i < path.length; i++) {\n    utilityArray[path[i][1]][path[i][0]] = 0;\n  }\n\n  return path;\n}\n\nfunction transformGrid() {\n  var temp = [];\n  for (var i = 0; i < height; i++) {\n    temp[i] = [];\n    for (var j = 0; j < width; j++) {\n      temp[i][j] = 1;\n    }\n  }\n\n  return temp;\n}\n// initialize an empty utility array with the same height and width of the grid map\nfunction utilityInitialisation () {\n  var utility = [];\n  for (var i = 0; i < width; i++) {\n    utility[i] = 0;\n  }\n  for (var j = 0; j < height; j++) {\n    utilityArray[j] = utility;\n  }\n}\n// update the utility array and set the tree positions to be -1 and the other positions +2\nfunction updateUtility (treeArray) {\n  for (var i = 0; i < height; i++) {\n    for (var j = 0; j < width; j++) {\n      if (treeArray[i][j] != 1) {\n        utilityArray[i][j] += 2;\n      } else {\n        utilityArray[i][j] = -1;\n      }\n    }\n  }\n}\n\nfunction setWalkable(targets, temp) {\n  for (var i = 0; i < targets.length; i++) {\n    var x = targets[i][0];\n    var y = targets[i][1];\n    temp[y][x] = 0;\n  }\n  return temp;\n}\n\n// evaluate the candidate targets and returns the best target index to explore the map\nfunction evaluateTarget(candidateTargets, posx, posy, direction) {\n  // use direction to decide which target to take for the next step\n  var bestIndex = 0;\n  var differenceX = 0;\n  var differenceY = 0;\n  // method 1\n  for (var i = 0; i < candidateTargets.length; i++) {\n    // from left to right\n    if (direction == 'right') {\n      var distanceX = candidateTargets[i][0] - posx;\n      if (distanceX > differenceX) {\n        bestIndex = i;\n        differenceX = distanceX;\n        differenceY = Math.abs(candidateTargets[i][1] - posy);\n      } else if (distanceX == differenceX) {\n        var distanceY = Math.abs(candidateTargets[i][1] - posy);\n        if (distanceY < differenceY) {\n          bestIndex = i;\n          differenceY = distanceY;\n        }\n      }\n    }\n    // from right to left\n    if (direction == 'left') {\n      var distanceX = posx - candidateTargets[i][0];\n      if (distanceX > differenceX) {\n        bestIndex = i;\n        differenceX = distanceX;\n        differenceY = Math.abs(candidateTargets[i][1] - posy);\n      } else if (distanceX == differenceX) {\n        var distanceY = Math.abs(candidateTargets[i][1] - posy);\n        if (distanceY < differenceY) {\n          bestIndex = i;\n          differenceY = distanceY;\n        }\n      }\n    }\n    // from top to bottom\n    if (direction == 'down') {\n      var distanceY = candidateTargets[i][1] - posy;\n      if (distanceY > differenceY) {\n        bestIndex = i;\n        differenceY = distanceY;\n        differenceX = Math.abs(candidateTargets[i][0] - posx);\n      } else if (distanceY == differenceY) {\n        var distanceX = Math.abs(candidateTargets[i][0] - posx);\n        if (distanceX < differenceX) {\n          bestIndex = i;\n          differenceX = distanceX;\n        }\n      }\n    }\n  }\n\n  data = {index: bestIndex, direction: direction};\n  return data;\n}\n\n// change next Direction\nfunction changeDirection(data, candidateTargets, width) {\n  var direction = data.direction;\n  var target = candidateTargets[data.index];\n  console.log('show direction before changing it: ' + direction);\n  //console.log('show target position x: ' + target[0]);\n  if ((target[0] == width-1 && direction == 'right') || (target[0] == 0 && direction == 'left')) {\n    if (target[1] == height-1) {\n      direction = 'utility random';\n    } else {\n      direction = 'down';\n    }\n  }\n  else if (target[0] == width-1 && direction == 'down') {\n    direction = 'left';\n  }\n  else if (target[0] == 0 && direction == 'down') {\n    direction = 'right';\n  }\n\n  return direction;\n}\n\nmodule.exports.engine = pathFindingEngine;\nmodule.exports.utility = utilityMovement;\n",
@@ -3112,7 +3406,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 210,
+    "__docId__": 217,
     "kind": "variable",
     "name": "PF",
     "memberof": "src/server/dronePathFinding.js",
@@ -3133,7 +3427,7 @@
     "ignore": true
   },
   {
-    "__docId__": 211,
+    "__docId__": 218,
     "kind": "variable",
     "name": "height",
     "memberof": "src/server/dronePathFinding.js",
@@ -3154,7 +3448,7 @@
     "ignore": true
   },
   {
-    "__docId__": 212,
+    "__docId__": 219,
     "kind": "variable",
     "name": "width",
     "memberof": "src/server/dronePathFinding.js",
@@ -3175,7 +3469,7 @@
     "ignore": true
   },
   {
-    "__docId__": 213,
+    "__docId__": 220,
     "kind": "variable",
     "name": "temp",
     "memberof": "src/server/dronePathFinding.js",
@@ -3196,7 +3490,7 @@
     "ignore": true
   },
   {
-    "__docId__": 214,
+    "__docId__": 221,
     "kind": "variable",
     "name": "utilityArray",
     "memberof": "src/server/dronePathFinding.js",
@@ -3217,7 +3511,7 @@
     "ignore": true
   },
   {
-    "__docId__": 215,
+    "__docId__": 222,
     "kind": "function",
     "name": "pathFindingEngine",
     "memberof": "src/server/dronePathFinding.js",
@@ -3272,7 +3566,7 @@
     "ignore": true
   },
   {
-    "__docId__": 216,
+    "__docId__": 223,
     "kind": "function",
     "name": "utilityMovement",
     "memberof": "src/server/dronePathFinding.js",
@@ -3309,7 +3603,7 @@
     "ignore": true
   },
   {
-    "__docId__": 217,
+    "__docId__": 224,
     "kind": "function",
     "name": "transformGrid",
     "memberof": "src/server/dronePathFinding.js",
@@ -3333,7 +3627,7 @@
     "ignore": true
   },
   {
-    "__docId__": 218,
+    "__docId__": 225,
     "kind": "function",
     "name": "utilityInitialisation",
     "memberof": "src/server/dronePathFinding.js",
@@ -3353,7 +3647,7 @@
     "ignore": true
   },
   {
-    "__docId__": 219,
+    "__docId__": 226,
     "kind": "function",
     "name": "updateUtility",
     "memberof": "src/server/dronePathFinding.js",
@@ -3380,7 +3674,7 @@
     "ignore": true
   },
   {
-    "__docId__": 220,
+    "__docId__": 227,
     "kind": "function",
     "name": "setWalkable",
     "memberof": "src/server/dronePathFinding.js",
@@ -3417,7 +3711,7 @@
     "ignore": true
   },
   {
-    "__docId__": 221,
+    "__docId__": 228,
     "kind": "function",
     "name": "evaluateTarget",
     "memberof": "src/server/dronePathFinding.js",
@@ -3466,7 +3760,7 @@
     "ignore": true
   },
   {
-    "__docId__": 222,
+    "__docId__": 229,
     "kind": "function",
     "name": "changeDirection",
     "memberof": "src/server/dronePathFinding.js",
@@ -3509,7 +3803,7 @@
     "ignore": true
   },
   {
-    "__docId__": 223,
+    "__docId__": 230,
     "kind": "file",
     "name": "src/server/index.js",
     "content": "const path = require('path')\r\nconst express = require('express') //Load Express\r\nconst app = express() //App is an Express function\r\nconst port = 3000 //Set a port\r\nconst root = __dirname; //Root is the current Directory\r\nconst socket = require('socket.io') //Load socket.io\r\nconst sender = require('./sender.js')\r\n\r\n//Route to the main HTML page (in this case index.html)\r\napp.get('/', function(req, res) {\r\n    res.sendFile('index.html', {root: path.join(root, '../')});\r\n});\r\n\r\n//Specify where to get files\r\n//E.g. the various js scripts in index.html\r\napp.use(express.static('../'));\r\n\r\n//Listening to port(3000) and logging a message on console\r\n//Also save the connection to a variable named 'server'\r\nconst server = app.listen(port,\r\n    () => console.log(`Example app listening on port ${port}!`));\r\n\r\n//Make a socket instance from what we requried\r\n//connected `to the previously created server\r\nconst io = socket(server);\r\nsender(io);\r\n",
@@ -3520,7 +3814,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 224,
+    "__docId__": 231,
     "kind": "variable",
     "name": "path",
     "memberof": "src/server/index.js",
@@ -3541,7 +3835,7 @@
     "ignore": true
   },
   {
-    "__docId__": 225,
+    "__docId__": 232,
     "kind": "variable",
     "name": "express",
     "memberof": "src/server/index.js",
@@ -3562,7 +3856,7 @@
     "ignore": true
   },
   {
-    "__docId__": 226,
+    "__docId__": 233,
     "kind": "variable",
     "name": "app",
     "memberof": "src/server/index.js",
@@ -3583,7 +3877,7 @@
     "ignore": true
   },
   {
-    "__docId__": 227,
+    "__docId__": 234,
     "kind": "variable",
     "name": "port",
     "memberof": "src/server/index.js",
@@ -3604,7 +3898,7 @@
     "ignore": true
   },
   {
-    "__docId__": 228,
+    "__docId__": 235,
     "kind": "variable",
     "name": "root",
     "memberof": "src/server/index.js",
@@ -3625,7 +3919,7 @@
     "ignore": true
   },
   {
-    "__docId__": 229,
+    "__docId__": 236,
     "kind": "variable",
     "name": "socket",
     "memberof": "src/server/index.js",
@@ -3646,7 +3940,7 @@
     "ignore": true
   },
   {
-    "__docId__": 230,
+    "__docId__": 237,
     "kind": "variable",
     "name": "sender",
     "memberof": "src/server/index.js",
@@ -3667,7 +3961,7 @@
     "ignore": true
   },
   {
-    "__docId__": 231,
+    "__docId__": 238,
     "kind": "variable",
     "name": "server",
     "memberof": "src/server/index.js",
@@ -3688,7 +3982,7 @@
     "ignore": true
   },
   {
-    "__docId__": 232,
+    "__docId__": 239,
     "kind": "variable",
     "name": "io",
     "memberof": "src/server/index.js",
@@ -3709,7 +4003,7 @@
     "ignore": true
   },
   {
-    "__docId__": 233,
+    "__docId__": 240,
     "kind": "file",
     "name": "src/server/roverPathFinding.js",
     "content": "//function that calculates the h for all the litters\nvar PF = require('pathfinding');\n\nfunction pathFindingEngine (litterArrayLocations, currentLocation, grid, gridCoordinates, capacity, baseX, baseY, battery) {\n\tvar shortestPath = [];\n\tvar length = 1000000; //for now test\n\tvar foundPath = 0;\n\n\tif (capacity == 0) {\n\t\tvar temp = transformGrid(grid, gridCoordinates);\n\t\tvar gridCopy = new PF.Grid(temp);\n\t\tvar finder = new PF.AStarFinder({\n\t\t\t\t\tallowDiagonal: true\n\t\t\t\t});\n\t\treturn(finder.findPath(currentLocation.x, currentLocation.y, baseX, baseY, gridCopy));\n\t}\n\n\tfor (var i = 0; i < litterArrayLocations.length; i++) {\n\t\tfor (var j = 0; j < litterArrayLocations[i].length; j++) {\n\t\t\tif (litterArrayLocations[i][j] == 1) {\n\t\t\t\tvar temp = transformGrid(grid, gridCoordinates);\n\t\t\t\tvar gridCopy = new PF.Grid(temp);\n\t\t\t\tvar finder = new PF.AStarFinder({\n\t\t\t\t\tallowDiagonal: true\n\t\t\t\t});\n\t\t\t\tvar path = finder.findPath(currentLocation.x, currentLocation.y, j, i, gridCopy);\n\t\t\t\tvar gridBatteryCopy = new PF.Grid(temp);\n\n\t\t\t\tif (path.length < length) {\n\t\t\t\t\tconsole.log(\"j val : \" + j + \" i val: \" + i + \" base x : \" + baseX + \" base y : \" + baseY);\n\t\t\t\t\tvar basePath = finder.findPath(j, i, baseX, baseY, gridBatteryCopy);\n\t\t\t\t\tvar\tbatteryToBase = pathBatteryUse(basePath);\n\t\t\t\t\tif ((batteryToBase + pathBatteryUse(path)) <= battery) {\n\t\t\t\t\t\tshortestPath = path;\n\t\t\t\t\t\tlength = path.length;\n\t\t\t\t\t\tfoundPath = 1;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\t//litterArrayLocations[i][j] = 0;\n\t\t}\n\t\t}\n\t}\n\tif (foundPath == 0) {\n\t\tvar temp = transformGrid(grid, gridCoordinates);\n\t\tvar gridCopy = new PF.Grid(temp);\n\t\tvar finder = new PF.AStarFinder({\n\t\t\t\t\tallowDiagonal: true\n\t\t\t\t});\n\t\treturn(finder.findPath(currentLocation.x, currentLocation.y, baseX, baseY, gridCopy));\n\t} else {\n\t\treturn shortestPath;\n\t}\n}\n\nfunction transformGrid(grid, gridCoordinates) {\n\tvar temp = [];\n\tfor (var i = 0; i < grid.length; i++) {\n\t\ttemp[i] = [];\n\t\tfor (var j = 0; j < grid[i].length; j++) {\n\t\t\tif (grid[i][j] == \"grass\" || grid[i][j] == \"base\") {\n\t\t\t\ttemp[i][j] = 0;\n\t\t\t} else {\n\t\t\t\ttemp[i][j] = 1;\n\t\t\t}\n\t\t\tif(j == gridCoordinates.x && i == gridCoordinates.y){\n\t\t\t\ttemp[i][j] = 1;\n\t\t\t}\n\t\t}\n\t}\n\treturn temp;\n}\n\nfunction pathBatteryUse(path) {\n\tvar batteryUse = 0;\n\tfor (var i = 1; i < path.length; i++) {\n\t\tvar x = path[i][0];\n\t\tvar y = path[i][1];\n\t\tvar prevX = path[i-1][0];\n\t\tvar prevY = path[i-1][1];\n\t\tif(x == prevX || y == prevY) {\n\t\t\tbatteryUse = batteryUse + 10\n\t\t}\n\t\telse {\n\t\t\tbatteryUse = batteryUse + 15;\n\t\t}\n\t}\n\treturn batteryUse;\n}\n\nmodule.exports = pathFindingEngine;\n",
@@ -3720,7 +4014,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 234,
+    "__docId__": 241,
     "kind": "variable",
     "name": "PF",
     "memberof": "src/server/roverPathFinding.js",
@@ -3741,7 +4035,7 @@
     "ignore": true
   },
   {
-    "__docId__": 235,
+    "__docId__": 242,
     "kind": "function",
     "name": "pathFindingEngine",
     "memberof": "src/server/roverPathFinding.js",
@@ -3814,7 +4108,7 @@
     "ignore": true
   },
   {
-    "__docId__": 236,
+    "__docId__": 243,
     "kind": "function",
     "name": "transformGrid",
     "memberof": "src/server/roverPathFinding.js",
@@ -3851,7 +4145,7 @@
     "ignore": true
   },
   {
-    "__docId__": 237,
+    "__docId__": 244,
     "kind": "function",
     "name": "pathBatteryUse",
     "memberof": "src/server/roverPathFinding.js",
@@ -3882,7 +4176,7 @@
     "ignore": true
   },
   {
-    "__docId__": 238,
+    "__docId__": 245,
     "kind": "file",
     "name": "src/server/sender.js",
     "content": "const engine = require('./roverPathFinding.js')\nconst droneEngine = require('./dronePathFinding.js')\nconst converter = require('./CoordinatesConversion.js')\n\nvar gridCoordinates = {x:0, y:1};\nvar purpleChange = false;\nvar scanRadius = 0;\nvar grid = [];\nvar direction = 'right'\nvar treeArray = [];\nvar litterArray = [];\nvar startPos = {\n  lat: 0,\n\tlong: 0\n}\nvar endPos = {\n\tlat: 0,\n\tlong: 0\n}\nvar latLongWidth = 0;\nvar latLongHeight = 0;\n\nvar litterArrayLocations = [];\nvar roverX;\nvar roverY;\nvar baseX;\nvar baseY;\nvar capacity;\nvar battery;\n\nvar width;\nvar height;\n\nvar count = 0;\nvar clientId;\n\nfunction sender(io) {\n\t//When a client connect display message on console\n\tio.on('connection', function(socket){\n\t  console.log('a user connected');\n\n    socket.on('rover-frontEnd', function(data) {\n\t\t\tconsole.log('ID of the client is: ' + clientId);\n\t\t\troverX = data.coordinates.posx;\n\t\t\troverY = data.coordinates.posy;\n\n\t\t\tbaseX = data.coordinates.basex;\n\t\t\tbaseY = data.coordinates.basey;\n\t\t\tcapacity = data.capacity;\n\t\t\tbattery = data.battery;\n\t\t\tvar path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, gridCoordinates, capacity, baseX, baseY, battery);\n\t\t\tconsole.log(path);\n\n\t\t\tif (data.state != false) {\n\t\t\t\tsocket.emit('rover-frontEnd', path);\n\t\t\t}\n\n\t\t});\n\n    socket.on('grid-channel', function(data) {\n\t\t\tclientId = socket.id;\n\t\t\tconsole.log('ID of the client is: ' + clientId);\n\t\t\tgrid = data.grid;\n\t\t\tlitterArrayLocations = data.litter;\n\t\t\theight = grid.length;\n\t\t\twidth = grid[0].length;\n\t\t\t// initialize the utilityArray for the first time it sends the information of grid map\n\t\t\tif (count == 0) {\n\t\t\t\ttreeArray = initializeTreeArray();\n\t\t\t\tconsole.log('successfully initialize grid');\n\t\t\t\tcount = 2;\n\t\t\t}\n\t\t});\n\t\t// copy tre array from front end to back end\n\t\tsocket.on('treeArray', function(data) {\n\t\t\ttreeArray = data;\n\t\t});\n\t\t//receive the location of the drone and send back the path\n\t\tsocket.on('drone-frontEnd', function(data) {\n\t\t\tscanRadius = data.scanRadius;\n      var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};\n\t\t\tif (data.state != false) {\n        if (direction != 'utility random') {\n          var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);\n  \t\t\t\tconsole.log('the length of targets array: '+ targets.length);\n  \t\t\t\tvar newdata = droneEngine.engine(currentLocation, targets, grid, direction, treeArray);\n  \t\t\t\tdirection = newdata.direction;\n  \t\t\t\tconsole.log('the direction next is: ' + direction);\n  \t\t\t\tvar path = newdata.path;\n  \t\t\t\t// console.log('the length of the drone path is: '+path.length);\n        } else {\n          var path = droneEngine.utility(currentLocation, treeArray);\n        }\n\t\t\t\tsocket.emit('drone-frontEnd', path);\n\t\t\t}\n\t\t});\n\t\t// receive litter from the drone\n\t\tsocket.on('litter-channel', function(data) {\n\t\t\tlitterArray = data;\n\t\t});\n\n\t\tsocket.on('mobile-channel', function(data) {\n\t\t\tconsole.log('position received: ' + data.latitude + ' - ' + data.longitude)\n\t\t\tlet pos = {lat: data.latitude, long: data.longitude}\n\t\t\tgridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);\n\t\t\tif (gridCoordinates.x > grid.length || gridCoordinates.x < 0) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\telse if (gridCoordinates.y > grid[0].length || gridCoordinates.y < 0) {\n\t\t\t\treturn;\n\t\t\t} else {\n\t\t\t\tio.to(clientId).emit('phone', gridCoordinates);\n        io.to(clientId).emit('gridCoordinates', gridCoordinates);\n        purpleChange = true;\n\t\t\t\tconsole.log('YOLOOOOOO');\n\t\t\t}\n\t\t});\n\t\t//connection for recieving start position of the map\n\t\tsocket.on('app-startPos', function(data){\n\t\t\tconsole.log('Recived start positions')\n\t\t\tstartPos.lat = data.latitude\n\t\t\tstartPos.long = data.longitude\n\t\t});\n\t\t//connection for recieving end position of the map\n\t\tsocket.on('app-endPos', function(data){\n\t\t\tconsole.log('Recived end position')\n\t\t\tendPos.lat = data.latitude\n\t\t\tendPos.long = data.longitude\n\t\t\t//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!\n\t\t\t//!!!!!!!!!!!!\n\t\t\tlatLongWidth = converter.calculateWidth(startPos, endPos, grid.length)\n\t\t\tlatLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)\n\n\t\t\tconsole.log(\"Calculated width: \" + latLongWidth)\n\t\t\tconsole.log(\"Calculated height: \" + latLongHeight)\n\t\t});\n  });\n\n}\n\n// a function that checks the scanning area and returns positions that can be the target\nfunction checkTrees(posx, posy, scanRadius) {\n\tvar targets = [];\n\tconsole.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);\n\n\tfor (var i = -scanRadius; i <= scanRadius; i++) {\n\t\tfor (var j = -scanRadius; j <= scanRadius; j++) {\n\t\t\tif (posx+i >= width || posy+j >= height || posx+i < 0 || posy+j < 0) {\n\t\t\t\t\tcontinue;\n\t\t\t} else if (treeArray[posy+j][posx+i] != 1) {\n\t\t\t\ttargets.push([posx+i,posy+j]);\n\t\t\t}\n\t\t}\n\t}\n\n\treturn targets;\n}\n\n //initialize treeArray to be a 2D array/\n function initializeTreeArray() {\n \tvar trees = [];\n \tvar treesArray = [];\n \tfor (var j = 0; j < width; j++) {\n \t\ttrees[j] = 0;\n \t}\n \tfor (var i = 0; i < height; i++) {\n \t\ttreesArray[i] = trees;\n \t}\n\n  return treesArray;\n\n  }\n\nmodule.exports = sender;\n",
@@ -3893,7 +4187,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 239,
+    "__docId__": 246,
     "kind": "variable",
     "name": "engine",
     "memberof": "src/server/sender.js",
@@ -3914,7 +4208,7 @@
     "ignore": true
   },
   {
-    "__docId__": 240,
+    "__docId__": 247,
     "kind": "variable",
     "name": "droneEngine",
     "memberof": "src/server/sender.js",
@@ -3935,7 +4229,7 @@
     "ignore": true
   },
   {
-    "__docId__": 241,
+    "__docId__": 248,
     "kind": "variable",
     "name": "converter",
     "memberof": "src/server/sender.js",
@@ -3956,7 +4250,7 @@
     "ignore": true
   },
   {
-    "__docId__": 242,
+    "__docId__": 249,
     "kind": "variable",
     "name": "gridCoordinates",
     "memberof": "src/server/sender.js",
@@ -3977,7 +4271,7 @@
     "ignore": true
   },
   {
-    "__docId__": 243,
+    "__docId__": 250,
     "kind": "variable",
     "name": "purpleChange",
     "memberof": "src/server/sender.js",
@@ -3998,7 +4292,7 @@
     "ignore": true
   },
   {
-    "__docId__": 244,
+    "__docId__": 251,
     "kind": "variable",
     "name": "scanRadius",
     "memberof": "src/server/sender.js",
@@ -4019,7 +4313,7 @@
     "ignore": true
   },
   {
-    "__docId__": 245,
+    "__docId__": 252,
     "kind": "variable",
     "name": "grid",
     "memberof": "src/server/sender.js",
@@ -4040,7 +4334,7 @@
     "ignore": true
   },
   {
-    "__docId__": 246,
+    "__docId__": 253,
     "kind": "variable",
     "name": "direction",
     "memberof": "src/server/sender.js",
@@ -4061,7 +4355,7 @@
     "ignore": true
   },
   {
-    "__docId__": 247,
+    "__docId__": 254,
     "kind": "variable",
     "name": "treeArray",
     "memberof": "src/server/sender.js",
@@ -4082,7 +4376,7 @@
     "ignore": true
   },
   {
-    "__docId__": 248,
+    "__docId__": 255,
     "kind": "variable",
     "name": "litterArray",
     "memberof": "src/server/sender.js",
@@ -4103,7 +4397,7 @@
     "ignore": true
   },
   {
-    "__docId__": 249,
+    "__docId__": 256,
     "kind": "variable",
     "name": "startPos",
     "memberof": "src/server/sender.js",
@@ -4124,7 +4418,7 @@
     "ignore": true
   },
   {
-    "__docId__": 250,
+    "__docId__": 257,
     "kind": "variable",
     "name": "endPos",
     "memberof": "src/server/sender.js",
@@ -4145,7 +4439,7 @@
     "ignore": true
   },
   {
-    "__docId__": 251,
+    "__docId__": 258,
     "kind": "variable",
     "name": "latLongWidth",
     "memberof": "src/server/sender.js",
@@ -4166,7 +4460,7 @@
     "ignore": true
   },
   {
-    "__docId__": 252,
+    "__docId__": 259,
     "kind": "variable",
     "name": "latLongHeight",
     "memberof": "src/server/sender.js",
@@ -4187,7 +4481,7 @@
     "ignore": true
   },
   {
-    "__docId__": 253,
+    "__docId__": 260,
     "kind": "variable",
     "name": "litterArrayLocations",
     "memberof": "src/server/sender.js",
@@ -4208,7 +4502,7 @@
     "ignore": true
   },
   {
-    "__docId__": 254,
+    "__docId__": 261,
     "kind": "variable",
     "name": "count",
     "memberof": "src/server/sender.js",
@@ -4229,7 +4523,7 @@
     "ignore": true
   },
   {
-    "__docId__": 255,
+    "__docId__": 262,
     "kind": "function",
     "name": "sender",
     "memberof": "src/server/sender.js",
@@ -4256,7 +4550,7 @@
     "ignore": true
   },
   {
-    "__docId__": 256,
+    "__docId__": 263,
     "kind": "function",
     "name": "checkTrees",
     "memberof": "src/server/sender.js",
@@ -4299,7 +4593,7 @@
     "ignore": true
   },
   {
-    "__docId__": 257,
+    "__docId__": 264,
     "kind": "function",
     "name": "initializeTreeArray",
     "memberof": "src/server/sender.js",

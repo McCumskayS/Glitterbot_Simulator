@@ -18,6 +18,8 @@
   "devDependencies": {
     "esdoc": "^1.1.0",
     "esdoc-standard-plugin": "^1.0.0",
+    "jsdo": "^4.3.12",
+    "jsdoc": "^3.5.5",
     "nodemon": "^1.18.7"
   }
 }

@@ -35,7 +35,17 @@
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/renders/pixiSetup.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+/**
+ * the object container for pixi
+ * @type {object}
+ * @public
+ */
 const container = new PIXI.Container();
+/**
+ * the pixel coordinate Y of the sprite
+ * @type {object}
+ * @public
+ */
 const app = new PIXI.Application({
 		width: 800,
 		height: 400,
@@ -58,6 +68,13 @@ container
 			 .on(&apos;pointerupoutside&apos;, onDragEnd)
 			 .on(&apos;pointermove&apos;, onDragMove);
 
+
+/**
+	* This function handles the beginning of the drag for the map
+	* @function
+	* @param {event} event - the mouse event on screen
+	* @return {void}
+*/
 function onDragStart(event) {
 	this.data = event.data;
 	var position = this.data.getLocalPosition(this);
@@ -67,6 +84,11 @@ function onDragStart(event) {
 	this.dragging = true;
 }
 
+/**
+	* This function handles what happens when the drag ends
+	* @function
+	* @return {void}
+*/
 function onDragEnd() {
 	document.body.style.cursor = &apos;auto&apos;;
 	this.alpha = 1;
@@ -74,6 +96,11 @@ function onDragEnd() {
 	this.data = null;
 }
 
+/**
+	* This function handles what happens during the drag
+	* @function
+	* @return {void}
+*/
 function onDragMove() {
 	if (this.dragging) {
 		document.body.style.cursor = &apos;move&apos;;

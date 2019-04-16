@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/renders/renderMapRefactor.js | glitterbot</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/renders/renderMapRefactor.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const socket = io();
+var count = 0;
+
+class MapRenderer {
+	constructor(container) {
+		this.row = 20;
+		this.col = 30;
+		this.container = container;
+		this.squareSize = 20;
+		this.baseX = 15;
+		this.baseY = 10;
+		this.grid = [];
+		this.litterArray = [];
+		this.litterArrayLocations = [];
+		this.grassTexture = PIXI.Texture.fromImage(&apos;./sprites/grass.png&apos;);
+		this.rockTexture = PIXI.Texture.fromImage(&apos;./sprites/rock.png&apos;);
+		this.litterTexture = PIXI.Texture.fromImage(&apos;./sprites/litter.png&apos;);
+		this.baseTexture = PIXI.Texture.fromImage(&apos;./sprites/base.png&apos;);
+		this.roverSprite = null;
+		this.droneSprite = null;
+		//phone drone stuff
+		this.phoneDrone = null;
+
+		// new features
+		this.treeTexture = PIXI.Texture.fromImage(&apos;./sprites/tree.png&apos;);
+		this.treeArray = [];
+
+		this.addLitter = this.addLitter.bind(this);
+		this.drawGrid = this.drawGrid.bind(this);
+		this.removeLitter = this.removeLitter.bind(this);
+		this.moveDrone = this.moveDrone.bind(this);
+		this.movePhoneDrone = this.movePhoneDrone.bind(this);
+	}
+
+	drawGrid() {
+		for (var i = 0; i &lt; this.row; i++) {
+			this.grid[i] = [];
+			this.litterArray[i] = [];
+			this.treeArray[i] = [];
+			this.litterArrayLocations[i] = [];
+
+		for (var j = 0; j &lt; this.col; j++) {
+			if (j == this.baseX &amp;&amp; i == this.baseY) {
+				var terrain = new PIXI.Sprite(this.baseTexture);
+				this.grid[i][j] = &quot;base&quot;;
+      } else {
+        var num = Math.random();
+				if (num &gt; 0.03) {
+					// add trees to the map
+					if (num &gt; 0.94 &amp;&amp; i != 0 &amp;&amp; j != 0) {
+						var terrain = new PIXI.Sprite(this.treeTexture);
+						this.grid[i][j] = &quot;tree&quot;;
+						count = count + 1;
+						console.log(&apos;count value : &apos;+count);
+						console.log(&apos;tree position x: &apos; + j);
+						console.log(&apos;tree position y: &apos; + i);
+		      } else {
+						var terrain = new PIXI.Sprite(this.grassTexture);
+						this.grid[i][j] = &quot;grass&quot;;
+					}
+				} else {
+						var terrain = new PIXI.Sprite(this.rockTexture);
+						this.grid[i][j] = &quot;rock&quot;;
+					}
+				}
+
+			terrain.anchor.set(0.5, 0.5);
+			terrain.x = Math.floor(j % this.col) * this.squareSize;
+			terrain.y = Math.floor(i % this.row) * this.squareSize;
+			this.container.addChild(terrain);
+			this.litterArray[i][j] = null;
+			this.treeArray[i][j] = 0;
+		}
+	}
+		this.roverSprite = new RoverSprite(this.container, this.squareSize, this, this.baseX, this.baseY);
+		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray, this.baseX, this.baseY);
+		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
+		socket.emit(&apos;grid-channel&apos;, {grid: this.grid, litter: this.litterArrayLocations});
+	}
+
+	addLitter() {
+		//TODO: this function gets stuck in the while loop if there&apos;s not free spot to place new litter
+		do {
+			var row = Math.floor(Math.random()*(this.row));
+			var col = Math.floor(Math.random()*(this.col));
+		}
+		while ((this.litterArray[row][col] != null) || (this.grid[row][col] == &quot;rock&quot;) || (this.grid[row][col] == &quot;tree&quot;));
+		var litterSprite = new PIXI.Sprite(this.litterTexture);
+		litterSprite.anchor.set(0.5, 0.5);
+		litterSprite.x = Math.floor(col % this.col) * this.squareSize;
+		litterSprite.y = Math.floor(row % this.row) * this.squareSize;
+		this.litterArray[row][col] = litterSprite; //tochange maybe
+		this.litterArrayLocations[row][col] = 1;
+		//test update the litter array on the server
+		socket.emit(&apos;grid-channel&apos;, {grid: this.grid, litter: this.litterArrayLocations});
+		this.container.addChild(litterSprite);
+	}
+
+	removeLitter(x, y) {
+		if (this.litterArray[y][x] != null) {
+			this.container.removeChild(this.litterArray[y][x]);
+			delete this.litterArray[y][x];
+			this.litterArrayLocations[y][x] = 0;
+			socket.emit(&apos;grid-channel&apos;, {grid: this.grid, litter: this.litterArrayLocations});
+			return true;
+		}
+		return false;
+	}
+
+	moveRover(path) {
+		this.roverSprite.followPath(path);
+	}
+
+	moveDrone(data) {
+		this.droneSprite.moveTo(data);
+	}
+
+	movePhoneDrone(data) {
+		this.phoneDrone.moveTo(data);
+	}
+
+}
+
+function startRoutine(m) {
+
+	console.log(m.roverSprite.posx);
+	socket.emit(&quot;rover-frontEnd&quot;, {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
+		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
+	console.log(&quot;sending to the server&quot;);
+  setTimeout(startRoutine, 2000, m);
+}
+
+function droneRoutine(m) {
+	console.log(m.droneSprite.waiting)
+	socket.emit(&apos;drone-frontEnd&apos;, {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
+		scanRadius: m.droneSprite.scanRadius, state:m.droneSprite.waiting, grid:m.grid});
+		setTimeout(droneRoutine, 5000, m);
+}
+
+function updateUI(m) {
+	document.getElementById(&quot;roverDisplay&quot;).innerHTML = &quot;X: &quot; + m.roverSprite.posx + &quot; Y: &quot; + m.roverSprite.posy + &quot; Capacity: &quot; + m.roverSprite.capacity + &quot; | Battery Remaining: &quot; + m.roverSprite.battery;
+	document.getElementById(&quot;droneDisplay&quot;).innerHTML = &quot;X: &quot; + m.droneSprite.posx + &quot; Y: &quot; + m.droneSprite.posy;
+	setTimeout(updateUI, 100, m);
+}
+
+function setButtons(mapRenderer) {
+	//Linking the litter generations button to the addLitter method
+	const genLitterBtn = document.getElementById(&quot;litter&quot;);
+	genLitterBtn.addEventListener(&apos;click&apos;, mapRenderer.addLitter);
+}
+
+function randAddLitter(mapRenderer) {
+	var timer = Math.floor(Math.random() * 20001) + 10000;
+	mapRenderer.addLitter();
+	setTimeout(randAddLitter, timer, mapRenderer);
+}
+
+function batteryLevel(){
+	document.getElementByClassName(&quot;span_3&quot;).innerHTML = this.roverSprite.battery;
+}
+
+function main() {
+	const mapRenderer = new MapRenderer(container);
+	mapRenderer.drawGrid();
+	// the aim is to scan the area before it starts exploration
+	mapRenderer.moveDrone([[0,0]]);
+
+	droneRoutine(mapRenderer);
+
+	socket.on(&apos;phone&apos;, function(data) {
+		console.log(&apos;received data for the phone drone&apos;);
+		mapRenderer.movePhoneDrone(data);
+	});
+
+	socket.on(&apos;drone-frontEnd&apos;, function(data) {
+		for (let i = 0; i &lt; data.length; i++) {
+			console.log(data[i]);
+		}
+		mapRenderer.moveDrone(data);
+   });
+
+	setButtons(mapRenderer);
+	startRoutine(mapRenderer);
+	randAddLitter(mapRenderer);
+	updateUI(mapRenderer);
+
+	socket.on(&apos;rover-frontEnd&apos;, function(data) {
+		console.log(data);
+		mapRenderer.moveRover(data);
+	});
+}
+
+document.addEventListener(&apos;DOMContentLoaded&apos;, main);
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

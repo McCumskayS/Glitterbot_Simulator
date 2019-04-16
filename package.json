@@ -16,6 +16,8 @@
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
+    "esdoc": "^1.1.0",
+    "esdoc-standard-plugin": "^1.0.0",
     "nodemon": "^1.18.7"
   }
 }

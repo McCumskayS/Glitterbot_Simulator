@@ -1,3 +1,15 @@
+/**
+	* @param {integer} row - the number of rows of the map where the drone will be placed
+	* @param {integer} column - the number of columns of the map where the drone will be placed
+	* @param {2Darray} mapGrid - the 2D array that rapresents the map
+	* @param {number} squareSize - the size of each cell of the map in pixels
+	* @param {object} container - the pixiJS object container
+	* @param {2Darray} litterArray - the 2D array that holds the positions of the litters
+	* @param {2Darray} treeArray - the 2D array that holds the positiions of the trees
+	* @param {integer} baseX - this X location of the base on the map
+	* @param {integer} baseY - this Y location of the base on the map
+	* @return {DroneSprite} an instance of the drone 
+*/
 class DroneSprite {
 	//Creates the rover sprite and adds it to the map at x:0;y:0
 	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY) {

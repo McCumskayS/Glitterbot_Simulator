@@ -51,6 +51,7 @@ class PhoneDrone {
 	}
 	/**
 	* function that changes the waiting state to true
+	* @function
 	*/
 	makeTrue() {
 		this.waiting = true;

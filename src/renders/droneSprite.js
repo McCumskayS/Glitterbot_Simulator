@@ -75,7 +75,15 @@ class DroneSprite {
 			}
 	}
 
-	// A function that make the drone search litter in the surrounding area
+/**
+* function that searches the surroundings of the drone for any litter and trees.
+* @function
+* @param {integer} posx - x position of the drone.
+* @param {integer} posy - y position of the drone.
+* @returns {2Darray} treeArray - sends an updated version of tree array to server if new tree is found.
+* @returns {integer} posx - sends x position of the litter to the server.
+* @returns {interger} posy - sends y position of the litter to the server.
+**/
 	searchLitter(posx, posy) {
 		//testting waiting boolean
 		this.waiting = true;

@@ -1,4 +1,32 @@
-//require the pathfinding library
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/dronePathFinding.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/dronePathFinding.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//require the pathfinding library
 var PF = require('pathfinding');
 //height of grid
 var height = 0;
@@ -43,7 +71,7 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
     allowDiagonal: true
   });
   // console.log('target length: '+targets.length);
-  for (var i = 0; i < targets.length; i++) {
+  for (var i = 0; i &lt; targets.length; i++) {
     var newGrid = new PF.Grid(temp);
     var path = finder.findPath(droneX, droneY, targets[i][0], targets[i][1], newGrid);
 
@@ -60,7 +88,7 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
   data.direction = changeDirection(data, candidateTargets, width);
   var newdata = {path: candidatePaths[data.index], direction: data.direction};
   // all the points on the path shall minus 1 to remain unchanged according to the utility array value
-  for (var i = 0; i < newdata.path.length; i++) {
+  for (var i = 0; i &lt; newdata.path.length; i++) {
     var path = newdata.path;
     utilityArray[path[i][1]][path[i][0]] -= 1;
   }
@@ -85,8 +113,8 @@ function utilityMovement(currentLocation, treeArray) {
   var maxUtility = 0;
   var candidateTargets = [];
   // calculate the candidate targets with the highest utility value
-  for (var i = 0; i < height; i++) {
-    for (var j = 0; j < width; j++) {
+  for (var i = 0; i &lt; height; i++) {
+    for (var j = 0; j &lt; width; j++) {
       if (utilityArray[i][j] > maxUtility) {
         maxUtility = utilityArray[i][j];
         if (candidateTargets.length != 0) {
@@ -104,7 +132,7 @@ function utilityMovement(currentLocation, treeArray) {
   var target = [candidateTargets[index][0], candidateTargets[index][1]];
   // var maxDistance = 0;
   // var target = [0,0];
-  // for (var i = 0; i < candidateTargets.length; i++) {
+  // for (var i = 0; i &lt; candidateTargets.length; i++) {
   //   var posx = candidateTargets[i][0];
   //   var posy = candidateTargets[i][1];
   //   var distance = Math.sqrt((droneX-posx)^2 + (droneY-posy)^2);
@@ -122,7 +150,7 @@ function utilityMovement(currentLocation, treeArray) {
   console.log('the utility target should be: '+target[0]+ ', '+target[1]);
   var utilityGrid = new PF.Grid(temp);
   var path = finder.findPath(droneX, droneY, target[0], target[1], utilityGrid);
-  for (var i = 0; i < path.length; i++) {
+  for (var i = 0; i &lt; path.length; i++) {
     utilityArray[path[i][1]][path[i][0]] = 0;
   }
 
@@ -136,9 +164,9 @@ function utilityMovement(currentLocation, treeArray) {
 */
 function transformGrid() {
   var temp = [];
-  for (var i = 0; i < height; i++) {
+  for (var i = 0; i &lt; height; i++) {
     temp[i] = [];
-    for (var j = 0; j < width; j++) {
+    for (var j = 0; j &lt; width; j++) {
       temp[i][j] = 1;
     }
   }
@@ -152,10 +180,10 @@ function transformGrid() {
 */
 function utilityInitialisation () {
   var utility = [];
-  for (var i = 0; i < width; i++) {
+  for (var i = 0; i &lt; width; i++) {
     utility[i] = 0;
   }
-  for (var j = 0; j < height; j++) {
+  for (var j = 0; j &lt; height; j++) {
     utilityArray[j] = utility;
   }
 }
@@ -167,8 +195,8 @@ function utilityInitialisation () {
 */
 
 function updateUtility (treeArray) {
-  for (var i = 0; i < height; i++) {
-    for (var j = 0; j < width; j++) {
+  for (var i = 0; i &lt; height; i++) {
+    for (var j = 0; j &lt; width; j++) {
       if (treeArray[i][j] != 1) {
         utilityArray[i][j] += 2;
       } else {
@@ -185,7 +213,7 @@ function updateUtility (treeArray) {
 * @return {2Darray} updated grid.
 */
 function setWalkable(targets, temp) {
-  for (var i = 0; i < targets.length; i++) {
+  for (var i = 0; i &lt; targets.length; i++) {
     var x = targets[i][0];
     var y = targets[i][1];
     temp[y][x] = 0;
@@ -208,7 +236,7 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
   var differenceX = 0;
   var differenceY = 0;
   // method 1
-  for (var i = 0; i < candidateTargets.length; i++) {
+  for (var i = 0; i &lt; candidateTargets.length; i++) {
     // from left to right
     if (direction == 'right') {
       var distanceX = candidateTargets[i][0] - posx;
@@ -218,7 +246,7 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
         differenceY = Math.abs(candidateTargets[i][1] - posy);
       } else if (distanceX == differenceX) {
         var distanceY = Math.abs(candidateTargets[i][1] - posy);
-        if (distanceY < differenceY) {
+        if (distanceY &lt; differenceY) {
           bestIndex = i;
           differenceY = distanceY;
         }
@@ -233,7 +261,7 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
         differenceY = Math.abs(candidateTargets[i][1] - posy);
       } else if (distanceX == differenceX) {
         var distanceY = Math.abs(candidateTargets[i][1] - posy);
-        if (distanceY < differenceY) {
+        if (distanceY &lt; differenceY) {
           bestIndex = i;
           differenceY = distanceY;
         }
@@ -248,7 +276,7 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
         differenceX = Math.abs(candidateTargets[i][0] - posx);
       } else if (distanceY == differenceY) {
         var distanceX = Math.abs(candidateTargets[i][0] - posx);
-        if (distanceX < differenceX) {
+        if (distanceX &lt; differenceX) {
           bestIndex = i;
           differenceX = distanceX;
         }
@@ -272,17 +300,17 @@ function changeDirection(data, candidateTargets, width) {
   var target = candidateTargets[data.index];
   console.log('show direction before changing it: ' + direction);
   //console.log('show target position x: ' + target[0]);
-  if ((target[0] == width-1 && direction == 'right') || (target[0] == 0 && direction == 'left')) {
+  if ((target[0] == width-1 &amp;&amp; direction == 'right') || (target[0] == 0 &amp;&amp; direction == 'left')) {
     if (target[1] == height-1) {
       direction = 'utility random';
     } else {
       direction = 'down';
     }
   }
-  else if (target[0] == width-1 && direction == 'down') {
+  else if (target[0] == width-1 &amp;&amp; direction == 'down') {
     direction = 'left';
   }
-  else if (target[0] == 0 && direction == 'down') {
+  else if (target[0] == 0 &amp;&amp; direction == 'down') {
     direction = 'right';
   }
 
@@ -291,3 +319,26 @@ function changeDirection(data, candidateTargets, width) {
 
 module.exports.engine = pathFindingEngine;
 module.exports.utility = utilityMovement;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 17 2019 15:06:58 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

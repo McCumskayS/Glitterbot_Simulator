@@ -112,7 +112,6 @@ function sender(io) {
 				io.to(clientId).emit('phone', gridCoordinates);
         io.to(clientId).emit('gridCoordinates', gridCoordinates);
         purpleChange = true;
-				console.log('YOLOOOOOO');
 			}
 		});
 		//connection for recieving start position of the map

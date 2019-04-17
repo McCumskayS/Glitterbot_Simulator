@@ -20,7 +20,7 @@ class MapRenderer {
 		this.addLitter = this.addLitter.bind(this);
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
-		this.moveDrone = this.moveDrone.bind(this);
+		this.moveDrone = this.moveDrone.bind(this);		
 	}
 
 	drawGrid() {
@@ -54,7 +54,6 @@ class MapRenderer {
 		this.droneSprite = new DroneSprite(this.squareSize, this.container, this.baseX, this.baseY);
 		//Sending grid array and litter array, to delete in the future
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-		addDraggableLitter(this);
 	}	
 
 	addLitter() {
@@ -122,42 +121,49 @@ function randAddLitter(mapRenderer) {
 	console.log
 }
 
+function dragStart(event) {
+	this.parent.interactive = false;
+		this.data = event.data;
+		this.dragging = true;
+}
+function dragEnd() {
+		this.dragging = false;
+		this.data = null;
+		this.parent.interactive = true;
+}
+function dragMove() {
+		if (this.dragging)
+		{
+			var newPosition = this.data.getLocalPosition(this.parent);
+			this.position.x = newPosition.x;
+			this.position.y = newPosition.y;
+		}
+}
+
 function addDraggableLitter(m) {
 		var litter = new PIXI.Sprite(m.litterTexture);
 		litter.interactive = true;
 		litter.buttonMode = true;
 		litter.anchor.set(0.5, 0.5);
 		litter
-			.on('mousedown', onDragStart(m))
-			.on('mouseup', onDragEnd(m))
-			.on('mouseupoutside', onDragEnd(m))
-			.on('mousemove', onDragMove(m));
+			.on('mousedown', dragStart)
+			.on('touchstart', dragStart)
+			.on('mouseup', dragEnd)
+			.on('mouseupoutside', dragEnd)
+			.on('touchend', dragEnd)
+			.on('touchendoutside', dragEnd)
+			.on('mousemove', dragMove)
+			.on('touchmove', dragMove);
 		litter.x = -1 * m.squareSize;
 		litter.y = m.squareSize;
 		m.container.addChild(litter);
 	}
-	
-function onDragStart(m) {
-	m.interactive = false;
-	this.dragging = true;
-}
-function onDragEnd(m) {
-	this.dragging = false;
-	m.interactive = true;
-}
-function onDragMove(m) {
-	if (this.dragging)
-    {
-        var newPosition = this.data.getLocalPosition(m.container);
-        this.position.x = newPosition.x;
-        this.position.y = newPosition.y;
-    }
-}
 
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
+	addDraggableLitter(mapRenderer);
 	startRoutine(mapRenderer);
 	randAddLitter(mapRenderer);
 	updateUI(mapRenderer);

@@ -44,7 +44,6 @@ class DroneSprite {
 		this.waiting = true;
 	}
 
-	//TODO boundry system!
 	/**
 	* function that moves the rover in a specified x and y coordiante
 	* @function
@@ -83,7 +82,7 @@ class DroneSprite {
 * @returns {2Darray} treeArray - sends an updated version of tree array to server if new tree is found.
 * @returns {integer} posx - sends x position of the litter to the server.
 * @returns {interger} posy - sends y position of the litter to the server.
-**/
+*/
 	searchLitter(posx, posy) {
 		//testting waiting boolean
 		this.waiting = true;

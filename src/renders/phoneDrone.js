@@ -27,7 +27,7 @@ class PhoneDrone {
 	}
 
 	/**
-	* function that moves the phonedrone in a specified x and y coordiante
+	* function that moves the phonedrone in a specified x and y coordinate
 	* @function
 	* @param {Object[]} data - an array of coordinates objects
 	*/

@@ -10,7 +10,7 @@ class MapRenderer {
 	*	Initialises the map, drones, rovers and textures for the map.
 	* @constructor
 	* @param {object} container - the pixiJS object container
-**/
+*/
 
 	constructor(container) {
 		this.row = 20;
@@ -46,7 +46,7 @@ class MapRenderer {
 * Draws the grid to the front end, adding rocks and trees randomly. Also makes new instances of the rover, drone and phone drone.
 * @function
 * @returns {2Darray} grid array and litterArrayLocations array sent to the server
-**/
+*/
 
 	drawGrid() {
 		for (var i = 0; i < this.row; i++) {
@@ -98,7 +98,7 @@ class MapRenderer {
 * Adds litter onto a random location on the map.
 * @function
 * @returns {2Darray} grid array and litterArrayLocations array sent to the server
-**/
+*/
 	addLitter() {
 		do {
 			var row = Math.floor(Math.random()*(this.row));
@@ -122,7 +122,7 @@ class MapRenderer {
 * @param {integer} x - x location on the grid.
 * @param {integer} y - y location on the grid.
 * @returns {2Darray} grid array and litterArrayLocations array sent to the server
-**/
+*/
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
 			this.container.removeChild(this.litterArray[y][x]);
@@ -138,25 +138,25 @@ class MapRenderer {
 * Calls rover function "followPath" on the path passed in.
 * @function
 * @param {Object[]} path - array of coordiante objects.
-**/
+*/
 	moveRover(path) {
 		this.roverSprite.followPath(path);
 	}
 
-	/**
-	* Calls drone function "moveTo" on the path passed in.
-	* @function
-	* @param {Object[]} path - array of coordiante objects.
-	**/
+/**
+* Calls drone function "moveTo" on the path passed in.
+* @function
+* @param {Object[]} path - array of coordiante objects.
+*/
 	moveDrone(data) {
 		this.droneSprite.moveTo(data);
 	}
 
-	/**
-	* Calls phoneDrone function "moveTo" on the path passed in.
-	* @function
-	* @param {Object[]} path - array of coordiante objects.
-	**/
+/**
+* Calls phoneDrone function "moveTo" on the path passed in.
+* @function
+* @param {Object[]} path - array of coordiante objects.
+*/
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
@@ -167,7 +167,7 @@ class MapRenderer {
 * Emits rover status to the server every 2000ms
 * @function
 * @param {MapRenderer} m - current instance of MapRenderer class.
-**/
+*/
 function startRoutine(m) {
 
 	console.log(m.roverSprite.posx);
@@ -181,7 +181,7 @@ function startRoutine(m) {
 * Emits drone status to the server every 5000ms
 * @function
 * @param {MapRenderer} m - current instance of MapRenderer class.
-**/
+*/
 function droneRoutine(m) {
 	console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
@@ -193,7 +193,7 @@ function droneRoutine(m) {
 * Updates the UI whenever called.
 * @function
 * @param {MapRenderer} m - current instance of MapRenderer class.
-**/
+*/
 function updateUI(m) {
 	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
@@ -204,7 +204,7 @@ function updateUI(m) {
 * Setup for the litter button so that it adds a litter whenever it is clicked.
 * @function
 * @param {MapRenderer} mapRenderer - current instance of MapRenderer class.
-**/
+*/
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
 	const genLitterBtn = document.getElementById("litter");
@@ -215,7 +215,7 @@ function setButtons(mapRenderer) {
 * Randomly adds litter onto the map at a random time.
 * @function
 * @param {MapRenderer} mapRenderer - current instance of MapRenderer class.
-**/
+*/
 function randAddLitter(mapRenderer) {
 	var timer = Math.floor(Math.random() * 20001) + 10000;
 	mapRenderer.addLitter();
@@ -225,7 +225,7 @@ function randAddLitter(mapRenderer) {
 /**
 * Setup for the rover battery levels to be displayed on frontend.
 * @function
-**/
+*/
 function batteryLevel(){
 	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
@@ -234,7 +234,7 @@ function batteryLevel(){
 * Main function that is called before everything else. Calls all the apppriote methods to display all front end elements on screen and
 * sets up all socket listeners to handle any emits from the server.
 * @function
-**/
+*/
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();

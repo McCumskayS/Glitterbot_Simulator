@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DroneSprite</title>
+    <title>JSDoc: Class: RoverSprite</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DroneSprite</h1>
+    <h1 class="page-title">Class: RoverSprite</h1>
 
     
 
@@ -28,9 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>DroneSprite<span class="signature">(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY)</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">This is the Drone Sprite Class</div>
+        <h2><span class="attribs"><span class="type-signature"></span></span>RoverSprite<span class="signature">(container, squareSize, mapRenderer, baseX, baseY)</span><span class="type-signature"> &rarr; {<a href="RoverSprite.html">RoverSprite</a>}</span></h2>
         
     
 </header>
@@ -41,11 +39,9 @@
         
 
     
-    <h2>Constructor</h2>
-    
 
     
-    <h4 class="name" id="DroneSprite"><span class="type-signature"></span>new DroneSprite<span class="signature">(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="RoverSprite"><span class="type-signature"></span>new RoverSprite<span class="signature">(container, squareSize, mapRenderer, baseX, baseY)</span><span class="type-signature"> &rarr; {<a href="RoverSprite.html">RoverSprite</a>}</span></h4>
     
 
     
@@ -89,13 +85,13 @@
 
         <tr>
             
-                <td class="name"><code>row</code></td>
+                <td class="name"><code>container</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">integer</span>
+<span class="param-type">object</span>
 
 
             
@@ -105,53 +101,7 @@
 
             
 
-            <td class="description last">the number of rows of the map where the drone will be placed</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>column</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the number of columns of the map where the drone will be placed</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mapGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">2Darray</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the 2D array that rapresents the map</td>
+            <td class="description last">the pixiJS object container</td>
         </tr>
 
     
@@ -181,13 +131,13 @@
 
         <tr>
             
-                <td class="name"><code>container</code></td>
+                <td class="name"><code>mapRenderer</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type"><a href="MapRenderer.html">MapRenderer</a></span>
 
 
             
@@ -197,53 +147,7 @@
 
             
 
-            <td class="description last">the pixiJS object container</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>litterArray</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">2Darray</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the 2D array that holds the positions of the litters</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>treeArray</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">2Darray</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the 2D array that holds the positiions of the trees</td>
+            <td class="description last">the current instance of the MapRenderer class</td>
         </tr>
 
     
@@ -330,7 +234,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="droneSprite.js.html">droneSprite.js</a>, <a href="droneSprite.js.html#line4">line 4</a>
+        <a href="roverSprite.js.html">roverSprite.js</a>, <a href="roverSprite.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -353,6 +257,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    an instance of the rover
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RoverSprite.html">RoverSprite</a></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -384,7 +310,7 @@
     
 
     
-    <h4 class="name" id="moveTo"><span class="type-signature"></span>moveTo<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="collectLitter"><span class="type-signature"></span>collectLitter<span class="signature">(posx, posy, targetX, targetY, path)</span><span class="type-signature"></span></h4>
     
 
     
@@ -392,7 +318,7 @@
 
 
 <div class="description">
-    function that moves the rover in a specified x and y coordiante
+    Function that collects a litter if the x and y of the rover matches the x and y of the target litter. Also manages battery depletion.
 </div>
 
 
@@ -428,7 +354,234 @@
 
         <tr>
             
-                <td class="name"><code>data</code></td>
+                <td class="name"><code>posx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current x position of the rover.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>posy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current y position of the rover.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetX</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">target x location from path.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">target y location from path.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an array of coordinates objects.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="roverSprite.js.html">roverSprite.js</a>, <a href="roverSprite.js.html#line78">line 78</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="followPath"><span class="type-signature"></span>followPath<span class="signature">(path)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    function that moves the rover in a specified x and y coordinate
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
             
 
             <td class="type">
@@ -485,7 +638,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="droneSprite.js.html">droneSprite.js</a>, <a href="droneSprite.js.html#line52">line 52</a>
+        <a href="roverSprite.js.html">roverSprite.js</a>, <a href="roverSprite.js.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -508,226 +661,6 @@
 
 
 
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="searchLitter"><span class="type-signature"></span>searchLitter<span class="signature">(posx, posy)</span><span class="type-signature"> &rarr; {2Darray|integer|interger}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    function that searches the surroundings of the drone for any litter and trees.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>posx</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">x position of the drone.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>posy</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">integer</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">y position of the drone.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="droneSprite.js.html">droneSprite.js</a>, <a href="droneSprite.js.html#line86">line 86</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-<ul>
-        <li>
-<div class="param-desc">
-    treeArray - sends an updated version of tree array to server if new tree is found.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">2Darray</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    posx - sends x position of the litter to the server.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">integer</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    posy - sends y position of the litter to the server.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">interger</span>
-
-
-    </dd>
-</dl>
-</li>
-    </ul>
 
 
 

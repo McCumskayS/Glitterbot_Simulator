@@ -123,41 +123,50 @@ function randAddLitter(mapRenderer) {
 
 function dragStart(event) {
 	this.parent.interactive = false;
-		this.data = event.data;
-		this.dragging = true;
+	this.data = event.data;
+	this.dragging = true;
 }
 function dragEnd() {
-		this.dragging = false;
-		this.data = null;
-		this.parent.interactive = true;
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	this.renderMap.litterArray[this.posy][this.posx] = this;
+	this.renderMap.litterArrayLocations[this.posy][this.posx] = 1;
+	addDraggableLitter(this.renderMap);
+	this.data = null;
 }
 function dragMove() {
-		if (this.dragging)
-		{
-			var newPosition = this.data.getLocalPosition(this.parent);
-			this.position.x = newPosition.x;
-			this.position.y = newPosition.y;
-		}
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
 }
 
 function addDraggableLitter(m) {
-		var litter = new PIXI.Sprite(m.litterTexture);
-		litter.interactive = true;
-		litter.buttonMode = true;
-		litter.anchor.set(0.5, 0.5);
-		litter
-			.on('mousedown', dragStart)
-			.on('touchstart', dragStart)
-			.on('mouseup', dragEnd)
-			.on('mouseupoutside', dragEnd)
-			.on('touchend', dragEnd)
-			.on('touchendoutside', dragEnd)
-			.on('mousemove', dragMove)
-			.on('touchmove', dragMove);
-		litter.x = -1 * m.squareSize;
-		litter.y = m.squareSize;
-		m.container.addChild(litter);
-	}
+	var litter = new PIXI.Sprite(m.litterTexture);
+	litter.renderMap = m;
+	litter.interactive = true;
+	litter.buttonMode = true;
+	litter.anchor.set(0.5, 0.5);
+	litter
+		.on('mousedown', dragStart)
+		.on('touchstart', dragStart)
+		.on('mouseup', dragEnd)
+		.on('mouseupoutside', dragEnd)
+		.on('touchend', dragEnd)
+		.on('touchendoutside', dragEnd)
+		.on('mousemove', dragMove)
+		.on('touchmove', dragMove);
+	litter.x = -1 * m.squareSize;
+	litter.y = m.squareSize;
+	m.container.addChild(litter);
+}
 
 function main() {
 	const mapRenderer = new MapRenderer(container);

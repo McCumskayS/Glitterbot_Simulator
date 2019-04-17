@@ -1,5 +1,5 @@
 /**
-	* This is the Phone Drone Sprite Class
+* This is the class that handles the PhoneDrone.
 */
 class PhoneDrone {
 	/**

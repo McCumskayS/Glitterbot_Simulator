@@ -1,8 +1,12 @@
+//position of the purple drone.
 var purplePosition = {x:0, y:1};
+/**
+* this is the class that handles the Rover.
+*/
 
 class RoverSprite {
 	/**
-	  *	Creates the rover sprite and adds it to the map at x:0;y:0
+	  *	creates the rover sprite and adds it to the map at x:0 y:0
 		* @constructor
 		* @param {object} container - the pixiJS object container
 		* @param {number} squareSize - the size of each cell of the map in pixels

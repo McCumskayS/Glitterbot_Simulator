@@ -1,9 +1,9 @@
 /**
-	* This is the Drone Sprite Class
+* This is the Drone Sprite Class
 */
 class DroneSprite {
 	/**
-	  *	Creates the rover sprite and adds it to the map at x:0;y:0
+	  *	Creates the drone sprite and adds it to the map at x:0 y:0
 		* @constructor
 		* @param {integer} row - the number of rows of the map where the drone will be placed
 		* @param {integer} column - the number of columns of the map where the drone will be placed

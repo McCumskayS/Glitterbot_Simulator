@@ -1,7 +1,8 @@
+//socket const that is used to emit/recieve data
 const socket = io();
+//variable count used for finding first instance of run.
 var count = 0;
-
-/*
+/**
 * Class to render front end interface and manage all front end elements.
 */
 

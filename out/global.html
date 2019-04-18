@@ -777,6 +777,209 @@
     
 
     
+    <h4 class="name" id="checkTrees"><span class="type-signature"></span>checkTrees<span class="signature">(posx, posy, scanRadius)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    a function that checks the scanning area and returns positions that can be the target
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>posx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">x position of the drone.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>posy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">y position of the drone.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scanRadius</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum radius that the drone can scan.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_sender.js.html">server/sender.js</a>, <a href="server_sender.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of targets that are walkable.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="droneRoutine"><span class="type-signature"></span>droneRoutine<span class="signature">(m)</span><span class="type-signature"></span></h4>
     
 
@@ -1121,6 +1324,114 @@
     <dd>
         
 <span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="initializeTreeArray"><span class="type-signature"></span>initializeTreeArray<span class="signature">()</span><span class="type-signature"> &rarr; {2DArray}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    initialize treeArray to be a 2D array
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_sender.js.html">server/sender.js</a>, <a href="server_sender.js.html#line177">line 177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    updated tree array.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">2DArray</span>
 
 
     </dd>
@@ -2616,6 +2927,141 @@
     
 
     
+    <h4 class="name" id="sender"><span class="type-signature"></span>sender<span class="signature">(io)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Function that handles all socket connections from all channels.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>io</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object used to access sockets</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_sender.js.html">server/sender.js</a>, <a href="server_sender.js.html#line44">line 44</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="setButtons"><span class="type-signature"></span>setButtons<span class="signature">(mapRenderer)</span><span class="type-signature"></span></h4>
     
 
@@ -3900,13 +4346,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#checkTrees">checkTrees</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#initializeTreeArray">initializeTreeArray</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#sender">sender</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 17 2019 15:06:58 GMT+0100 (British Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 18 2019 12:30:01 GMT+0100 (British Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

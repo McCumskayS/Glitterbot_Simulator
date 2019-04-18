@@ -134,10 +134,15 @@ function dragEnd() {
 	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
 	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
 	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
-	this.renderMap.litterArray[this.posy][this.posx] = this;
-	this.renderMap.litterArrayLocations[this.posy][this.posx] = 1;
 	addDraggableLitter(this.renderMap);
-	this.data = null;
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0) {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.litterArray[this.posy][this.posx] = this;
+		this.renderMap.litterArrayLocations[this.posy][this.posx] = 1;
+		this.data = null;
+	}
 }
 function dragMove() {
 	if (this.dragging)

@@ -121,12 +121,12 @@ function randAddLitter(mapRenderer) {
 	console.log
 }
 
-function dragStart(event) {
+function litterDragStart(event) {
 	this.parent.interactive = false;
 	this.data = event.data;
 	this.dragging = true;
 }
-function dragEnd() {
+function litterDragEnd() {
 	this.dragging = false;
 	this.parent.interactive = true;
 	this.interactive = false;
@@ -135,7 +135,7 @@ function dragEnd() {
 	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
 	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
 	addDraggableLitter(this.renderMap);
-	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0) {
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
 		this.parent.removeChild(this);
 	}
 	else {
@@ -144,7 +144,7 @@ function dragEnd() {
 		this.data = null;
 	}
 }
-function dragMove() {
+function litterDragMove() {
 	if (this.dragging)
 	{
 		var newPosition = this.data.getLocalPosition(this.parent);
@@ -160,17 +160,68 @@ function addDraggableLitter(m) {
 	litter.buttonMode = true;
 	litter.anchor.set(0.5, 0.5);
 	litter
-		.on('mousedown', dragStart)
-		.on('touchstart', dragStart)
-		.on('mouseup', dragEnd)
-		.on('mouseupoutside', dragEnd)
-		.on('touchend', dragEnd)
-		.on('touchendoutside', dragEnd)
-		.on('mousemove', dragMove)
-		.on('touchmove', dragMove);
+		.on('mousedown', litterDragStart)
+		.on('touchstart', litterDragStart)
+		.on('mouseup', litterDragEnd)
+		.on('mouseupoutside', litterDragEnd)
+		.on('touchend', litterDragEnd)
+		.on('touchendoutside', litterDragEnd)
+		.on('mousemove', litterDragMove)
+		.on('touchmove', litterDragMove);
 	litter.x = -1 * m.squareSize;
 	litter.y = m.squareSize;
 	m.container.addChild(litter);
+}
+
+function rockDragStart(event) {
+	this.parent.interactive = false;
+	this.data = event.data;
+	this.dragging = true;
+}
+function rockDragEnd() {
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	addDraggableRock(this.renderMap);
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.grid[this.posy][this.posx] = "rock";
+		this.data = null;
+	}
+}
+function rockDragMove() {
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
+}
+
+function addDraggableRock(m) {
+	var rock = new PIXI.Sprite(m.rockTexture);
+	rock.renderMap = m;
+	rock.interactive = true;
+	rock.buttonMode = true;
+	rock.anchor.set(0.5, 0.5);
+	rock
+		.on('mousedown', rockDragStart)
+		.on('touchstart', rockDragStart)
+		.on('mouseup', rockDragEnd)
+		.on('mouseupoutside', rockDragEnd)
+		.on('touchend', rockDragEnd)
+		.on('touchendoutside', rockDragEnd)
+		.on('mousemove', rockDragMove)
+		.on('touchmove', rockDragMove);
+	rock.x = -1 * m.squareSize;
+	rock.y = 2 * m.squareSize;
+	m.container.addChild(rock);
 }
 
 function main() {
@@ -178,6 +229,7 @@ function main() {
 	mapRenderer.drawGrid();
 	setButtons(mapRenderer);
 	addDraggableLitter(mapRenderer);
+	addDraggableRock(mapRenderer);
 	startRoutine(mapRenderer);
 	randAddLitter(mapRenderer);
 	updateUI(mapRenderer);

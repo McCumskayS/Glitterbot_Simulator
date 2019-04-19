@@ -20,7 +20,7 @@ class MapRenderer {
 		this.addLitter = this.addLitter.bind(this);
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
-		this.moveDrone = this.moveDrone.bind(this);		
+		this.moveDrone = this.moveDrone.bind(this);
 	}
 
 	drawGrid() {
@@ -54,7 +54,7 @@ class MapRenderer {
 		this.droneSprite = new DroneSprite(this.squareSize, this.container, this.baseX, this.baseY);
 		//Sending grid array and litter array, to delete in the future
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-	}	
+	}
 
 	addLitter() {
 		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
@@ -103,9 +103,25 @@ function startRoutine(m) {
 }
 
 function updateUI(m) {
-	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + "  |  Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
 	setTimeout(updateUI, 100, m);
+	var x = document.getElementsByClassName("span_4");
+	if(m.roverSprite.battery >= 900){
+		x[0].style.background = "url(../image/100.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 900 || m.roverSprite.battery >= 700) {
+		x[0].style.background = "url(../image/80.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 700 || m.roverSprite.battery >= 500) {
+		x[0].style.background = "url(../image/60.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 500 || m.roverSprite.battery >= 200) {
+		x[0].style.background = "url(../image/40.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 200) {
+		x[0].style.background = "url(../image/20.png) no-repeat 0px";
+	}
 }
 
 function setButtons(mapRenderer) {

@@ -24,6 +24,7 @@ class RoverSprite {
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
 		this.battery = 1000;
+		this.updateNotification = false;
 	}
 
 	//Follows a path of nodes!
@@ -72,6 +73,9 @@ class RoverSprite {
 		if (this.capacity > 0) {
 			console.log(posx+'-'+posy);
 			if (this.mapRenderer.removeLitter(posx, posy)) {
+
+				this.updateNotification = true;
+
 				this.capacity = this.capacity - 1;
 				console.log("litter collected, capacity remaining = " + this.capacity);
 			}

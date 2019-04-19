@@ -21,6 +21,7 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.litterID = 1;
 	}
 
 	drawGrid() {
@@ -121,6 +122,23 @@ function updateUI(m) {
 	}
 	else if (m.roverSprite.battery < 200) {
 		x[0].style.background = "url(../image/20.png) no-repeat 0px";
+	}
+
+	if(m.roverSprite.updateNotification == true){
+		var y = document.getElementsByClassName("span_1");
+		var z = document.getElementsByClassName("a_1");
+
+		y[0].innerHTML = y[1].innerHTML;
+		z[0].innerHTML = z[1].innerHTML;
+		y[1].innerHTML = y[2].innerHTML;
+		z[1].innerHTML = z[2].innerHTML;
+		y[2].innerHTML = y[3].innerHTML;
+		z[2].innerHTML = z[3].innerHTML;
+		y[3].innerHTML = "Rover"
+		z[3].innerHTML = " collected litter ID: " + 0;
+		this.litterID = this.litterID + 1;
+
+		m.roverSprite.updateNotification = false;
 	}
 }
 

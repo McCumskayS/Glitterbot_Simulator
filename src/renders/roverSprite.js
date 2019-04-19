@@ -1,6 +1,7 @@
 //Rover robot front end object handler
 //Authors: Zain Ali, Asad Mahmood
 //Date: 21/11/2018
+var purplePosition = {x:0, y:1};
 
 class RoverSprite {
 	//Creates the rover sprite and adds it to the map at the base location
@@ -23,13 +24,13 @@ class RoverSprite {
 		this.animSpeed = 0.5;
 		this.waiting = true;
 		this.collectLitter = this.collectLitter.bind(this);
+		this.purplePosition = {};
 		this.battery = 1000;
 	}
 
 	//Follows a path of nodes!
 	followPath(path) {
-		console.log("from rover " + this.posx + this.posy);
-		console.log(this.posx + this.posy);
+		//gridXY();
 		this.waiting = false;
 
 		if(path.length <= 1){
@@ -39,8 +40,14 @@ class RoverSprite {
 		for (let i = 1; i < path.length; i++) {
 			var targetX = path[i][0];
 			var targetY = path[i][1];
+			if (targetX == purplePosition.x && targetY == purplePosition.y) {
+				console.log('THIS MEANS THE ROVER RECALCULATES');
+				break;
+			}
+			this.posx = targetX;
+			this.posy = targetY;
 
-			console.log("battery: " + this.battery);
+      console.log("battery: " + this.battery);
 
 			this.roverTimeline.to(this.sprite, this.animSpeed,
 				{x:this.squareSize*targetX, y:this.squareSize*targetY,
@@ -48,9 +55,9 @@ class RoverSprite {
 		}
 	}
 
-	collectLitter(posx, posy, targetX, targetY, path){
 
-		if(targetX == this.posx || targetY == this.posy) {
+	collectLitter (posx, posy, targetX, targetY, path) {
+		if (targetX == this.posx || targetY == this.posy) {
 			this.battery = this.battery - 10;
 		}
 		else {
@@ -62,9 +69,7 @@ class RoverSprite {
 		this.posx = posx;
 		this.posy = posy;
 
-
-
-		if(posx === this.baseX && posy === this.baseY) {
+		if (posx === this.baseX && posy === this.baseY) {
 			this.capacity = 5;
 			this.battery = 1000;
 		}
@@ -80,12 +85,12 @@ class RoverSprite {
 			console.log("rover full, returning to base");
 		}
 
-		if(posx == path[path.length-1][0] && posy == path[path.length-1][1])
-		{
+		if (posx == path[path.length-1][0] && posy == path[path.length-1][1]) {
 			this.waiting = true;
 		}
 
 	}
+
 
 	//The functions below this line will be used by the operator in case of overriding
 	//Check is rover can go over the next 'tile'
@@ -132,4 +137,11 @@ class RoverSprite {
 			console.log("Can't go there\n");
 		}
 	}*/
+}
+
+function gridXY () {
+		socket.on('gridCoordinates', function(data){
+			purplePosition = {x:data.x, y:data.y};
+		});
+
 }

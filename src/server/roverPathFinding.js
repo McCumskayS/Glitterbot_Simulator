@@ -1,13 +1,13 @@
 //function that calculates the h for all the litters
 var PF = require('pathfinding');
 
-function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity, baseX, baseY, battery)  {
+function pathFindingEngine (litterArrayLocations, currentLocation, grid, gridCoordinates, capacity, baseX, baseY, battery) {
 	var shortestPath = [];
 	var length = 1000000; //for now test
 	var foundPath = 0;
 
 	if (capacity == 0) {
-		var temp = transformGrid(grid);
+		var temp = transformGrid(grid, gridCoordinates);
 		var gridCopy = new PF.Grid(temp);
 		var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -15,11 +15,10 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 		return(finder.findPath(currentLocation.x, currentLocation.y, baseX, baseY, gridCopy));
 	}
 
-
 	for (var i = 0; i < litterArrayLocations.length; i++) {
 		for (var j = 0; j < litterArrayLocations[i].length; j++) {
 			if (litterArrayLocations[i][j] == 1) {
-				var temp = transformGrid(grid);
+				var temp = transformGrid(grid, gridCoordinates);
 				var gridCopy = new PF.Grid(temp);
 				var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -37,13 +36,13 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 						foundPath = 1;
 					}
 				}
-				litterArrayLocations[i][j] = 0;
 
+				//litterArrayLocations[i][j] = 0;
 		}
 		}
 	}
 	if (foundPath == 0) {
-		var temp = transformGrid(grid);
+		var temp = transformGrid(grid, gridCoordinates);
 		var gridCopy = new PF.Grid(temp);
 		var finder = new PF.AStarFinder({
 					allowDiagonal: true
@@ -54,7 +53,7 @@ function pathFindingEngine(litterArrayLocations, currentLocation, grid, capacity
 	}
 }
 
-function transformGrid(grid) {
+function transformGrid(grid, gridCoordinates) {
 	var temp = [];
 	for (var i = 0; i < grid.length; i++) {
 		temp[i] = [];
@@ -62,6 +61,9 @@ function transformGrid(grid) {
 			if (grid[i][j] == "grass" || grid[i][j] == "base") {
 				temp[i][j] = 0;
 			} else {
+				temp[i][j] = 1;
+			}
+			if(j == gridCoordinates.x && i == gridCoordinates.y){
 				temp[i][j] = 1;
 			}
 		}

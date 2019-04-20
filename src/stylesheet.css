@@ -150,6 +150,69 @@ body{
 }
 
 
+.SwitchIcon {
+		position: fixed;
+		bottom: -160px;
+		left: 90px;
+
+		margin: 200px auto;
+		height: 20px;
+		width: 30px;
+}
+#toggle-button {
+		display: none;
+}
+.button-label {
+		position: relative;
+		display: inline-block;
+		width: 90px;
+		height: 30px;
+		background-color: #ccc;
+		box-shadow: #ccc 0px 0px 0px 2px;
+		border-radius: 30px;
+		overflow: hidden;
+}
+.circle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background-color: #fff;
+}
+.button-label .text {
+		line-height: 30px;
+		font-size: 13px;
+		text-shadow: 0 0 2px #ddd;
+}
+.on {
+		color: #fff;
+		display: none;
+		text-indent: -45px;
+}
+.off {
+		color: #fff;
+		display: inline-block;
+		text-indent: 32px;
+}
+.button-label .circle {
+		left: 0;
+		transition: all 0.3s;
+}
+#toggle-button:checked + label.button-label .circle {
+		left: 59px;
+}
+#toggle-button:checked + label.button-label .on {
+		display: inline-block;
+}
+#toggle-button:checked + label.button-label .off {
+		display: none;
+}
+#toggle-button:checked + label.button-label {
+		background-color: #666;
+}
+
 
 
 

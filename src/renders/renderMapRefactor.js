@@ -124,9 +124,9 @@ function updateUI(m) {
 		x[0].style.background = "url(../image/20.png) no-repeat 0px";
 	}
 
-	if(m.roverSprite.updateNotification == true){
+	if(m.roverSprite.updateNotification == true || m.roverSprite.updateNotificationBase == true){
 		var y = document.getElementsByClassName("span_1");
-		var z = document.getElementsByClassName("a_1");
+		var z = document.getElementsByClassName("span_5");
 
 		y[0].innerHTML = y[1].innerHTML;
 		z[0].innerHTML = z[1].innerHTML;
@@ -135,10 +135,15 @@ function updateUI(m) {
 		y[2].innerHTML = y[3].innerHTML;
 		z[2].innerHTML = z[3].innerHTML;
 		y[3].innerHTML = "Rover"
-		z[3].innerHTML = " collected litter ID: " + 0;
-		this.litterID = this.litterID + 1;
-
-		m.roverSprite.updateNotification = false;
+		if(m.roverSprite.updateNotification == true){
+			z[3].innerHTML = " collected litter ID: " + m.litterID;
+			m.litterID = m.litterID + 1;
+			m.roverSprite.updateNotification = false;
+		}
+		else if(m.roverSprite.updateNotificationBase == true){
+			z[3].innerHTML = " returning to base";
+			m.roverSprite.updateNotificationBase = false;
+		}
 	}
 }
 

@@ -8,14 +8,15 @@ body{
 	background-size:100%;
 	width:100%;
 	height:auto;
-    position:relative;}
+  position:relative;}
 .box_1{
 	width:100%;
 	height:60px;
 	background: #666}
-.box_1 h2{color: #fff;
-    margin-left: 40px;
-    line-height: 60px;}
+.box_1 h2{
+	color: #fff;
+  margin-left: 40px;
+  line-height: 60px;}
 /*
 .left{
 	width:200px;
@@ -69,14 +70,14 @@ body{
 .nva ul li img{
 	width:40px;
 	margin: 6px;
-    margin-left: 20px;
+  margin-left: 20px;
 	}
 .right{
 	width: 396px;
-    height: 180px;
-    position: fixed;
-    right: 30px;
-    top: 80px;
+  height: 180px;
+  position: fixed;
+  right: 30px;
+  top: 80px;
 	}
 .left_4{
 	width: 325px;
@@ -95,15 +96,15 @@ body{
 	margin:5px}
 .left_5{
 	width: 325px;
-    height: 50px;
-    background: #666 url(../image/9.png) no-repeat 10px;
-    margin-bottom: 10px;
-    border-radius:13px;
-    background-size: 36px 24px;
-    color: #fff;
-    line-height: 50px;
-    padding-left: 65px;
-    font-size: 12px;
+  height: 50px;
+  background: #666 url(../image/9.png) no-repeat 10px;
+  margin-bottom: 10px;
+  border-radius:13px;
+  background-size: 36px 24px;
+  color: #fff;
+  line-height: 50px;
+  padding-left: 65px;
+  font-size: 12px;
 	box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.20);}
 .left_5 img{
 	width:36px;
@@ -122,14 +123,14 @@ body{
 	background:url(../image/100.png) no-repeat 0px;
 	background-size:16px 34px}
 .right .span_4{
-		position: fixed;
-		right: 10px;
-		top: 140px;
+	position: fixed;
+	right: 10px;
+	top: 140px;
 
-  	width: 65px;
-    height: 50px;
-    display: block;
-    float: right;
+	width: 65px;
+  height: 50px;
+  display: block;
+  float: right;
 	text-align: center;
   background:url(../image/100.png) no-repeat 0px;
 	background-size:16px 34px}
@@ -153,7 +154,7 @@ body{
 .SwitchIcon {
 		position: fixed;
 		bottom: -160px;
-		left: 90px;
+		left: 50px;
 
 		margin: 200px auto;
 		height: 20px;
@@ -200,6 +201,55 @@ body{
 		left: 0;
 		transition: all 0.3s;
 }
+
+
+.change_direction{
+	background-color: #ffffff;
+	text-align: center;
+	position: absolute;
+	top: 470px;
+	width: 200px;
+	height: 120px;
+}
+.direction_content{
+	 width: 100%;
+	 height: 70%;
+	 position: relative;
+}
+.direction_div{
+	position:relative;
+	width: 34px;
+	height: 34px;
+}
+.direction_div img{
+	width: 100%;
+	height:  100%;
+}
+/*left*/
+.left_direction {
+	top: 5%;
+	left: 20%;
+	visibility:hidden;
+}
+/*bottom*/
+.bottom_direction{
+	top:5%;
+	left: 40%;
+	visibility:hidden;
+}
+/*right*/
+.right_direction{
+	top: -75%;
+	left: 61%;
+	visibility:hidden;
+}
+/*top*/
+.top_direction{
+	top: 2%;
+	left: 40%;
+	visibility:hidden;
+}
+
 #toggle-button:checked + label.button-label .circle {
 		left: 59px;
 }
@@ -212,6 +262,8 @@ body{
 #toggle-button:checked + label.button-label {
 		background-color: #666;
 }
+
+
 
 
 

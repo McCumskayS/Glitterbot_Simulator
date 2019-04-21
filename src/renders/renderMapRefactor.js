@@ -147,6 +147,36 @@ function updateUI(m) {
 	}
 }
 
+
+//Set button to off when loading in to this websit or refreshing it.
+window.onload = function () {
+		var onoffswitch = document.getElementById("toggle-button");
+		onoffswitch.checked = false;
+}
+function SwitchClick() {
+		var onoffswitch = document.getElementById("toggle-button");
+		var left = document.getElementsByClassName("left_direction");
+		var bottom = document.getElementsByClassName("bottom_direction");
+		var right = document.getElementsByClassName("right_direction");
+		var top = document.getElementsByClassName("top_direction");
+		if (onoffswitch.checked) {
+			//display direction controling button
+			left[0].style.visibility = "visible";
+			bottom[0].style.visibility = "visible";
+			right[0].style.visibility = "visible";
+			top[0].style.visibility = "visible";
+
+
+		}
+		else {
+			left[0].style.visibility = "hidden";
+			bottom[0].style.visibility = "hidden";
+			right[0].style.visibility = "hidden";
+			top[0].style.visibility = "hidden";
+
+		}
+}
+
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
 	const genLitterBtn = document.getElementById("litter");

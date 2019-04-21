@@ -93,6 +93,7 @@ class MapRenderer {
 	moveDrone(x, y) {
 		this.droneSprite.moveTo(x, y);
 	}
+	
 }
 
 function startRoutine(m) {
@@ -176,6 +177,8 @@ function SwitchClick() {
 
 		}
 }
+
+
 
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method

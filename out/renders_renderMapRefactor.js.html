@@ -68,13 +68,13 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.litterID = 1;
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 	}
 
 /**
 * Draws the grid to the front end, adding rocks and trees randomly. Also makes new instances of the rover, drone and phone drone.
 * @function
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 
 	drawGrid() {
@@ -126,7 +126,6 @@ class MapRenderer {
 /**
 * Adds litter onto a random location on the map.
 * @function
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 	addLitter() {
 		do {
@@ -150,7 +149,6 @@ class MapRenderer {
 * @function
 * @param {integer} x - x location on the grid.
 * @param {integer} y - y location on the grid.
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
@@ -189,7 +187,6 @@ class MapRenderer {
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
-
 }
 
 /**
@@ -198,7 +195,6 @@ class MapRenderer {
 * @param {MapRenderer} m - current instance of MapRenderer class.
 */
 function startRoutine(m) {
-
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
 		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
@@ -224,9 +220,81 @@ function droneRoutine(m) {
 * @param {MapRenderer} m - current instance of MapRenderer class.
 */
 function updateUI(m) {
-	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + "  |  Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
 	setTimeout(updateUI, 100, m);
+	var x = document.getElementsByClassName("span_4");
+	if(m.roverSprite.battery >= 900){
+		x[0].style.background = "url(../image/100.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery &lt; 900 || m.roverSprite.battery >= 700) {
+		x[0].style.background = "url(../image/80.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery &lt; 700 || m.roverSprite.battery >= 500) {
+		x[0].style.background = "url(../image/60.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery &lt; 500 || m.roverSprite.battery >= 200) {
+		x[0].style.background = "url(../image/40.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery &lt; 200) {
+		x[0].style.background = "url(../image/20.png) no-repeat 0px";
+	}
+
+	if(m.roverSprite.updateNotification == true || m.roverSprite.updateNotificationBase == true){
+		var y = document.getElementsByClassName("span_1");
+		var z = document.getElementsByClassName("span_5");
+
+		y[0].innerHTML = y[1].innerHTML;
+		z[0].innerHTML = z[1].innerHTML;
+		y[1].innerHTML = y[2].innerHTML;
+		z[1].innerHTML = z[2].innerHTML;
+		y[2].innerHTML = y[3].innerHTML;
+		z[2].innerHTML = z[3].innerHTML;
+		y[3].innerHTML = "Rover"
+		if(m.roverSprite.updateNotification == true){
+			z[3].innerHTML = " collected litter ID: " + m.litterID;
+			m.litterID = m.litterID + 1;
+			m.roverSprite.updateNotification = false;
+		}
+		else if(m.roverSprite.updateNotificationBase == true){
+			z[3].innerHTML = " returning to base";
+			m.roverSprite.updateNotificationBase = false;
+		}
+	}
+}
+
+/**
+* Sets the switch to be toggled off by default when the website loads for manual operator overide.
+* @function
+*/
+window.onload = function () {
+		var onoffswitch = document.getElementById("toggle-button");
+		onoffswitch.checked = false;
+}
+
+/**
+* Handles the on and off toggle switch and the arrows for the manual operator override.
+* @function
+*/
+function SwitchClick() {
+		var onoffswitch = document.getElementById("toggle-button");
+		var left = document.getElementsByClassName("left_direction");
+		var bottom = document.getElementsByClassName("bottom_direction");
+		var right = document.getElementsByClassName("right_direction");
+		var top = document.getElementsByClassName("top_direction");
+		if (onoffswitch.checked) {
+			//display direction controling button
+			left[0].style.visibility = "visible";
+			bottom[0].style.visibility = "visible";
+			right[0].style.visibility = "visible";
+			top[0].style.visibility = "visible";
+		}
+		else {
+			left[0].style.visibility = "hidden";
+			bottom[0].style.visibility = "hidden";
+			right[0].style.visibility = "hidden";
+			top[0].style.visibility = "hidden";
+		}
 }
 
 /**
@@ -260,6 +328,149 @@ function batteryLevel(){
 }
 
 /**
+* Sets up the litter to be interactive.
+* @function
+* @param {String} event - event that the user interacted with the litter with.
+*/
+function litterDragStart(event) {
+	this.parent.interactive = false;
+	this.data = event.data;
+	this.dragging = true;
+}
+
+/**
+* Handles the end logic of the drop functionality of the litter.
+* @function
+*/
+function litterDragEnd() {
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	addDraggableLitter(this.renderMap);
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx &lt; 0 || this.posy &lt; 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.litterArray[this.posy][this.posx] = this;
+		this.renderMap.litterArrayLocations[this.posy][this.posx] = 1;
+		this.data = null;
+	}
+}
+
+/**
+* Handles the drag functionality of the litter.
+* @function
+*/
+function litterDragMove() {
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
+}
+
+/**
+* Adds the litter to the map.
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
+function addDraggableLitter(m) {
+	var litter = new PIXI.Sprite(m.litterTexture);
+	litter.renderMap = m;
+	litter.interactive = true;
+	litter.buttonMode = true;
+	litter.anchor.set(0.5, 0.5);
+	litter
+		.on('mousedown', litterDragStart)
+		.on('touchstart', litterDragStart)
+		.on('mouseup', litterDragEnd)
+		.on('mouseupoutside', litterDragEnd)
+		.on('touchend', litterDragEnd)
+		.on('touchendoutside', litterDragEnd)
+		.on('mousemove', litterDragMove)
+		.on('touchmove', litterDragMove);
+	litter.x = -1 * m.squareSize;
+	litter.y = m.squareSize;
+	m.container.addChild(litter);
+}
+
+/**
+* Sets up the rock to be interactive.
+* @function
+* @param {string} event - event that the user interacted with the rock with.
+*/
+function rockDragStart(event) {
+	this.parent.interactive = false;
+	this.data = event.data;
+	this.dragging = true;
+}
+
+/**
+* Handles the end logic of the drop functionality of the rock.
+* @function
+*/
+function rockDragEnd() {
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	addDraggableRock(this.renderMap);
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx &lt; 0 || this.posy &lt; 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.grid[this.posy][this.posx] = "rock";
+		this.data = null;
+	}
+}
+
+/**
+* Handles the drag functionality of the rock.
+* @function
+*/
+function rockDragMove() {
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
+}
+
+/**
+* Adds the rock to the map.
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
+function addDraggableRock(m) {
+	var rock = new PIXI.Sprite(m.rockTexture);
+	rock.renderMap = m;
+	rock.interactive = true;
+	rock.buttonMode = true;
+	rock.anchor.set(0.5, 0.5);
+	rock
+		.on('mousedown', rockDragStart)
+		.on('touchstart', rockDragStart)
+		.on('mouseup', rockDragEnd)
+		.on('mouseupoutside', rockDragEnd)
+		.on('touchend', rockDragEnd)
+		.on('touchendoutside', rockDragEnd)
+		.on('mousemove', rockDragMove)
+		.on('touchmove', rockDragMove);
+	rock.x = -1 * m.squareSize;
+	rock.y = 2 * m.squareSize;
+	m.container.addChild(rock);
+}
+
+/**
 * Main function that is called before everything else. Calls all the apppriote methods to display all front end elements on screen and
 * sets up all socket listeners to handle any emits from the server.
 * @function
@@ -285,6 +496,8 @@ function main() {
    });
 
 	setButtons(mapRenderer);
+	addDraggableLitter(mapRenderer);
+	addDraggableRock(mapRenderer);
 	startRoutine(mapRenderer);
 	randAddLitter(mapRenderer);
 	updateUI(mapRenderer);
@@ -306,13 +519,13 @@ document.addEventListener('DOMContentLoaded', main);
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#checkTrees">checkTrees</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#initializeTreeArray">initializeTreeArray</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#sender">sender</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addDraggableLitter">addDraggableLitter</a></li><li><a href="global.html#addDraggableRock">addDraggableRock</a></li><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#checkTrees">checkTrees</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#initializeTreeArray">initializeTreeArray</a></li><li><a href="global.html#litterDragEnd">litterDragEnd</a></li><li><a href="global.html#litterDragMove">litterDragMove</a></li><li><a href="global.html#litterDragStart">litterDragStart</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#rockDragEnd">rockDragEnd</a></li><li><a href="global.html#rockDragMove">rockDragMove</a></li><li><a href="global.html#rockDragStart">rockDragStart</a></li><li><a href="global.html#sender">sender</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#SwitchClick">SwitchClick</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 18 2019 12:30:01 GMT+0100 (British Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Apr 23 2019 12:25:00 GMT+0100 (British Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

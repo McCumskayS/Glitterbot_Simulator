@@ -29,6 +29,7 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.litterID = 1;
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 	}
 
@@ -76,7 +77,7 @@ class MapRenderer {
 		this.droneSprite = new DroneSprite(this.row, this.col, this.grid, this.squareSize, this.container, this.litterArray, this.treeArray, this.baseX, this.baseY);
 		this.phoneDrone = new PhoneDrone(this.squareSize, this.container);
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
-	}	
+	}
 
 	addLitter() {
 		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
@@ -118,11 +119,9 @@ class MapRenderer {
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
-
 }
 
 function startRoutine(m) {
-
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
 		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
@@ -138,9 +137,74 @@ function droneRoutine(m) {
 }
 
 function updateUI(m) {
-	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + "  |  Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
 	setTimeout(updateUI, 100, m);
+	var x = document.getElementsByClassName("span_4");
+	if(m.roverSprite.battery >= 900){
+		x[0].style.background = "url(../image/100.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 900 || m.roverSprite.battery >= 700) {
+		x[0].style.background = "url(../image/80.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 700 || m.roverSprite.battery >= 500) {
+		x[0].style.background = "url(../image/60.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 500 || m.roverSprite.battery >= 200) {
+		x[0].style.background = "url(../image/40.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 200) {
+		x[0].style.background = "url(../image/20.png) no-repeat 0px";
+	}
+
+	if(m.roverSprite.updateNotification == true || m.roverSprite.updateNotificationBase == true){
+		var y = document.getElementsByClassName("span_1");
+		var z = document.getElementsByClassName("span_5");
+
+		y[0].innerHTML = y[1].innerHTML;
+		z[0].innerHTML = z[1].innerHTML;
+		y[1].innerHTML = y[2].innerHTML;
+		z[1].innerHTML = z[2].innerHTML;
+		y[2].innerHTML = y[3].innerHTML;
+		z[2].innerHTML = z[3].innerHTML;
+		y[3].innerHTML = "Rover"
+		if(m.roverSprite.updateNotification == true){
+			z[3].innerHTML = " collected litter ID: " + m.litterID;
+			m.litterID = m.litterID + 1;
+			m.roverSprite.updateNotification = false;
+		}
+		else if(m.roverSprite.updateNotificationBase == true){
+			z[3].innerHTML = " returning to base";
+			m.roverSprite.updateNotificationBase = false;
+		}
+	}
+}
+
+//Set button to off when loading in to this websit or refreshing it.
+window.onload = function () {
+		var onoffswitch = document.getElementById("toggle-button");
+		onoffswitch.checked = false;
+}
+
+function SwitchClick() {
+		var onoffswitch = document.getElementById("toggle-button");
+		var left = document.getElementsByClassName("left_direction");
+		var bottom = document.getElementsByClassName("bottom_direction");
+		var right = document.getElementsByClassName("right_direction");
+		var top = document.getElementsByClassName("top_direction");
+		if (onoffswitch.checked) {
+			//display direction controling button
+			left[0].style.visibility = "visible";
+			bottom[0].style.visibility = "visible";
+			right[0].style.visibility = "visible";
+			top[0].style.visibility = "visible";
+		}
+		else {
+			left[0].style.visibility = "hidden";
+			bottom[0].style.visibility = "hidden";
+			right[0].style.visibility = "hidden";
+			top[0].style.visibility = "hidden";
+		}
 }
 
 function setButtons(mapRenderer) {
@@ -160,6 +224,7 @@ function litterDragStart(event) {
 	this.data = event.data;
 	this.dragging = true;
 }
+
 function litterDragEnd() {
 	this.dragging = false;
 	this.parent.interactive = true;
@@ -178,6 +243,7 @@ function litterDragEnd() {
 		this.data = null;
 	}
 }
+
 function litterDragMove() {
 	if (this.dragging)
 	{
@@ -212,6 +278,7 @@ function rockDragStart(event) {
 	this.data = event.data;
 	this.dragging = true;
 }
+
 function rockDragEnd() {
 	this.dragging = false;
 	this.parent.interactive = true;
@@ -229,6 +296,7 @@ function rockDragEnd() {
 		this.data = null;
 	}
 }
+
 function rockDragMove() {
 	if (this.dragging)
 	{

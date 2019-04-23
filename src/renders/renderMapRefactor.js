@@ -40,6 +40,7 @@ class MapRenderer {
 		this.drawGrid = this.drawGrid.bind(this);
 		this.removeLitter = this.removeLitter.bind(this);
 		this.moveDrone = this.moveDrone.bind(this);
+		this.litterID = 1;
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 	}
 
@@ -161,7 +162,6 @@ class MapRenderer {
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
-
 }
 
 /**
@@ -170,7 +170,6 @@ class MapRenderer {
 * @param {MapRenderer} m - current instance of MapRenderer class.
 */
 function startRoutine(m) {
-
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
 		state: m.roverSprite.waiting, capacity:m.roverSprite.capacity, battery:m.roverSprite.battery});
@@ -196,9 +195,74 @@ function droneRoutine(m) {
 * @param {MapRenderer} m - current instance of MapRenderer class.
 */
 function updateUI(m) {
-	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + " | Battery Remaining: " + m.roverSprite.battery;
+	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + "  |  Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
 	setTimeout(updateUI, 100, m);
+	var x = document.getElementsByClassName("span_4");
+	if(m.roverSprite.battery >= 900){
+		x[0].style.background = "url(../image/100.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 900 || m.roverSprite.battery >= 700) {
+		x[0].style.background = "url(../image/80.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 700 || m.roverSprite.battery >= 500) {
+		x[0].style.background = "url(../image/60.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 500 || m.roverSprite.battery >= 200) {
+		x[0].style.background = "url(../image/40.png) no-repeat 0px";
+	}
+	else if (m.roverSprite.battery < 200) {
+		x[0].style.background = "url(../image/20.png) no-repeat 0px";
+	}
+
+	if(m.roverSprite.updateNotification == true || m.roverSprite.updateNotificationBase == true){
+		var y = document.getElementsByClassName("span_1");
+		var z = document.getElementsByClassName("span_5");
+
+		y[0].innerHTML = y[1].innerHTML;
+		z[0].innerHTML = z[1].innerHTML;
+		y[1].innerHTML = y[2].innerHTML;
+		z[1].innerHTML = z[2].innerHTML;
+		y[2].innerHTML = y[3].innerHTML;
+		z[2].innerHTML = z[3].innerHTML;
+		y[3].innerHTML = "Rover"
+		if(m.roverSprite.updateNotification == true){
+			z[3].innerHTML = " collected litter ID: " + m.litterID;
+			m.litterID = m.litterID + 1;
+			m.roverSprite.updateNotification = false;
+		}
+		else if(m.roverSprite.updateNotificationBase == true){
+			z[3].innerHTML = " returning to base";
+			m.roverSprite.updateNotificationBase = false;
+		}
+	}
+}
+
+//Set button to off when loading in to this websit or refreshing it.
+window.onload = function () {
+		var onoffswitch = document.getElementById("toggle-button");
+		onoffswitch.checked = false;
+}
+
+function SwitchClick() {
+		var onoffswitch = document.getElementById("toggle-button");
+		var left = document.getElementsByClassName("left_direction");
+		var bottom = document.getElementsByClassName("bottom_direction");
+		var right = document.getElementsByClassName("right_direction");
+		var top = document.getElementsByClassName("top_direction");
+		if (onoffswitch.checked) {
+			//display direction controling button
+			left[0].style.visibility = "visible";
+			bottom[0].style.visibility = "visible";
+			right[0].style.visibility = "visible";
+			top[0].style.visibility = "visible";
+		}
+		else {
+			left[0].style.visibility = "hidden";
+			bottom[0].style.visibility = "hidden";
+			right[0].style.visibility = "hidden";
+			top[0].style.visibility = "hidden";
+		}
 }
 
 /**
@@ -231,6 +295,113 @@ function batteryLevel(){
 	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
 
+function litterDragStart(event) {
+	this.parent.interactive = false;
+	this.data = event.data;
+	this.dragging = true;
+}
+
+function litterDragEnd() {
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	addDraggableLitter(this.renderMap);
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.litterArray[this.posy][this.posx] = this;
+		this.renderMap.litterArrayLocations[this.posy][this.posx] = 1;
+		this.data = null;
+	}
+}
+
+function litterDragMove() {
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
+}
+
+function addDraggableLitter(m) {
+	var litter = new PIXI.Sprite(m.litterTexture);
+	litter.renderMap = m;
+	litter.interactive = true;
+	litter.buttonMode = true;
+	litter.anchor.set(0.5, 0.5);
+	litter
+		.on('mousedown', litterDragStart)
+		.on('touchstart', litterDragStart)
+		.on('mouseup', litterDragEnd)
+		.on('mouseupoutside', litterDragEnd)
+		.on('touchend', litterDragEnd)
+		.on('touchendoutside', litterDragEnd)
+		.on('mousemove', litterDragMove)
+		.on('touchmove', litterDragMove);
+	litter.x = -1 * m.squareSize;
+	litter.y = m.squareSize;
+	m.container.addChild(litter);
+}
+
+function rockDragStart(event) {
+	this.parent.interactive = false;
+	this.data = event.data;
+	this.dragging = true;
+}
+
+function rockDragEnd() {
+	this.dragging = false;
+	this.parent.interactive = true;
+	this.interactive = false;
+	this.posx = Math.floor(this.position.x / this.renderMap.squareSize);
+	this.posy = Math.floor(this.position.y / this.renderMap.squareSize);
+	this.position.x = Math.floor(this.posx) * this.renderMap.squareSize;
+	this.position.y = Math.floor(this.posy) * this.renderMap.squareSize;
+	addDraggableRock(this.renderMap);
+	if(this.posx >= this.renderMap.col || this.posy >= this.renderMap.row || this.posx < 0 || this.posy < 0 || this.renderMap.litterArrayLocations[this.posy][this.posx] == 1 || this.renderMap.grid[this.posy][this.posx] == "rock" || this.renderMap.grid[this.posy][this.posx] == "base") {
+		this.parent.removeChild(this);
+	}
+	else {
+		this.renderMap.grid[this.posy][this.posx] = "rock";
+		this.data = null;
+	}
+}
+
+function rockDragMove() {
+	if (this.dragging)
+	{
+		var newPosition = this.data.getLocalPosition(this.parent);
+		this.position.x = newPosition.x;
+		this.position.y = newPosition.y;
+	}
+}
+
+function addDraggableRock(m) {
+	var rock = new PIXI.Sprite(m.rockTexture);
+	rock.renderMap = m;
+	rock.interactive = true;
+	rock.buttonMode = true;
+	rock.anchor.set(0.5, 0.5);
+	rock
+		.on('mousedown', rockDragStart)
+		.on('touchstart', rockDragStart)
+		.on('mouseup', rockDragEnd)
+		.on('mouseupoutside', rockDragEnd)
+		.on('touchend', rockDragEnd)
+		.on('touchendoutside', rockDragEnd)
+		.on('mousemove', rockDragMove)
+		.on('touchmove', rockDragMove);
+	rock.x = -1 * m.squareSize;
+	rock.y = 2 * m.squareSize;
+	m.container.addChild(rock);
+}
+
 /**
 * Main function that is called before everything else. Calls all the apppriote methods to display all front end elements on screen and
 * sets up all socket listeners to handle any emits from the server.
@@ -257,6 +428,8 @@ function main() {
    });
 
 	setButtons(mapRenderer);
+	addDraggableLitter(mapRenderer);
+	addDraggableRock(mapRenderer);
 	startRoutine(mapRenderer);
 	randAddLitter(mapRenderer);
 	updateUI(mapRenderer);

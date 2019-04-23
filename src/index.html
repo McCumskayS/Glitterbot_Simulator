@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <title></title>
@@ -8,6 +8,8 @@
     <div class="box_1">
         <h2>GlitterBot</h2>
     </div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
@@ -37,19 +39,54 @@
                 <ul id="nav_1">
                 <li class="top"><a href="#nogo22" id="services" class="top_link"><span class="down"><img src="image/7.png"></span></a>
                 <ul class="sub">
-                    <li><a href="#nogo23" class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
-                    <li><a href="#nogo24"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
-                    <li><a href="#nogo25"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
-                    <li><a href="#nogo26"  class="a_1"><span class="span_1">Rover</span> collected litter ID: 12</a></li>
+                    <li><a href="#nogo23" class="a_1"><span class="span_1"></span><span class="span_5"></span></a></li>
+                    <li><a href="#nogo24" class="a_1"><span class="span_1"></span><span class="span_5"></span></a></li>
+                    <li><a href="#nogo25" class="a_1"><span class="span_1">Rover</span><span class="span_5"> is ready</span></a></li>
+                    <li><a href="#nogo26" class="a_1"><span class="span_1">Drone</span><span class="span_5"> is ready</span></a></li>
                 </ul>
                 </ul>
             </ul>
         </div>
     </div>
     <div class="right">
-        <div id="droneDisplay" class="left_4"></div>
-        <div id="roverDisplay" class="left_5"></div>
+      <!--<div id="droneDisplay"></div>
+      <div id="roverDisplay"></div> -->
+      <div id="droneDisplay" class="left_4"></div>
+      <div id="roverDisplay" class="left_5"></div>
+
+      <span class="span_3"></span>
+      <span class="span_4"></span>
     </div>
+
+    <div class="SwitchIcon">
+    <div class="toggle-button-wrapper">
+        <input type="checkbox" id="toggle-button" name="switch" onclick="SwitchClick()" checked>
+        <label for="toggle-button" class="button-label">
+            <span class="circle"></span>
+            <span class="text on">ON</span>
+            <span class="text off">MANUAL</span>
+        </label>
+
+    </div>
+    </div>
+
+    <div class="change_direction">
+			<div class="direction_content">
+				<div class="direction_div top_direction">
+					<img id="img_up" src="image/buttonup.png" onclick="ManualUp()" style="cursor:pointer;"/>
+				</div>
+				<div class="direction_div left_direction">
+					<img id="img_left" src="image/buttonleft.png" onclick="ManualLeft()" style="cursor:pointer;" />
+				</div>
+				<div class="direction_div bottom_direction">
+					<img id="img_bottom" src="image/buttondown.png" onclick="ManualDown()" style="cursor:pointer;" />
+				</div>
+				<div class="direction_div right_direction">
+					<img id="img_right" src="image/buttonright.png" onclick="ManualRight()" style="cursor:pointer;" />
+				</div>
+			</div>
+		</div>
+
 
     <script src="./renders/pixiSetup.js"></script>
   </body>

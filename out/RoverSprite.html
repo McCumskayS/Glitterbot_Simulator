@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: RoverSprite</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: RoverSprite</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>RoverSprite<span class="signature">(container, squareSize, mapRenderer, baseX, baseY)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">this is the class that handles the Rover.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="RoverSprite"><span class="type-signature"></span>new RoverSprite<span class="signature">(container, squareSize, mapRenderer, baseX, baseY)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    creates the rover sprite and adds it to the map at x:0 y:0
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>container</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the pixiJS object container</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>squareSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the size of each cell of the map in pixels</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mapRenderer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="MapRenderer.html">MapRenderer</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the current instance of the MapRenderer class</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>baseX</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">this X location of the base on the map</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>baseY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">this Y location of the base on the map</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="renders_roverSprite.js.html">renders/roverSprite.js</a>, <a href="renders_roverSprite.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="collectLitter"><span class="type-signature"></span>collectLitter<span class="signature">(posx, posy, targetX, targetY, path)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Function that collects a litter if the x and y of the rover matches the x and y of the target litter. Also manages battery depletion.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>posx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current x position of the rover.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>posy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current y position of the rover.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetX</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">target x location from path.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">target y location from path.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an array of coordinates objects.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="renders_roverSprite.js.html">renders/roverSprite.js</a>, <a href="renders_roverSprite.js.html#line82">line 82</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="followPath"><span class="type-signature"></span>followPath<span class="signature">(path)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    function that moves the rover in a specified x and y coordinate
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an array of coordinates objects</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="renders_roverSprite.js.html">renders/roverSprite.js</a>, <a href="renders_roverSprite.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#checkTrees">checkTrees</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#initializeTreeArray">initializeTreeArray</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#sender">sender</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 18 2019 12:30:01 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

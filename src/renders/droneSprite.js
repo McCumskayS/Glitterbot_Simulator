@@ -1,5 +1,21 @@
+/**
+* This is the Drone Sprite Class
+*/
 class DroneSprite {
-	//Creates the rover sprite and adds it to the map at x:0;y:0
+	/**
+	  *	Creates the drone sprite and adds it to the map at x:0 y:0
+		* @constructor
+		* @param {integer} row - the number of rows of the map where the drone will be placed
+		* @param {integer} column - the number of columns of the map where the drone will be placed
+		* @param {2Darray} mapGrid - the 2D array that rapresents the map
+		* @param {number} squareSize - the size of each cell of the map in pixels
+		* @param {object} container - the pixiJS object container
+		* @param {2Darray} litterArray - the 2D array that holds the positions of the litters
+		* @param {2Darray} treeArray - the 2D array that holds the positiions of the trees
+		* @param {integer} baseX - this X location of the base on the map
+		* @param {integer} baseY - this Y location of the base on the map
+		* @return {DroneSprite} an instance of the drone
+	*/
 	constructor(row, column, mapGrid, squareSize, container, litterArray, treeArray, baseX, baseY) {
 		this.texture = PIXI.Texture.fromImage('./sprites/drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
@@ -28,7 +44,11 @@ class DroneSprite {
 		this.waiting = true;
 	}
 
-	//TODO boundry system!
+	/**
+	* function that moves the rover in a specified x and y coordiante
+	* @function
+	* @param {Object[]} data - an array of coordinates objects
+	*/
 	moveTo(data) {
 			if (this.waiting) {
 				this.waiting = false;
@@ -54,7 +74,13 @@ class DroneSprite {
 			}
 	}
 
-	// A function that make the drone search litter in the surrounding area
+/**
+* function that searches the surroundings of the drone for any litter and trees.
+* @function
+* @param {integer} posx - x position of the drone.
+* @param {integer} posy - y position of the drone.
+* @returns {(2Darray|integer|integer)} updated treeArray if tree is found or x and y positions of the litter if litter is found.
+*/
 	searchLitter(posx, posy) {
 		//testting waiting boolean
 		this.waiting = true;
@@ -78,9 +104,6 @@ class DroneSprite {
 					}
 				}
 			}
-
 		}
 	}
-
-
 }

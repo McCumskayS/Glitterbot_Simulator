@@ -1,7 +1,9 @@
+//requires for the path finding js files
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
 const converter = require('./CoordinatesConversion.js')
 
+//variable declerations
 var gridCoordinates = {x:0, y:1};
 var purpleChange = false;
 var scanRadius = 0;
@@ -34,6 +36,11 @@ var height;
 var count = 0;
 var clientId;
 
+/**
+* Function that handles all socket connections from all channels.
+* @function
+* @param {Object} io - object used to access sockets
+*/
 function sender(io) {
 	//When a client connect display message on console
 	io.on('connection', function(socket){
@@ -112,7 +119,6 @@ function sender(io) {
 				io.to(clientId).emit('phone', gridCoordinates);
         io.to(clientId).emit('gridCoordinates', gridCoordinates);
         purpleChange = true;
-				console.log('YOLOOOOOO');
 			}
 		});
 		//connection for recieving start position of the map
@@ -138,7 +144,14 @@ function sender(io) {
 
 }
 
-// a function that checks the scanning area and returns positions that can be the target
+/**
+* a function that checks the scanning area and returns positions that can be the target
+* @Function
+* @param {Integer} posx - x position of the drone.
+* @param {Integer} posy - y position of the drone.
+* @param {Integer} scanRadius - maximum radius that the drone can scan.
+* @returns {Array} array of targets that are walkable.
+*/
 function checkTrees(posx, posy, scanRadius) {
 	var targets = [];
 	console.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);
@@ -156,7 +169,11 @@ function checkTrees(posx, posy, scanRadius) {
 	return targets;
 }
 
- //initialize treeArray to be a 2D array/
+/**
+* initialize treeArray to be a 2D array
+* @Function
+* @returns {2DArray} updated tree array.
+*/
  function initializeTreeArray() {
  	var trees = [];
  	var treesArray = [];

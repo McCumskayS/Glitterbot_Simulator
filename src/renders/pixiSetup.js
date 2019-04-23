@@ -22,6 +22,12 @@ container
 			 .on('pointerupoutside', onDragEnd)
 			 .on('pointermove', onDragMove);
 
+
+/**
+	* This function handles the beginning of the drag for the map
+	* @function
+	* @param {event} event - the mouse event on screen
+*/
 function onDragStart(event) {
 	this.data = event.data;
 	var position = this.data.getLocalPosition(this);
@@ -31,6 +37,10 @@ function onDragStart(event) {
 	this.dragging = true;
 }
 
+/**
+	* This function handles what happens when the drag ends
+	* @function
+*/
 function onDragEnd() {
 	document.body.style.cursor = 'auto';
 	this.alpha = 1;
@@ -38,6 +48,10 @@ function onDragEnd() {
 	this.data = null;
 }
 
+/**
+	* This function handles what happens during the drag
+	* @function
+*/
 function onDragMove() {
 	if (this.dragging) {
 		document.body.style.cursor = 'move';

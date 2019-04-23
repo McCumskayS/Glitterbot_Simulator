@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/sender.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/sender.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//requires for the path finding js files
+const engine = require('./roverPathFinding.js')
+const droneEngine = require('./dronePathFinding.js')
+const converter = require('./CoordinatesConversion.js')
+
+//variable declerations
+var gridCoordinates = {x:0, y:1};
+var purpleChange = false;
+var scanRadius = 0;
+var grid = [];
+var direction = 'right'
+var treeArray = [];
+var litterArray = [];
+var startPos = {
+  lat: 0,
+	long: 0
+}
+var endPos = {
+	lat: 0,
+	long: 0
+}
+var latLongWidth = 0;
+var latLongHeight = 0;
+
+var litterArrayLocations = [];
+var roverX;
+var roverY;
+var baseX;
+var baseY;
+var capacity;
+var battery;
+
+var width;
+var height;
+
+var count = 0;
+var clientId;
+
+/**
+* Function that handles all socket connections from all channels.
+* @function
+* @param {Object} io - object used to access sockets
+*/
+function sender(io) {
+	//When a client connect display message on console
+	io.on('connection', function(socket){
+	  console.log('a user connected');
+
+    socket.on('rover-frontEnd', function(data) {
+			console.log('ID of the client is: ' + clientId);
+			roverX = data.coordinates.posx;
+			roverY = data.coordinates.posy;
+
+			baseX = data.coordinates.basex;
+			baseY = data.coordinates.basey;
+			capacity = data.capacity;
+			battery = data.battery;
+			var path = engine(litterArrayLocations, {x:roverX, y:roverY}, grid, gridCoordinates, capacity, baseX, baseY, battery);
+			console.log(path);
+
+			if (data.state != false) {
+				socket.emit('rover-frontEnd', path);
+			}
+
+		});
+
+    socket.on('grid-channel', function(data) {
+			clientId = socket.id;
+			console.log('ID of the client is: ' + clientId);
+			grid = data.grid;
+			litterArrayLocations = data.litter;
+			height = grid.length;
+			width = grid[0].length;
+			// initialize the utilityArray for the first time it sends the information of grid map
+			if (count == 0) {
+				treeArray = initializeTreeArray();
+				console.log('successfully initialize grid');
+				count = 2;
+			}
+		});
+		// copy tre array from front end to back end
+		socket.on('treeArray', function(data) {
+			treeArray = data;
+		});
+		//receive the location of the drone and send back the path
+		socket.on('drone-frontEnd', function(data) {
+			scanRadius = data.scanRadius;
+      var currentLocation = {x: data.coordinates.posx, y: data.coordinates.posy};
+			if (data.state != false) {
+        if (direction != 'utility random') {
+          var targets = checkTrees(data.coordinates.posx, data.coordinates.posy, scanRadius);
+  				console.log('the length of targets array: '+ targets.length);
+  				var newdata = droneEngine.engine(currentLocation, targets, grid, direction, treeArray);
+  				direction = newdata.direction;
+  				console.log('the direction next is: ' + direction);
+  				var path = newdata.path;
+  				// console.log('the length of the drone path is: '+path.length);
+        } else {
+          var path = droneEngine.utility(currentLocation, treeArray);
+        }
+				socket.emit('drone-frontEnd', path);
+			}
+		});
+		// receive litter from the drone
+		socket.on('litter-channel', function(data) {
+			litterArray = data;
+		});
+
+		socket.on('mobile-channel', function(data) {
+			console.log('position received: ' + data.latitude + ' - ' + data.longitude)
+			let pos = {lat: data.latitude, long: data.longitude}
+			gridCoordinates = converter.mapOnGrid(startPos, pos, latLongWidth, latLongHeight);
+			if (gridCoordinates.x > grid.length || gridCoordinates.x &lt; 0) {
+				return;
+			}
+			else if (gridCoordinates.y > grid[0].length || gridCoordinates.y &lt; 0) {
+				return;
+			} else {
+				io.to(clientId).emit('phone', gridCoordinates);
+        io.to(clientId).emit('gridCoordinates', gridCoordinates);
+        purpleChange = true;
+			}
+		});
+		//connection for recieving start position of the map
+		socket.on('app-startPos', function(data){
+			console.log('Recived start positions')
+			startPos.lat = data.latitude
+			startPos.long = data.longitude
+		});
+		//connection for recieving end position of the map
+		socket.on('app-endPos', function(data){
+			console.log('Recived end position')
+			endPos.lat = data.latitude
+			endPos.long = data.longitude
+			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
+			//!!!!!!!!!!!!
+			latLongWidth = converter.calculateWidth(startPos, endPos, grid.length)
+			latLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)
+
+			console.log("Calculated width: " + latLongWidth)
+			console.log("Calculated height: " + latLongHeight)
+		});
+  });
+
+}
+
+/**
+* a function that checks the scanning area and returns positions that can be the target
+* @Function
+* @param {Integer} posx - x position of the drone.
+* @param {Integer} posy - y position of the drone.
+* @param {Integer} scanRadius - maximum radius that the drone can scan.
+* @returns {Array} array of targets that are walkable.
+*/
+function checkTrees(posx, posy, scanRadius) {
+	var targets = [];
+	console.log('the current position of drone: '+ 'x: '+posx + ' y: ' + posy);
+
+	for (var i = -scanRadius; i &lt;= scanRadius; i++) {
+		for (var j = -scanRadius; j &lt;= scanRadius; j++) {
+			if (posx+i >= width || posy+j >= height || posx+i &lt; 0 || posy+j &lt; 0) {
+					continue;
+			} else if (treeArray[posy+j][posx+i] != 1) {
+				targets.push([posx+i,posy+j]);
+			}
+		}
+	}
+
+	return targets;
+}
+
+/**
+* initialize treeArray to be a 2D array
+* @Function
+* @returns {2DArray} updated tree array.
+*/
+ function initializeTreeArray() {
+ 	var trees = [];
+ 	var treesArray = [];
+ 	for (var j = 0; j &lt; width; j++) {
+ 		trees[j] = 0;
+ 	}
+ 	for (var i = 0; i &lt; height; i++) {
+ 		treesArray[i] = trees;
+ 	}
+
+  return treesArray;
+
+  }
+
+module.exports = sender;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DroneSprite.html">DroneSprite</a></li><li><a href="MapRenderer.html">MapRenderer</a></li><li><a href="PhoneDrone.html">PhoneDrone</a></li><li><a href="RoverSprite.html">RoverSprite</a></li></ul><h3>Global</h3><ul><li><a href="global.html#batteryLevel">batteryLevel</a></li><li><a href="global.html#calculateHeight">calculateHeight</a></li><li><a href="global.html#calculateWidth">calculateWidth</a></li><li><a href="global.html#changeDirection">changeDirection</a></li><li><a href="global.html#checkTrees">checkTrees</a></li><li><a href="global.html#droneRoutine">droneRoutine</a></li><li><a href="global.html#evaluateTarget">evaluateTarget</a></li><li><a href="global.html#initializeTreeArray">initializeTreeArray</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#mapOnGrid">mapOnGrid</a></li><li><a href="global.html#onDragEnd">onDragEnd</a></li><li><a href="global.html#onDragMove">onDragMove</a></li><li><a href="global.html#onDragStart">onDragStart</a></li><li><a href="global.html#pathBatteryUse">pathBatteryUse</a></li><li><a href="global.html#pathFindingEngine">pathFindingEngine</a></li><li><a href="global.html#randAddLitter">randAddLitter</a></li><li><a href="global.html#sender">sender</a></li><li><a href="global.html#setButtons">setButtons</a></li><li><a href="global.html#setWalkable">setWalkable</a></li><li><a href="global.html#startRoutine">startRoutine</a></li><li><a href="global.html#transformGrid">transformGrid</a></li><li><a href="global.html#updateUI">updateUI</a></li><li><a href="global.html#updateUtility">updateUtility</a></li><li><a href="global.html#utilityInitialisation">utilityInitialisation</a></li><li><a href="global.html#utilityMovement">utilityMovement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 18 2019 12:30:01 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

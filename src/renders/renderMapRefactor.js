@@ -1,7 +1,18 @@
+//socket const that is used to emit/recieve data
 const socket = io();
+//variable count used for finding first instance of run.
 var count = 0;
+/**
+* Class to render front end interface and manage all front end elements.
+*/
 
 class MapRenderer {
+/**
+	*	Initialises the map, drones, rovers and textures for the map.
+	* @constructor
+	* @param {object} container - the pixiJS object container
+*/
+
 	constructor(container) {
 		this.row = 20;
 		this.col = 30;
@@ -32,6 +43,12 @@ class MapRenderer {
 		this.litterID = 1;
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
 	}
+
+/**
+* Draws the grid to the front end, adding rocks and trees randomly. Also makes new instances of the rover, drone and phone drone.
+* @function
+* @returns {2Darray} grid array and litterArrayLocations array sent to the server
+*/
 
 	drawGrid() {
 		for (var i = 0; i < this.row; i++) {
@@ -79,8 +96,12 @@ class MapRenderer {
 		socket.emit('grid-channel', {grid: this.grid, litter: this.litterArrayLocations});
 	}
 
+/**
+* Adds litter onto a random location on the map.
+* @function
+* @returns {2Darray} grid array and litterArrayLocations array sent to the server
+*/
 	addLitter() {
-		//TODO: this function gets stuck in the while loop if there's not free spot to place new litter
 		do {
 			var row = Math.floor(Math.random()*(this.row));
 			var col = Math.floor(Math.random()*(this.col));
@@ -97,6 +118,13 @@ class MapRenderer {
 		this.container.addChild(litterSprite);
 	}
 
+/**
+* Removes a litter at an x and y location on the grid.
+* @function
+* @param {integer} x - x location on the grid.
+* @param {integer} y - y location on the grid.
+* @returns {2Darray} grid array and litterArrayLocations array sent to the server
+*/
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
 			this.container.removeChild(this.litterArray[y][x]);
@@ -108,19 +136,39 @@ class MapRenderer {
 		return false;
 	}
 
+/**
+* Calls rover function "followPath" on the path passed in.
+* @function
+* @param {Object[]} path - array of coordiante objects.
+*/
 	moveRover(path) {
 		this.roverSprite.followPath(path);
 	}
 
+/**
+* Calls drone function "moveTo" on the path passed in.
+* @function
+* @param {Object[]} path - array of coordiante objects.
+*/
 	moveDrone(data) {
 		this.droneSprite.moveTo(data);
 	}
 
+/**
+* Calls phoneDrone function "moveTo" on the path passed in.
+* @function
+* @param {Object[]} path - array of coordiante objects.
+*/
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
 }
 
+/**
+* Emits rover status to the server every 2000ms
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
 function startRoutine(m) {
 	console.log(m.roverSprite.posx);
 	socket.emit("rover-frontEnd", {coordinates: {posx:m.roverSprite.posx, posy:m.roverSprite.posy, basex:m.baseX, basey:m.baseY},
@@ -129,6 +177,11 @@ function startRoutine(m) {
   setTimeout(startRoutine, 2000, m);
 }
 
+/**
+* Emits drone status to the server every 5000ms
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
 function droneRoutine(m) {
 	console.log(m.droneSprite.waiting)
 	socket.emit('drone-frontEnd', {coordinates: {posx:m.droneSprite.posx, posy:m.droneSprite.posy},
@@ -136,6 +189,11 @@ function droneRoutine(m) {
 		setTimeout(droneRoutine, 5000, m);
 }
 
+/**
+* Updates the UI whenever called.
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
 function updateUI(m) {
 	document.getElementById("roverDisplay").innerHTML = "X: " + m.roverSprite.posx + " Y: " + m.roverSprite.posy + " Capacity: " + m.roverSprite.capacity + "  |  Battery Remaining: " + m.roverSprite.battery;
 	document.getElementById("droneDisplay").innerHTML = "X: " + m.droneSprite.posx + " Y: " + m.droneSprite.posy;
@@ -207,16 +265,34 @@ function SwitchClick() {
 		}
 }
 
+/**
+* Setup for the litter button so that it adds a litter whenever it is clicked.
+* @function
+* @param {MapRenderer} mapRenderer - current instance of MapRenderer class.
+*/
 function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
 	const genLitterBtn = document.getElementById("litter");
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
 }
 
+/**
+* Randomly adds litter onto the map at a random time.
+* @function
+* @param {MapRenderer} mapRenderer - current instance of MapRenderer class.
+*/
 function randAddLitter(mapRenderer) {
 	var timer = Math.floor(Math.random() * 20001) + 10000;
 	mapRenderer.addLitter();
 	setTimeout(randAddLitter, timer, mapRenderer);
+}
+
+/**
+* Setup for the rover battery levels to be displayed on frontend.
+* @function
+*/
+function batteryLevel(){
+	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
 
 function litterDragStart(event) {
@@ -326,6 +402,11 @@ function addDraggableRock(m) {
 	m.container.addChild(rock);
 }
 
+/**
+* Main function that is called before everything else. Calls all the apppriote methods to display all front end elements on screen and
+* sets up all socket listeners to handle any emits from the server.
+* @function
+*/
 function main() {
 	const mapRenderer = new MapRenderer(container);
 	mapRenderer.drawGrid();

@@ -1,11 +1,22 @@
-//Rover robot front end object handler
-//Authors: Zain Ali, Asad Mahmood
-//Date: 21/11/2018
+//position of the purple drone.
 var purplePosition = {x:0, y:1};
+/**
+* this is the class that handles the Rover.
+*/
 
 class RoverSprite {
-	//Creates the rover sprite and adds it to the map at the base location
-	constructor(container, squareSize, mapRenderer, baseX, baseY) {
+	/**
+	  *	creates the rover sprite and adds it to the map at x:0 y:0
+		* @constructor
+		* @param {object} container - the pixiJS object container
+		* @param {number} squareSize - the size of each cell of the map in pixels
+		* @param {MapRenderer} mapRenderer - the current instance of the MapRenderer class
+		* @param {integer} baseX - this X location of the base on the map
+		* @param {integer} baseY - this Y location of the base on the map
+		* @return {RoverSprite} an instance of the rover
+	*/
+
+		constructor(container, squareSize, mapRenderer, baseX, baseY) {
 		this.texture = PIXI.Texture.fromImage('./sprites/rover.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.x = baseX * squareSize;
@@ -29,8 +40,12 @@ class RoverSprite {
 		this.updateNotification = false;
 	}
 
-	//Follows a path of nodes!
-	followPath(path) {
+	/**
+	* function that moves the rover in a specified x and y coordinate
+	* @function
+	* @param {Object[]} path - an array of coordinates objects
+	*/
+		followPath(path) {
 		//gridXY();
 		this.waiting = false;
 
@@ -56,7 +71,15 @@ class RoverSprite {
 		}
 	}
 
-
+	/**
+	* Function that collects a litter if the x and y of the rover matches the x and y of the target litter. Also manages battery depletion.
+	* @function
+	* @param {integer} posx - current x position of the rover.
+	* @param {integer} posy - current y position of the rover.
+	* @param {integer} targetX - target x location from path.
+	* @param {integer} targetY - target y location from path.
+	* @param {Object[]} path - an array of coordinates objects.
+	*/
 	collectLitter (posx, posy, targetX, targetY, path) {
 		if (targetX == this.posx || targetY == this.posy) {
 			this.battery = this.battery - 10;

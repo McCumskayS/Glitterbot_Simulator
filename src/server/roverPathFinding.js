@@ -1,6 +1,19 @@
-//function that calculates the h for all the litters
+//require pathfinding library.
 var PF = require('pathfinding');
 
+/**
+* Caculates shortest path to target using A* algorithm.
+* @function
+* @param {2Darray} litterArrayLocations - array of locations of all the litters on the map.
+* @param {Object} currentLocation - current x and y of the rover.
+* @param {2Darray} grid - array of grid of terrain types.
+* @param {Object} gridCoordinates - x and y positions to check for litter on the grid.
+* @param {Integer} capacity - the amount of litter that the rover can hold.
+* @param {Integer} baseX - x position of the base for the rover.
+* @param {Integer} baseY - y position of the base for the rover.
+* @param {Integer} battery - battery capacity of the rover.
+* @return {Object[]} list of coordiantes towards the path.
+*/
 function pathFindingEngine (litterArrayLocations, currentLocation, grid, gridCoordinates, capacity, baseX, baseY, battery) {
 	var shortestPath = [];
 	var length = 1000000; //for now test
@@ -53,6 +66,13 @@ function pathFindingEngine (litterArrayLocations, currentLocation, grid, gridCoo
 	}
 }
 
+/**
+* Transforms the grid into a grid of 1s and 0s.
+* @function
+* @param {2Darray} - grid array.
+* @param {Object} - x and y position on grid.
+* @returns {2Darray} transformed grid.
+*/
 function transformGrid(grid, gridCoordinates) {
 	var temp = [];
 	for (var i = 0; i < grid.length; i++) {
@@ -71,6 +91,12 @@ function transformGrid(grid, gridCoordinates) {
 	return temp;
 }
 
+/**
+* Checks battery usage of the path calculated to see if rover can get there and back to the base without dying.
+* @functions
+* @param {Object[]} path - array of path locations calculated by A*.
+* @return {integer} battery that will be used by the path.
+*/
 function pathBatteryUse(path) {
 	var batteryUse = 0;
 	for (var i = 1; i < path.length; i++) {

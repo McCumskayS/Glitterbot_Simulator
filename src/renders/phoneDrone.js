@@ -1,6 +1,15 @@
+/**
+* This is the class that handles the PhoneDrone.
+*/
 class PhoneDrone {
-	//Creates the rover sprite and adds it to the map at x:0;y:0
-	constructor(squareSize, container) {
+	/**
+	  * Creates a new instance of phone drone sprite and sets x = 0 and y = 0
+		* @constructor
+		* @param {integer} squareSize - the size of each grid square
+		* @param {object} container - the pixiJS object container
+		* @return {PhoneDrone} an instance of the drone
+	*/
+		constructor(squareSize, container) {
 		this.texture = PIXI.Texture.fromImage('./sprites/phone_drone.png');
 		this.sprite = new PIXI.Sprite(this.texture);
 		this.sprite.anchor.set(0.5, 0.5);
@@ -17,7 +26,11 @@ class PhoneDrone {
 		this.makeTrue = this.makeTrue.bind(this);
 	}
 
-	//TODO boundry system!
+	/**
+	* function that moves the phonedrone in a specified x and y coordinate
+	* @function
+	* @param {Object[]} data - an array of coordinates objects
+	*/
 	moveTo(position) {
 		if (this.waiting) {
 			this.waiting = false;
@@ -36,7 +49,10 @@ class PhoneDrone {
 			console.log("Drone: " +this.posx+"-"+this.posy);
 		}
 	}
-
+	/**
+	* function that changes the waiting state to true
+	* @function
+	*/
 	makeTrue() {
 		this.waiting = true;
 	}

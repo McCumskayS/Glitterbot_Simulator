@@ -1,0 +1,235 @@
+{
+  "coverage": "8.67%",
+  "expectCount": 173,
+  "actualCount": 15,
+  "files": {
+    "src/renders/droneSprite.js": {
+      "expectCount": 22,
+      "actualCount": 4,
+      "undocumentLines": [
+        45,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        56,
+        58,
+        59,
+        60,
+        61,
+        62,
+        64,
+        68,
+        94
+      ]
+    },
+    "src/renders/ok.js": {
+      "expectCount": 6,
+      "actualCount": 6,
+      "undocumentLines": []
+    },
+    "src/renders/phoneDrone.js": {
+      "expectCount": 13,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        3,
+        4,
+        5,
+        7,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        21,
+        40
+      ]
+    },
+    "src/renders/pixiSetup.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/renders/renderMap.js": {
+      "expectCount": 23,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        35,
+        36,
+        38,
+        44,
+        55,
+        64,
+        145,
+        154,
+        161,
+        171,
+        172
+      ]
+    },
+    "src/renders/renderMapRefactor.js": {
+      "expectCount": 35,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        22,
+        25,
+        26,
+        35,
+        81,
+        99,
+        110,
+        114,
+        118,
+        124,
+        133,
+        140,
+        146,
+        152,
+        158,
+        162
+      ]
+    },
+    "src/renders/roverSprite.js": {
+      "expectCount": 21,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6,
+        8,
+        9,
+        10,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        25,
+        27,
+        28,
+        32,
+        59,
+        142
+      ]
+    },
+    "src/server/CoordinatesConversion.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        6,
+        11
+      ]
+    },
+    "src/server/dronePathFinding.js": {
+      "expectCount": 13,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        56,
+        110,
+        122,
+        132,
+        144,
+        154,
+        213
+      ]
+    },
+    "src/server/index.js": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        20,
+        25
+      ]
+    },
+    "src/server/roverPathFinding.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        2,
+        4,
+        56,
+        74
+      ]
+    },
+    "src/server/sender.js": {
+      "expectCount": 19,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        16,
+        20,
+        21,
+        23,
+        34,
+        37,
+        142,
+        160
+      ]
+    }
+  }
+}

@@ -1,9 +1,24 @@
+//require the pathfinding library
 var PF = require('pathfinding');
+//height of grid
 var height = 0;
+//width of grid
 var width = 0;
+//temp grid to store grid
 var temp = [];
+//array that keeps track of utility of drone.
 var utilityArray = [];
 
+/**
+* Caculates shortest path to target using A* algorithm.
+* @function
+* @param {Object} currentLocation - current x and y of the drone.
+* @param {2Darray} targets - array of places that the drone can fly to.
+* @param {2Darray} grid - array of grid of terrain types.
+* @param {string} direction - direction the drone is flying towards.
+* @param {2Darray} treeArray - array of tree locations.
+* @return {Object[]} list of coordiantes towards the path.
+*/
 function pathFindingEngine(currentLocation, targets, grid, direction, treeArray) {
   var droneX = currentLocation.x;
   var droneY = currentLocation.y;
@@ -53,6 +68,13 @@ function pathFindingEngine(currentLocation, targets, grid, direction, treeArray)
   return newdata;
 }
 
+/**
+* Movenment of drone handling depending on utility function (where the drone hasnt been in the longest time).
+* @function
+* @param {Object} currentLocation - x and y location of the drone.
+* @param {treeArray} treeArray - array of tree locations.
+* @return {Object[]} list of path x and y coordinates.
+*/
 function utilityMovement(currentLocation, treeArray) {
   var droneX = currentLocation.x;
   var droneY = currentLocation.y;
@@ -107,6 +129,11 @@ function utilityMovement(currentLocation, treeArray) {
   return path;
 }
 
+/**
+* Transforms the grid into a grid of 1s and 0s.
+* @function
+* @returns {2Darray} transformed grid.
+*/
 function transformGrid() {
   var temp = [];
   for (var i = 0; i < height; i++) {
@@ -118,7 +145,11 @@ function transformGrid() {
 
   return temp;
 }
-// initialize an empty utility array with the same height and width of the grid map
+
+/**
+* Initialize an empty utility array with the same height and width of the grid map
+* @function
+*/
 function utilityInitialisation () {
   var utility = [];
   for (var i = 0; i < width; i++) {
@@ -128,7 +159,13 @@ function utilityInitialisation () {
     utilityArray[j] = utility;
   }
 }
-// update the utility array and set the tree positions to be -1 and the other positions +2
+
+/**
+* Update the utility array and set the tree positions to be -1 and the other positions +2
+* @function
+* @param {2Darray} treeArray - array of tree locations.
+*/
+
 function updateUtility (treeArray) {
   for (var i = 0; i < height; i++) {
     for (var j = 0; j < width; j++) {
@@ -141,6 +178,12 @@ function updateUtility (treeArray) {
   }
 }
 
+/**
+* Function that sets the targets passed in to be 0 on the grid.
+* @param {2Darray} targets - array of target places that the drone can move to.
+* @param {2Darray} temp - temporary copy of the grid array.
+* @return {2Darray} updated grid.
+*/
 function setWalkable(targets, temp) {
   for (var i = 0; i < targets.length; i++) {
     var x = targets[i][0];
@@ -150,7 +193,15 @@ function setWalkable(targets, temp) {
   return temp;
 }
 
-// evaluate the candidate targets and returns the best target index to explore the map
+/**
+* Evaluate the candidate targets and returns the best target index to explore the map.
+* @function
+* @param {2Darray} candidateTargets - array of target locations for the drone.
+* @param {Integer} posx - x position of the drone.
+* @param {Integer} posy - y poisiton of the drone.
+* @param {String} direction - direction that the drone is currently flying towards.
+* @return {Object} of direction and best target to go to.
+*/
 function evaluateTarget(candidateTargets, posx, posy, direction) {
   // use direction to decide which target to take for the next step
   var bestIndex = 0;
@@ -209,7 +260,13 @@ function evaluateTarget(candidateTargets, posx, posy, direction) {
   return data;
 }
 
-// change next Direction
+/**
+* Takes the best target and direction and checks to see if the drone can go there and changes the direction accordingly.
+* @param {Object} data - best target and the direction of that target.
+* @param {2Darray} candidateTargets - array of possible targets that the drone can fly over.
+* @param {Integer} width - width of the grid.
+* @return {String} new direction.
+*/
 function changeDirection(data, candidateTargets, width) {
   var direction = data.direction;
   var target = candidateTargets[data.index];

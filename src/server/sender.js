@@ -1,16 +1,21 @@
 //requires for the path finding js files
 const engine = require('./roverPathFinding.js')
 const droneEngine = require('./dronePathFinding.js')
-const converter = require('./CoordinatesConversion.js')
+const converter = require('./coordinatesConversion.js')
 
 //variable declerations
-var gridCoordinates = {x:0, y:1};
+var gridCoordinates = {
+  x:0,
+  y:1
+};
+
 var purpleChange = false;
 var scanRadius = 0;
 var grid = [];
 var direction = 'right'
 var treeArray = [];
 var litterArray = [];
+
 var startPos = {
   lat: 0,
 	long: 0

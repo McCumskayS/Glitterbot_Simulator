@@ -31,6 +31,7 @@ class MapRenderer {
 		this.moveDrone = this.moveDrone.bind(this);
 		this.litterID = 1;
 		this.movePhoneDrone = this.movePhoneDrone.bind(this);
+		this.droneLand = this.droneLand.bind(this);
 	}
 
 	drawGrid() {
@@ -119,6 +120,14 @@ class MapRenderer {
 	movePhoneDrone(data) {
 		this.phoneDrone.moveTo(data);
 	}
+	
+	droneLand() {
+		if(this.droneSprite.landed == false) {
+			this.droneSprite.landed = true;
+		} else {
+			this.droneSprite.landed = false;
+		}
+	}
 }
 
 function startRoutine(m) {
@@ -156,28 +165,6 @@ function updateUI(m) {
 	else if (m.roverSprite.battery < 200) {
 		x[0].style.background = "url(../image/20.png) no-repeat 0px";
 	}
-
-	if(m.roverSprite.updateNotification == true || m.roverSprite.updateNotificationBase == true){
-		var y = document.getElementsByClassName("span_1");
-		var z = document.getElementsByClassName("span_5");
-
-		y[0].innerHTML = y[1].innerHTML;
-		z[0].innerHTML = z[1].innerHTML;
-		y[1].innerHTML = y[2].innerHTML;
-		z[1].innerHTML = z[2].innerHTML;
-		y[2].innerHTML = y[3].innerHTML;
-		z[2].innerHTML = z[3].innerHTML;
-		y[3].innerHTML = "Rover"
-		if(m.roverSprite.updateNotification == true){
-			z[3].innerHTML = " collected litter ID: " + m.litterID;
-			m.litterID = m.litterID + 1;
-			m.roverSprite.updateNotification = false;
-		}
-		else if(m.roverSprite.updateNotificationBase == true){
-			z[3].innerHTML = " returning to base";
-			m.roverSprite.updateNotificationBase = false;
-		}
-	}
 }
 
 //Set button to off when loading in to this websit or refreshing it.
@@ -211,6 +198,8 @@ function setButtons(mapRenderer) {
 	//Linking the litter generations button to the addLitter method
 	const genLitterBtn = document.getElementById("litter");
 	genLitterBtn.addEventListener('click', mapRenderer.addLitter);
+	const landDroneBtn = document.getElementById("droneLand");
+	landDroneBtn.addEventListener('click', mapRenderer.droneLand);
 }
 
 function randAddLitter(mapRenderer) {

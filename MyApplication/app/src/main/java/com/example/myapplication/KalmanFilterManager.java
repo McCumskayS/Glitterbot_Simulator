@@ -1,8 +1,12 @@
 package com.example.myapplication;
 
+/**
+ * class that handle all logic behind the Kalman Filter.
+ */
 public class KalmanFilterManager {
+    //initialise variables.
     private int gpsStandardDeviation = 1;
-    private double accelerometerDeviation = 0.2;
+    private double accelerometerDeviation = 0.8;
     private Long deltaTime;
     private Long prevTime;
     private Long currentTime;
@@ -35,6 +39,11 @@ public class KalmanFilterManager {
     private Matrix IK;
 
 
+    /**
+     * constructor for the kalman filter. Initialises all of the matrices and sets the default values.
+     * @param position - (latitude/longitude) location values in meters.
+     * @param speed - current speed from accelerometer in one direction, depending on the lat or long thats passed in.
+     */
     public KalmanFilterManager(double position, double speed){
         //Kalman matrices
         A = new Matrix(2,2);
@@ -71,6 +80,10 @@ public class KalmanFilterManager {
     }
 
 
+    /**
+     * predict function of the kalman filter. creates estimations of the state of the system in the future.
+     * @param absoluteAcc - absolute acceleration value passed in to predict.
+     */
     public void predict(double absoluteAcc) {
         currentTime = System.currentTimeMillis();
         deltaTime = currentTime - prevTime;
@@ -93,6 +106,13 @@ public class KalmanFilterManager {
         Matrix.matrixAdd(APkAt, Q, Pk);
     }
 
+    /**
+     * update function of the kalman filter. Uses the predicted values alongside current values to correct location values. Also sets up matrices for the next predict
+     * stage.
+     * @param position - current lat/long value.
+     * @param speed - current speed value in one direction.
+     * @param accuracy - accuracy of the location.
+     */
     public void update(double position, double speed, double accuracy){
         //Setting new observation values
         Z.setData(position, speed);

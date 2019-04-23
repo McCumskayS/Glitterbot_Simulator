@@ -1,12 +1,20 @@
 package com.example.myapplication;
 
 /**
- * Created by lezh1k on 2/13/18.
+ * https://github.com/Lezh1k
+ * Class used to handle coordinates.
  */
-
 public class Coordinates {
     private static final double EARTH_RADIUS = 6371.0 * 1000.0; // meters
 
+    /**
+     * finds the distance between 2 coordinates.
+     * @param lon1 - first longitude value.
+     * @param lat1 - first latitude value.
+     * @param lon2 - second longitude value.
+     * @param lat2 - second latitude value.
+     * @return distance of between the 2 values.
+     */
     public static double distanceBetween(double lon1, double lat1, double lon2, double lat2) {
         double deltaLon = Math.toRadians(lon2 - lon1);
         double deltaLat = Math.toRadians(lat2 - lat1);
@@ -19,11 +27,22 @@ public class Coordinates {
         return EARTH_RADIUS * c;
     }
 
+    /**
+     * converts longitude into meters.
+     * @param lon - the default longitude value passed in.
+     * @return longitude converted into meters.
+     */
     public static double longitudeToMeters(double lon) {
         double distance = distanceBetween(lon, 0.0, 0.0, 0.0);
         return distance * (lon < 0.0 ? -1.0 : 1.0);
     }
 
+    /**
+     * converts the lonitude and latitude that is in meters into a geopoint value.
+     * @param lonMeters - longitude in meters.
+     * @param latMeters - latitude in meters.
+     * @return geopoint value for the long and lat values.
+     */
     public static GeoPoint metersToGeoPoint(double lonMeters, double latMeters) {
         GeoPoint point = new GeoPoint(0.0, 0.0);
         GeoPoint pointEast = pointPlusDistanceEast(point, lonMeters);
@@ -31,11 +50,20 @@ public class Coordinates {
         return pointNorthEast;
     }
 
+    /**
+     * converts latitde into meters.
+     * @param lat - default latitude value.
+     * @return latitude converted into meters.
+     */
     public static double latitudeToMeters(double lat) {
         double distance = distanceBetween(0.0, lat, 0.0, 0.0);
         return distance * (lat < 0.0 ? -1.0 : 1.0);
     }
 
+    /**
+     * calculations behind finding the geopoint value.
+     * @return updated geopoint object.
+     */
     private static GeoPoint getPointAhead(GeoPoint point, double distance, double azimuthDegrees) {
         double radiusFraction = distance / EARTH_RADIUS;
         double bearing = Math.toRadians(azimuthDegrees);
@@ -63,25 +91,5 @@ public class Coordinates {
 
     private static GeoPoint pointPlusDistanceNorth(GeoPoint point, double distance) {
         return getPointAhead(point, distance, 0.0);
-    }
-
-    public static double calculateDistance(GeoPoint track[]) {
-        double distance = 0.0;
-        double lastLon, lastLat;
-        //WARNING! I didn't find array.length type. Seems it's int, so we can use next comparison:
-        if (track == null || track.length - 1 <= 0) //track.length == 0 || track.length == 1
-            return 0.0;
-
-        lastLon = track[0].Longitude;
-        lastLat = track[0].Latitude;
-
-        for (int i = 1; i < track.length; ++i) {
-            distance += Coordinates.distanceBetween(
-                    lastLat, lastLon,
-                    track[i].Latitude, track[i].Longitude);
-            lastLat = track[i].Latitude;
-            lastLon = track[i].Longitude;
-        }
-        return distance;
     }
 }

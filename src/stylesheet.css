@@ -50,7 +50,7 @@ body{
 .span_2{
 	color:#5BFF85}
 .nva{
-	width:500px;
+	width:200px;
 	height:60px;
 	background: #666;
 	margin:0 auto;
@@ -120,7 +120,6 @@ body{
   display: block;
   float: right;
 	text-align: center;
-	background:url(../image/100.png) no-repeat 0px;
 	background-size:16px 34px}
 .right .span_4{
 	position: fixed;
@@ -132,7 +131,6 @@ body{
   display: block;
   float: right;
 	text-align: center;
-  background:url(../image/100.png) no-repeat 0px;
 	background-size:16px 34px}
 
 #map-canvas {

@@ -42,6 +42,7 @@ class DroneSprite {
 		this.treeArray = treeArray;
 		this.searchLitter = this.searchLitter.bind(this);
 		this.waiting = true;
+		this.landed = false;
 	}
 
 	/**
@@ -50,7 +51,7 @@ class DroneSprite {
 	* @param {Object[]} data - an array of coordinates objects
 	*/
 	moveTo(data) {
-			if (this.waiting) {
+			if (this.waiting && this.landed == false) {
 				this.waiting = false;
 				var path = data;
 				for (var i = 0; i < path.length; i++) {

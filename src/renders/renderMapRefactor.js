@@ -47,7 +47,6 @@ class MapRenderer {
 /**
 * Draws the grid to the front end, adding rocks and trees randomly. Also makes new instances of the rover, drone and phone drone.
 * @function
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 
 	drawGrid() {
@@ -99,7 +98,6 @@ class MapRenderer {
 /**
 * Adds litter onto a random location on the map.
 * @function
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 	addLitter() {
 		do {
@@ -123,7 +121,6 @@ class MapRenderer {
 * @function
 * @param {integer} x - x location on the grid.
 * @param {integer} y - y location on the grid.
-* @returns {2Darray} grid array and litterArrayLocations array sent to the server
 */
 	removeLitter(x, y) {
 		if (this.litterArray[y][x] != null) {
@@ -238,12 +235,19 @@ function updateUI(m) {
 	}
 }
 
-//Set button to off when loading in to this websit or refreshing it.
+/**
+* Sets the switch to be toggled off by default when the website loads for manual operator overide.
+* @function
+*/
 window.onload = function () {
 		var onoffswitch = document.getElementById("toggle-button");
 		onoffswitch.checked = false;
 }
 
+/**
+* Handles the on and off toggle switch and the arrows for the manual operator override.
+* @function
+*/
 function SwitchClick() {
 		var onoffswitch = document.getElementById("toggle-button");
 		var left = document.getElementsByClassName("left_direction");
@@ -295,12 +299,21 @@ function batteryLevel(){
 	document.getElementByClassName("span_3").innerHTML = this.roverSprite.battery;
 }
 
+/**
+* Sets up the litter to be interactive.
+* @function
+* @param {String} event - event that the user interacted with the litter with.
+*/
 function litterDragStart(event) {
 	this.parent.interactive = false;
 	this.data = event.data;
 	this.dragging = true;
 }
 
+/**
+* Handles the end logic of the drop functionality of the litter.
+* @function
+*/
 function litterDragEnd() {
 	this.dragging = false;
 	this.parent.interactive = true;
@@ -320,6 +333,10 @@ function litterDragEnd() {
 	}
 }
 
+/**
+* Handles the drag functionality of the litter.
+* @function
+*/
 function litterDragMove() {
 	if (this.dragging)
 	{
@@ -329,6 +346,11 @@ function litterDragMove() {
 	}
 }
 
+/**
+* Adds the litter to the map.
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
 function addDraggableLitter(m) {
 	var litter = new PIXI.Sprite(m.litterTexture);
 	litter.renderMap = m;
@@ -349,12 +371,21 @@ function addDraggableLitter(m) {
 	m.container.addChild(litter);
 }
 
+/**
+* Sets up the rock to be interactive.
+* @function
+* @param {string} event - event that the user interacted with the rock with.
+*/
 function rockDragStart(event) {
 	this.parent.interactive = false;
 	this.data = event.data;
 	this.dragging = true;
 }
 
+/**
+* Handles the end logic of the drop functionality of the rock.
+* @function
+*/
 function rockDragEnd() {
 	this.dragging = false;
 	this.parent.interactive = true;
@@ -373,6 +404,10 @@ function rockDragEnd() {
 	}
 }
 
+/**
+* Handles the drag functionality of the rock.
+* @function
+*/
 function rockDragMove() {
 	if (this.dragging)
 	{
@@ -382,6 +417,11 @@ function rockDragMove() {
 	}
 }
 
+/**
+* Adds the rock to the map.
+* @function
+* @param {MapRenderer} m - current instance of MapRenderer class.
+*/
 function addDraggableRock(m) {
 	var rock = new PIXI.Sprite(m.rockTexture);
 	rock.renderMap = m;

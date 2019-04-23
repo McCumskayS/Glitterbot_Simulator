@@ -106,6 +106,7 @@ function sender(io) {
 			litterArray = data;
 		});
 
+    //channel for the application to connect to
 		socket.on('mobile-channel', function(data) {
 			console.log('position received: ' + data.latitude + ' - ' + data.longitude)
 			let pos = {lat: data.latitude, long: data.longitude}
@@ -132,11 +133,8 @@ function sender(io) {
 			console.log('Recived end position')
 			endPos.lat = data.latitude
 			endPos.long = data.longitude
-			//TODO: MAKE SURE YOU GOT BOTH START AND END ONCE!!!!!
-			//!!!!!!!!!!!!
 			latLongWidth = converter.calculateWidth(startPos, endPos, grid.length)
 			latLongHeight = converter.calculateHeight(startPos, endPos, grid[0].length)
-
 			console.log("Calculated width: " + latLongWidth)
 			console.log("Calculated height: " + latLongHeight)
 		});

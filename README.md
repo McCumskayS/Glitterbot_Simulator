@@ -29,4 +29,4 @@ For more infomation on the architecture used and the technology used you can ref
 * Scott McCumskays - Manual Testing
 * Yichun Yuan - Drone scanning logic, Tree collision logic and Drone Utility function.
 * Xinyang Zhang - GUI 
-* William Connors - GUI
+* William Connors - GUI and Rover Battery/Capacity system.

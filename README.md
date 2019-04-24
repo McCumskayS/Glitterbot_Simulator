@@ -16,7 +16,7 @@ For infomation on how to install both the website and mobile application success
 * [User Manual](https://docs.google.com/document/d/1D9aiSdxwDQ8TtZzKQduFwR5ZnJMMdiqJibJ3uz94UNQ/edit?usp=sharing)
 
 For more infomation on the architecture used and the technology used you can refer to the link below:
-* [Software Manual](https://drive.google.com/open?id=12lIZ62dIeISMW-6cKP9SUp9c51RePznj)
+* [Software Manual](https://docs.google.com/document/d/16HVr1NpnlaTT-BpATwtOVFNAjPWFgNrsmqaenen-BI4/edit?usp=sharing)
 
 ## Main Branches
 * Master - Main branch with all working changes.

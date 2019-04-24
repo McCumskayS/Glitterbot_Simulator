@@ -13,7 +13,10 @@ appDevelopment
 * [Google Drive](https://drive.google.com/open?id=1AVRqvaEoW0lo5PRXyDMAQ6pkdIHL36RG) - Diagrams/Designs/MeetingDoc/GanttChart
 ## How to Install:
 For infomation on how to install both the website and mobile application successfully follow the guide linked below:
-* [User Manual](https://drive.google.com/open?id=12lIZ62dIeISMW-6cKP9SUp9c51RePznj)
+* [User Manual](https://docs.google.com/document/d/1D9aiSdxwDQ8TtZzKQduFwR5ZnJMMdiqJibJ3uz94UNQ/edit?usp=sharing)
+
+For more infomation on the architecture used and the technology used you can refer to the link below:
+* [Software Manual](https://drive.google.com/open?id=12lIZ62dIeISMW-6cKP9SUp9c51RePznj)
 
 ## Main Branches
 * Master - Main branch with all working changes.
@@ -21,4 +24,9 @@ For infomation on how to install both the website and mobile application success
 * appDevelopment - Main application development branch with all working features.
 
 ## Authors
-Zain Ali, Asad Mahmood, Scott McCumskays, Yichun Yuan, Xinyang Zhang, William Connors
+* Zain Ali - Mobile Development, Rover State Machine, Frontend and Backend setup.
+* Asad Mahmood - Mobile phone development and Rover Statemachine.
+* Scott McCumskays - Manual Testing
+* Yichun Yuan - Drone scanning logic, Tree collision logic and Drone Utility function.
+* Xinyang Zhang - GUI 
+* William Connors - GUI

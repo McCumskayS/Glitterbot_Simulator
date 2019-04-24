@@ -10,7 +10,7 @@ appDevelopment
 ```
 
 ## Documentation
-* [Google Drive](https://drive.google.com/open?id=1AVRqvaEoW0lo5PRXyDMAQ6pkdIHL36RG) - Diagrams/Designs/MeetingDoc/GanttChart
+* [Google Drive](https://drive.google.com/open?id=1fglPQWB9NN_7FF1wB13InCfTlrysEVZm) - Diagrams/Designs/MeetingDoc/GanttChart
 ## How to Install:
 For infomation on how to install both the website and mobile application successfully follow the guide linked below:
 * [User Manual](https://docs.google.com/document/d/1K3AeXITBDctbXu9DgGTguj1_NGPimEGyOv6oWREDGJQ/edit?usp=sharing)

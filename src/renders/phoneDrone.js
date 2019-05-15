@@ -34,8 +34,8 @@ class PhoneDrone {
 	moveTo(position) {
 		if (this.waiting) {
 			this.waiting = false;
-			var targetX = position.x;
-			var targetY = position.y;
+			var targetX = position.y;
+			var targetY = position.x;
 
 			var distanceSquared = ((this.posx-targetX)^2) + ((this.posy-targetY)^2);
 			distanceSquared = Math.abs(distanceSquared);
